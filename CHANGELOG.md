@@ -16,6 +16,7 @@ Fixes
 - Console: removed the stale built-in model table that disagreed with `config/llama-swap.yaml`; the console answers bad request bodies (not an object, invalid JSON) with `400` instead of dropping the connection; `/favicon.ico` no longer logs a 404.
 - Installer: `doctor` no longer downloads the 5.6 GB CUDA image silently (`doctor --pull` does, after you agreed); `--no-gpu` for a PC without an NVIDIA GPU (`docker-compose.nogpu.yml`); `verify` no longer checks the `/video` page that does not exist.
 - `scripts/check_i18n.js` no longer reports a false gap for texts that start with a quotation mark and no longer uses `eval`.
+- Removed `console/video.html`: a leftover page of the separate Video Studio project (no route, no `video.js`, not copied into the image). The header link "Video generation" still points to Video Studio on port 8767.
 - `.env.example`: removed the duplicated `PUBLIC_REPO_URL` and the unused `VIDEO_HOST_DIR`.
 
 Quality

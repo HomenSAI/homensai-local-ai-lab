@@ -21,8 +21,8 @@
    "sha256": "f3838eda1d6684a974cfd1dd9136424febe96a53e1bf74d72c395fddc3e0b96b"
   },
   "CHANGELOG.md": {
-   "bytes": 4448,
-   "sha256": "445f2d3385096e8f70cb4de0a75cf8d27e293abdd7ab408f8ec9082a0fd731bc"
+   "bytes": 4665,
+   "sha256": "ee1b2c09d64b12388c70ff0d1ad14a8bec6216b1f93f0054d902b9c6b30a7dba"
   },
   "CLAUDE.md": {
    "bytes": 1556,
@@ -147,10 +147,6 @@
   "console/tests_feed.py": {
    "bytes": 2045,
    "sha256": "9c29b592bfb1ebe2759ff73812862d2383855983b01c73fa568391ba781beea0"
-  },
-  "console/video.html": {
-   "bytes": 11897,
-   "sha256": "be642863c69c0675ebcc4fefb62cb944d784f65f4bd52f6497cf1e24e73fdf7f"
   },
   "docker-compose.nogpu.yml": {
    "bytes": 302,
