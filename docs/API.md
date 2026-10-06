@@ -1,6 +1,25 @@
 # HTTP interfaces (for operators and AI supervisors)
 
-Everything below is plain HTTP on the local machine. There is no authentication: use `127.0.0.1` or a trusted LAN only. Replace `localhost` with the LAN address if you opened the console (see `AI_CONSOLE_BIND_IP`).
+Everything below is plain HTTP on the local machine. The gateway has no authentication: use `127.0.0.1` or a trusted LAN only. Replace `localhost` with the LAN address if you opened the console (see `AI_CONSOLE_BIND_IP`).
+
+## Rules every console request must follow
+
+The console checks each request (see [SECURITY.md](../SECURITY.md)); a script or an AI supervisor has to comply:
+
+| Rule | Detail |
+|---|---|
+| `Host` header | `localhost`, an IP address, or a name listed in `AI_CONSOLE_ALLOWED_HOSTS`; otherwise `421`. `/health` is exempt |
+| Password | If `AI_CONSOLE_PASSWORD` is set, send HTTP Basic credentials (any user name): `curl -u any:PASSWORD ...`; otherwise `401`. `/health` is exempt |
+| `POST` content type | **Always** `Content-Type: application/json`, also for calls without a body (`/api/timer/cancel`); otherwise `415`. With `curl` use `-H "Content-Type: application/json"` |
+| `POST` origin | Scripts send no `Origin` header, which is fine. A browser request from another origin gets `403` |
+| Body | A JSON object. Empty or too large: `413`; invalid JSON or not an object: `400` |
+| Methods | `GET` and `POST` only (`HEAD`, `OPTIONS` answer `501`); the console never sends CORS headers |
+
+Every answer carries `Content-Security-Policy`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` and `Referrer-Policy: no-referrer`. Error answers are `{"error": "..."}`.
+
+```
+curl -X POST http://localhost:8766/api/start -H "Content-Type: application/json" -d '{"model_key":"MiniCPM5-2B-Q8_0"}'
+```
 
 ## Gateway - OpenAI-compatible, port 8080
 
@@ -24,7 +43,7 @@ curl http://localhost:8080/v1/chat/completions -H "Content-Type: application/jso
 
 | Method and path | Purpose |
 |---|---|
-| `GET /health` | `{"ok": true}` |
+| `GET /health` | `{"ok": true}` (needs no password and no known `Host`) |
 | `GET /api/version` | `{"name", "version", "author", "url", "repo"}` |
 | `GET /api/status` | Docker and GPU state, models in memory (`active_models`), `host_ai` containers, `issues` (must be empty on a healthy system), running job |
 | `GET /api/models` | catalog with file existence (`exists`), size, context, quantization, tuned parameters |

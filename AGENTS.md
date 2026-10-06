@@ -7,14 +7,14 @@ Read first: `docs/AI_OPERATOR.en.md` (your role and the supervision loop), `docs
 ## Install (summary)
 
 ```
-python scripts/install.py doctor      # fix what it reports before going on
+python scripts/install.py doctor      # fix what it reports before going on (it never downloads the 5.6 GB CUDA image: ask first, then `doctor --pull`)
 python scripts/install.py init        # creates .env - ask the human for MODEL_DIR and the network address
 python scripts/install.py build       # 15-40 minutes the first time
 python scripts/install.py up
 python scripts/install.py verify      # every line must be [ok]
 ```
 
-Models: section 4.5 of `docs/INSTALL.en.md`. Do not invent download sources; verify SHA-256; start with one small model.
+No NVIDIA GPU on this PC: add `--no-gpu` to doctor / build / up / verify (console, report and Git only). Models: section 4.5 of `docs/INSTALL.en.md`. Do not invent download sources; verify SHA-256; start with one small model.
 
 ## Operate and supervise
 
@@ -26,7 +26,7 @@ Models: section 4.5 of `docs/INSTALL.en.md`. Do not invent download sources; ver
 
 ## Ask first (never decide alone)
 
-Deleting files or Docker volumes, changing network addresses or opening ports, downloads larger than 1 GB, publishing anything (Git push, release), editing `.env` values that the human set.
+Deleting files or Docker volumes, downloading the 5.6 GB CUDA test image (`doctor --pull`), choosing the console password (`AI_CONSOLE_PASSWORD`), changing network addresses or opening ports, downloads larger than 1 GB, publishing anything (Git push, release), editing `.env` values that the human set.
 
 ## Never
 
@@ -34,4 +34,4 @@ Expose ports 8766, 8080, 3010, 8767 to the internet; put secrets, tokens or pers
 
 ## Code rules (if you change this repository)
 
-Standard library only in `console/`, `scripts/build_live_report.py`, `scripts/versioner.py`; keep the three interface languages complete (`node scripts/check_i18n.js de` and `en`); bump `VERSION` and `CHANGELOG.md` for a release; license: code MIT, results and texts CC BY 4.0 with credit to <https://homensai.com>.
+Run `python -m unittest discover -s tests` and `python scripts/make_manifest.py --check` (rewrite with `python scripts/make_manifest.py` after you changed files). Never weaken the checks in `console/security.py` (Host / Origin / Content-Type / password) and the fixed `docker exec` form in `container_server.py`; new `POST` endpoints must go through `Handler.guarded`, and every change of them needs a test. Standard library only in `console/`, `scripts/build_live_report.py`, `scripts/versioner.py`; keep the three interface languages complete (`node scripts/check_i18n.js de` and `en`); bump `VERSION` and `CHANGELOG.md` for a release; license: code MIT, results and texts CC BY 4.0 with credit to <https://homensai.com>.

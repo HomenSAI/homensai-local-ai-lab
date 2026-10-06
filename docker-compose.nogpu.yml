@@ -1,0 +1,5 @@
+# Override for a machine without an NVIDIA GPU (console, report and Git only; the gateway cannot load models).
+# Use it with:  python scripts/install.py up --no-gpu     or     docker compose -f docker-compose.yml -f docker-compose.nogpu.yml up -d ai-console
+services:
+  ai-console:
+    gpus: !reset []

@@ -1,5 +1,8 @@
 /* Phrase table for i18n.js: [russian, english, german]. Whole-word, case-insensitive, longest phrase wins. */
 window.I18N_DICT = [
+  ["Некорректный", "Invalid", "Ungültige"], ["Тело запроса должно быть", "The request body must be a", "Der Anfragetext muss ein"], ["объектом", "object", "Objekt sein"],
+  ["должен быть", "must be a", "muss ein"],
+  ["Не удалось загрузить данные отчёта. Откройте отчёт через консоль", "Could not load the report data. Open the report through the console", "Die Berichtsdaten konnten nicht geladen werden. Öffnen Sie den Bericht über die Konsole"],
   // header, status
   ["Генерация видео", "Video generation", "Videogenerierung"], ["Модели", "Models", "Modelle"],
   ["Локальная сеть", "Local network", "Lokales Netzwerk"], ["Отчёт и результаты", "Report and results", "Bericht und Ergebnisse"],

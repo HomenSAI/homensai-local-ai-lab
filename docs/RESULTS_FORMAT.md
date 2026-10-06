@@ -6,7 +6,7 @@ A test tool (a script, or an AI supervisor working by hand) talks to the report 
 
 | File | Kind | Required fields | Optional fields |
 |---|---|---|---|
-| `results_all.jsonl` | general test | `model`, `load_ok` (bool), `quality`: list of `{task, cat, score, max}` (`cat` is one of `Русский`, `Логика`, `Код`, `Инструкции`, `Зрение`) | `file`, `quant`, `size_gb`, `mode`, `ngl`, `placement`, `pp`, `tg`, `vram_peak_8k`, `vram_bench`, `load_s`, `max_ctx`, `ctx`, `host_free_min_gb`, `guard_killed`, `error` |
+| `results_all.jsonl` | general test | `model`, `load_ok` (bool), `quality`: list of `{task, cat, score, max}` (`cat` is one of `Русский`, `Логика`, `Код`, `Инструкции`, `Зрение`); `quality` may be left out when `load_ok` is `false` | `file`, `quant`, `size_gb`, `mode`, `ngl`, `placement`, `pp`, `tg`, `vram_peak_8k`, `vram_bench`, `load_s`, `max_ctx`, `ctx`, `host_free_min_gb`, `guard_killed`, `error` |
 | `results_german.jsonl` | German | `model`, `score`, `n`, `items`: list of `{cat, ok}` | `tokens`, `minutes`, `mode` |
 | `results_ctx.jsonl` | maximum context | `model`, `best_ctx`, `cfgs`: `{config: {best_ctx, tg, vram}}` | `native_ctx`, `cap`, `ref_tg_8k`, `best_cfg`, `recommended_cfg`, `minutes` |
 | `results_ctx_trials.jsonl` | single context trials | `model`, `ctx`, `stable` (bool) | `cfg`, `hits`, `pp`, `tg`, `vram_peak` |
@@ -17,6 +17,12 @@ A test tool (a script, or an AI supervisor working by hand) talks to the report 
 | `results_soak.jsonl` | reliability | `model`, `ctx`, `steps` | `problems`, `vram_peak`, `gpu_util_peak`, `host_free_min_gb`, `load_s` |
 
 A newer row for the same `(suite, model)` replaces the value shown in the report, **the older value stays in the SQLite archive and in Git**. Never edit a line that was already written; append a new one.
+
+### Models that did not load, and invalid scores
+
+- A model that did not load is written as `{"model": "...", "load_ok": false, "error": "short reason"}`. The row is kept: the model appears in the report and in the public snapshot as **failed to load** (never as "admitted"). Do not put paths or personal data into `error`.
+- In `quality`, `score` must be a number from 0 up to `max`, and `max` a number above 0 (a missing `max` counts as 1). The builder **ignores** an item that breaks this (a wrong checker would otherwise show as 500 %) and clamps a `score` above `max` to `max`. The number of ignored items is stored as `invalid_items` in the model row: if it appears, fix the checker and append a new row.
+- Lines that are not valid JSON (a line still being written) are skipped.
 
 Model names must be stable between files: the same `model` string joins the rows of different tests into one line of the table. Names that appear in the model list file `bench_top.py` (`TOP`) define which models belong to the current plan; other names are kept but not counted.
 
@@ -60,4 +66,4 @@ Removed models: a model counts as removed when `results_ctx.jsonl` has `best_ctx
 
 ## 4. The public snapshot
 
-`python scripts/make_public_results.py` writes `results-public/RESULTS.md`, `results-summary.csv` and `results-summary.json` from `report/live-data.json`: aggregated numbers only, no prompts or answers.
+`python scripts/make_public_results.py [OUT_DIR] [--live FILE]` writes `results-public/RESULTS.md`, `results-summary.csv` and `results-summary.json` from `report/live-data.json`: aggregated numbers only, no prompts or answers.

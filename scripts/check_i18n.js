@@ -1,9 +1,10 @@
 // Lists Russian fragments in the UI sources that console/i18n-dict.js does not translate completely.
 // Usage: node scripts/check_i18n.js [de|en]   (prints the missing fragments; exit code 1 if any)
 const fs = require("fs");
-global.window = {};
-eval(fs.readFileSync(process.env.I18N_DICT || "console/i18n-dict.js", "utf8"));
-const D = window.I18N_DICT;
+const vm = require("vm");
+const sandbox = { window: {} };
+vm.runInNewContext(fs.readFileSync(process.env.I18N_DICT || "console/i18n-dict.js", "utf8"), sandbox);
+const D = sandbox.window.I18N_DICT;
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 function build(i) {
   const m = new Map();
@@ -23,7 +24,7 @@ for (const f of (files2 || files)) {
   if (f.endsWith(".py")) t = t.replace(/\{[^{}]*\}/g, "\u0001");
   for (const line of t.split("\n")) {
     if (/^\s*(#|\/\/)/.test(line)) continue;
-    for (const m of line.matchAll(/[А-Яа-яЁё][А-Яа-яЁё0-9 ,.:;!?()«»"%\/·—–\-'+№]*/g)) {
+    for (const m of line.matchAll(/[«А-Яа-яЁё][А-Яа-яЁё0-9 ,.:;!?()«»"%\/·—–\-'+№]*/g)) {
       const s = m[0].trim().replace(/[ ,.:;"']+$/, "");
       if (s.length < 2) continue;
       const o = tr(s, lang);

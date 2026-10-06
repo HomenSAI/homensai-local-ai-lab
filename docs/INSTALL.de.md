@@ -70,7 +70,7 @@ swap=8GB
 ```
 git clone https://github.com/HomenSAI/homensai-local-ai-lab.git local-ai-server
 cd local-ai-server
-python scripts/install.py doctor      # prüft Docker, GPU in Docker, freie Ports und Speicherplatz
+python scripts/install.py doctor      # prüft Docker, GPU in Docker, freie Ports und Speicherplatz (lädt selbst nichts herunter; siehe unten)
 python scripts/install.py init        # erstellt .env, Ordner, Platzhalter, Docker-Netzwerk und -Volume
 # jetzt .env bearbeiten: MODEL_DIR (und AI_CONSOLE_BIND_IP für Netzwerkzugriff), dann die Modelle bereitstellen (Abschnitt 4.5)
 python scripts/install.py build       # baut die Images (beim ersten Mal 15–40 Minuten)
@@ -79,6 +79,10 @@ python scripts/install.py verify      # HTTP-Prüfung jedes Teils
 ```
 
 `python scripts/install.py all` führt doctor, init, build, up und verify in einem Zug aus (nach dem Bearbeiten von `.env` verwenden). Jeder Schritt lässt sich gefahrlos wiederholen. Danach **http://localhost:8766/** öffnen.
+
+- **GPU-Prüfung und das 5,6-GB-Image.** `doctor` prüft die GPU mit dem Image `nvidia/cuda:12.8.1-runtime-ubuntu24.04`. Ist es noch nicht auf dem PC, warnt `doctor` nur und überspringt die Prüfung; fragen Sie den Eigentümer und starten Sie `python scripts/install.py doctor --pull`, um es herunterzuladen (5,6 GB).
+- **PC ohne NVIDIA-GPU** (um Konsole, Bericht und Git auszuprobieren): `--no-gpu` an `doctor`, `build`, `up` und `verify` anhängen (oder an `all`). Das Gateway wird nicht gestartet, Modelle lassen sich nicht laden; die Konsole startet ohne GPU-Anforderung (`docker-compose.nogpu.yml`). Beim manuellen Start der Konsole: `docker compose -f docker-compose.yml -f docker-compose.nogpu.yml up -d ai-console`.
+- **Selbsttest des Repositorys:** `python -m unittest discover -s tests` (nur Standardbibliothek, ohne GPU und Docker) und `python scripts/make_manifest.py --check`.
 
 ## 4. Installation Schritt für Schritt
 
@@ -110,12 +114,14 @@ python scripts/install.py init        # erstellt .env aus .env.example, falls es
 | `MODEL_DIR` | Ordner auf dem Host mit Ihren `.gguf`-Dateien (für Container schreibgeschützt) | `C:/AI/models` oder `/data/models` |
 | `MEDIA_DIR` | Arbeitsordner für die optionalen Whisper-/Bild-Profile | `./media` |
 | `AI_CONSOLE_BIND_IP` | Adresse, unter der die Konsole zusätzlich zu `127.0.0.1` veröffentlicht wird. LAN-Adresse des PCs eintragen, um sie von anderen Geräten zu öffnen | `127.0.0.1` |
+| `AI_CONSOLE_PASSWORD` | Optional. Wenn gesetzt, verlangt die Konsole HTTP-Basic-Anmeldung (beliebiger Benutzername, dieses Passwort) für alles außer `/health`. **Vor dem Öffnen der Konsole im LAN setzen.** `.env` wird von Git ignoriert | leer (kein Passwort) |
+| `AI_CONSOLE_ALLOWED_HOSTS` | Optional, durch Komma getrennt. Zusätzliche Hostnamen, die Sie im Browser eingeben (z. B. ein Name aus Ihrem LAN-DNS). `localhost` und IP-Adressen gehen immer; jeder andere `Host` erhält `421` | leer |
 | `GITEA_WEB_PORT`, `GITEA_SSH_PORT` | Ports des lokalen Git-Servers | `3010`, `2222` |
 | `GITEA_REPORT_OWNER`, `GITEA_REPORT_REPO` | Git-Benutzer und Repository für Berichtsversionen | `reports-admin`, `model-test-reports` |
 | `UPSTREAM_LLAMA_COMMIT`, `PRISM_LLAMA_COMMIT`, `WHISPER_CPP_COMMIT`, `STABLE_DIFFUSION_CPP_COMMIT` | Festgelegte Quell-Commits der CUDA-Builds. Nur mit gutem Grund ändern. | festgelegt |
 | `GATEWAY_PORT`, `HOST_BIND_IP`, `WHISPER_PORT`, `REPORT_PORT`, `AI_CONSOLE_PORT` | Optionale Port-Anpassungen | 8080, 127.0.0.1, 8082, 8765, 8766 |
 
-Tragen Sie niemals Passwörter oder API-Schlüssel in `.env` ein; das Projekt braucht keine.
+Das Projekt braucht keine API-Schlüssel. Das einzige Geheimnis, das in `.env` stehen darf, ist das optionale `AI_CONSOLE_PASSWORD`; `.env` wird von Git ignoriert, committen Sie sie nie und fügen Sie sie nicht in Chats oder Issues ein.
 
 ### 4.4 Ordner, Netzwerk und Volume anlegen
 
@@ -202,12 +208,12 @@ git clone -c core.sshCommand="ssh -i secrets/id_ed25519 -o StrictHostKeyChecking
 
 ### 4.9 Zugriff von anderen Geräten im Netzwerk (optional)
 
-1. In `.env` `AI_CONSOLE_BIND_IP=<LAN-Adresse dieses PCs>` setzen und die Konsole neu erstellen: `docker compose up -d --force-recreate --no-deps ai-console`.
+1. In `.env` `AI_CONSOLE_PASSWORD=<langes Passwort>` und `AI_CONSOLE_BIND_IP=<LAN-Adresse dieses PCs>` setzen (bei Zugriff über einen Hostnamen zusätzlich `AI_CONSOLE_ALLOWED_HOSTS`), dann die Konsole neu erstellen: `docker compose up -d --force-recreate --no-deps ai-console`.
 2. Den Port in der Firewall nur für das eigene Subnetz öffnen (PowerShell als Administrator):
    ```
    New-NetFirewallRule -DisplayName "AI console 8766 (LAN)" -Direction Inbound -Protocol TCP -LocalPort 8766 -RemoteAddress 192.168.0.0/24 -Profile Any -Action Allow
    ```
-   (Subnetz anpassen). **Die Konsole hat kein Passwort**: nie ins Internet stellen.
+   (Subnetz anpassen). Die Konsole nie ins Internet stellen, mit oder ohne Passwort: Basic-Authentifizierung sendet das Passwort unverschlüsselt, daher nur in einem vertrauenswürdigen Netz oder hinter VPN / TLS-Proxy verwenden.
 
 ## 5. Optionale Komponenten
 
@@ -259,6 +265,8 @@ Installieren Sie zuerst dieses Projekt, danach Video Studio.
 | Container | `docker ps --format "{{.Names}} {{.Status}}"` | `healthy` bei Konsole, Gateway, report-builder, gitea, versioner |
 | Erstes Modell | in der Konsole **Start** bei einem Modell drücken, dann Chat | Antwort erscheint; `curl localhost:8080/running` listet das Modell |
 
+Ist `AI_CONSOLE_PASSWORD` gesetzt, hängen Sie `-u any:PASSWORT` an die `curl`-Aufrufe der Konsole an (nicht an `/health`). Auf einem PC ohne GPU `python scripts/install.py verify --no-gpu` verwenden: die Gateway-Prüfungen entfallen.
+
 ## 7. Die Konsole benutzen
 
 - **Sprache**: Umschalter RU / EN / DE in der Kopfzeile (wird im Browser gemerkt).
@@ -285,7 +293,7 @@ Installieren Sie zuerst dieses Projekt, danach Video Studio.
 
 - **Linux**: Docker Engine, NVIDIA-Treiber und NVIDIA Container Toolkit installieren, `docker run --rm --gpus all ... nvidia-smi` prüfen. Die Compose-Dateien sind plattformunabhängig; verwenden Sie `python scripts/install.py ...` und Schrägstriche in den Pfaden von `.env`. Die `.ps1`-Skripte sind optionale PowerShell-Helfer. Das Projekt wurde unter Windows 10 + Docker Desktop entwickelt und getestet; unter Linux sollte es funktionieren, wurde vom Autor aber nicht getestet.
 - **macOS**: Es gibt kein CUDA, daher laufen die GPU-Images nicht. Nicht unterstützt.
-- Wenn die Konsole unter Linux den Docker-Socket nicht sieht, prüfen Sie, ob `/var/run/docker.sock` existiert (die Konsole nutzt ihn, um Container aufzulisten).
+- Wenn die Konsole unter Linux den Docker-Socket nicht sieht, prüfen Sie, ob `/var/run/docker.sock` existiert (die Konsole nutzt ihn, um Container aufzulisten und den Zustand von `llama-server` zu lesen).
 
 ## 11. Fehlersuche
 
@@ -301,11 +309,16 @@ Installieren Sie zuerst dieses Projekt, danach Video Studio.
 | Git Bash verfälscht `/models`-Pfade | `MSYS_NO_PATHCONV=1` voranstellen oder PowerShell verwenden. |
 | Konsole zeigt in EN/DE russischen Text | Texte aus Ihren eigenen Daten (Prompts, Modellantworten, Protokolle) werden nie übersetzt. Neue Oberflächentexte gehören in `console/i18n-dict.js` (`node scripts/check_i18n.js de` listet fehlende auf). |
 | Berichtsseite leer | Normal, bis die erste `bench_results/results*.jsonl` existiert. |
+| `doctor` meldet, das CUDA-Prüfimage sei nicht heruntergeladen | Es lädt 5,6 GB nicht von selbst. Eigentümer fragen, dann `python scripts/install.py doctor --pull`, oder auf einem PC ohne GPU `--no-gpu` verwenden. |
+| `docker compose up` bricht mit „could not select device driver“ / „no known GPU vendor“ ab | Docker sieht keine GPU. `python scripts/install.py up --no-gpu` verwenden. |
+| Ein Skript oder `curl` erhält von der Konsole `415`, `421`, `403` oder `401` | Die Konsole prüft jede Anfrage: `POST` braucht `Content-Type: application/json`, der `Host` muss `localhost` oder eine IP sein (oder in `AI_CONSOLE_ALLOWED_HOSTS` stehen), ein Passwort kann nötig sein (`curl -u any:PASSWORT`). Siehe [API.md](API.md). |
+| Der Browser zeigt `421`, wenn die Konsole über einen Hostnamen geöffnet wird | Namen in `AI_CONSOLE_ALLOWED_HOSTS` in `.env` eintragen und die Konsole neu erstellen. |
 
 ## 12. Sicherheit
 
-- Konsole und Gateway haben **keine Authentifizierung**. Halten Sie sie auf `127.0.0.1` oder in einem vertrauenswürdigen Subnetz; veröffentlichen Sie die Ports 8766 / 8080 / 3010 nie im Internet.
-- Der Konsolencontainer bindet `/var/run/docker.sock` ein, um Container aufzulisten (ihr Code ruft nur lesend ab): Zugriff auf die Konsole entspricht Zugriff auf Docker dieses PCs.
+- Das Gateway hat **keine Authentifizierung**; die Konsole hat ein optionales Passwort (`AI_CONSOLE_PASSWORD`). Halten Sie beide auf `127.0.0.1` oder in einem vertrauenswürdigen Subnetz; veröffentlichen Sie die Ports 8766 / 8080 / 3010 nie im Internet.
+- Die Konsole weist fremde `Host`-Namen sowie seitenübergreifende oder Nicht-JSON-`POST`-Anfragen ab und sendet Sicherheits-Header; eine Webseite im selben Browser kann die Modelle daher nicht steuern.
+- Der Konsolencontainer bindet `/var/run/docker.sock` ein; das Flag `read_only` schützt ihn nicht. Die Konsole sendet nur eine feste Art von Befehlen darüber und läuft ohne Privilegien, dennoch entspricht Zugriff auf die Konsole Zugriff auf Docker dieses PCs. Details: [SECURITY.md](../SECURITY.md).
 - In Gitea ist die Registrierung deaktiviert und eine Anmeldung erforderlich; Passwort und Token liegen nur in `secrets/`.
 - Modelldateien stammen von Dritten: SHA-256 prüfen und deren Lizenzen lesen.
 - Probleme bitte privat melden, siehe [SECURITY.md](../SECURITY.md).

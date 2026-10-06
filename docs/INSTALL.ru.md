@@ -70,7 +70,7 @@ swap=8GB
 ```
 git clone https://github.com/HomenSAI/homensai-local-ai-lab.git local-ai-server
 cd local-ai-server
-python scripts/install.py doctor      # проверит Docker, видеокарту в Docker, свободные порты и диск
+python scripts/install.py doctor      # проверит Docker, видеокарту в Docker, свободные порты и диск (сам ничего не скачивает; см. ниже)
 python scripts/install.py init        # создаст .env, папки, заглушки, сеть и том Docker
 # отредактируйте .env: MODEL_DIR (и AI_CONSOLE_BIND_IP для доступа по сети), затем разместите модели (раздел 4.5)
 python scripts/install.py build       # соберёт образы (в первый раз 15–40 минут)
@@ -79,6 +79,10 @@ python scripts/install.py verify      # HTTP-проверка каждой ча�
 ```
 
 `python scripts/install.py all` выполняет doctor, init, build, up и verify подряд (запускайте после правки `.env`). Любой шаг можно безопасно повторять. Потом откройте **http://localhost:8766/**.
+
+- **Проверка видеокарты и образ на 5,6 ГБ.** `doctor` проверяет видеокарту образом `nvidia/cuda:12.8.1-runtime-ubuntu24.04`. Если его ещё нет на ПК, `doctor` только предупреждает и пропускает проверку; спросите владельца и запустите `python scripts/install.py doctor --pull`, чтобы скачать образ (5,6 ГБ).
+- **ПК без видеокарты NVIDIA** (чтобы попробовать консоль, отчёт и Git): добавьте `--no-gpu` к `doctor`, `build`, `up` и `verify` (или к `all`). Шлюз не запускается, модели загрузить нельзя; консоль стартует без запроса видеокарты (`docker-compose.nogpu.yml`). Если запускаете консоль вручную: `docker compose -f docker-compose.yml -f docker-compose.nogpu.yml up -d ai-console`.
+- **Самопроверка репозитория:** `python -m unittest discover -s tests` (только стандартная библиотека, без GPU и Docker) и `python scripts/make_manifest.py --check`.
 
 ## 4. Установка по шагам
 
@@ -110,12 +114,14 @@ python scripts/install.py init        # создаёт .env из .env.example, �
 | `MODEL_DIR` | Папка на хосте с вашими файлами `.gguf` (контейнеры видят её только для чтения) | `C:/AI/models` или `/data/models` |
 | `MEDIA_DIR` | Рабочая папка для необязательных профилей Whisper / изображений | `./media` |
 | `AI_CONSOLE_BIND_IP` | Адрес, на котором консоль опубликована кроме `127.0.0.1`. Укажите LAN-адрес ПК, чтобы открывать с других устройств | `127.0.0.1` |
+| `AI_CONSOLE_PASSWORD` | Необязательно. Если задан, консоль требует HTTP Basic (любое имя пользователя и этот пароль) для всего, кроме `/health`. **Задайте его до того, как откроете консоль для локальной сети.** `.env` не попадает в Git | пусто (без пароля) |
+| `AI_CONSOLE_ALLOWED_HOSTS` | Необязательно, через запятую. Дополнительные имена хоста, которые вы вводите в браузере (например, имя из DNS вашей сети). `localhost` и IP-адреса работают всегда; любой другой `Host` получает `421` | пусто |
 | `GITEA_WEB_PORT`, `GITEA_SSH_PORT` | Порты локального Git-сервера | `3010`, `2222` |
 | `GITEA_REPORT_OWNER`, `GITEA_REPORT_REPO` | Пользователь и репозиторий Git для версий отчётов | `reports-admin`, `model-test-reports` |
 | `UPSTREAM_LLAMA_COMMIT`, `PRISM_LLAMA_COMMIT`, `WHISPER_CPP_COMMIT`, `STABLE_DIFFUSION_CPP_COMMIT` | Зафиксированные коммиты исходников для CUDA-сборок. Не меняйте без причины. | зафиксированы |
 | `GATEWAY_PORT`, `HOST_BIND_IP`, `WHISPER_PORT`, `REPORT_PORT`, `AI_CONSOLE_PORT` | Необязательная смена портов | 8080, 127.0.0.1, 8082, 8765, 8766 |
 
-Никогда не кладите в `.env` пароли и ключи API; проекту они не нужны.
+Проекту не нужны ключи API. Единственный секрет, который можно положить в `.env`, — необязательный `AI_CONSOLE_PASSWORD`; `.env` не попадает в Git, никогда не коммитьте его и не вставляйте в чат или обращение.
 
 ### 4.4 Создайте папки, сеть и том
 
@@ -202,12 +208,12 @@ git clone -c core.sshCommand="ssh -i secrets/id_ed25519 -o StrictHostKeyChecking
 
 ### 4.9 Доступ с других устройств сети (необязательно)
 
-1. В `.env` задайте `AI_CONSOLE_BIND_IP=<LAN-адрес этого ПК>` и пересоздайте консоль: `docker compose up -d --force-recreate --no-deps ai-console`.
+1. В `.env` задайте `AI_CONSOLE_PASSWORD=<длинный пароль>` и `AI_CONSOLE_BIND_IP=<LAN-адрес этого ПК>` (добавьте `AI_CONSOLE_ALLOWED_HOSTS`, если открываете по имени хоста), затем пересоздайте консоль: `docker compose up -d --force-recreate --no-deps ai-console`.
 2. Откройте порт в брандмауэре только для вашей подсети (PowerShell от администратора):
    ```
    New-NetFirewallRule -DisplayName "AI console 8766 (LAN)" -Direction Inbound -Protocol TCP -LocalPort 8766 -RemoteAddress 192.168.0.0/24 -Profile Any -Action Allow
    ```
-   (подставьте свою подсеть). **У консоли нет пароля**: никогда не открывайте её в интернет.
+   (подставьте свою подсеть). Никогда не открывайте консоль в интернет, с паролем или без: Basic-аутентификация передаёт пароль без шифрования, поэтому используйте её только в доверенной сети или за VPN / TLS-прокси.
 
 ## 5. Необязательные компоненты
 
@@ -259,6 +265,8 @@ docker compose -f compose.yaml up -d --build
 | Контейнеры | `docker ps --format "{{.Names}} {{.Status}}"` | `healthy` у консоли, шлюза, report-builder, gitea, versioner |
 | Первая модель | в консоли нажмите **Старт** у модели, потом чат | приходит ответ; `curl localhost:8080/running` показывает модель |
 
+Если задан `AI_CONSOLE_PASSWORD`, добавляйте `-u any:ПАРОЛЬ` к вызовам `curl` консоли (кроме `/health`). На ПК без видеокарты используйте `python scripts/install.py verify --no-gpu`: проверки шлюза пропускаются.
+
 ## 7. Работа с консолью
 
 - **Язык**: переключатель RU / EN / DE в шапке (запоминается в браузере).
@@ -285,7 +293,7 @@ docker compose -f compose.yaml up -d --build
 
 - **Linux**: установите Docker Engine, драйвер NVIDIA и NVIDIA Container Toolkit, проверьте `docker run --rm --gpus all ... nvidia-smi`. Файлы compose не зависят от платформы; используйте `python scripts/install.py ...` и прямые слэши в путях `.env`. Скрипты `.ps1` — необязательное удобство для PowerShell. Проект разработан и проверен на Windows 10 + Docker Desktop; на Linux должен работать, но автор его не проверял.
 - **macOS**: CUDA нет, поэтому GPU-образы не работают. Не поддерживается.
-- Если на Linux консоль не видит сокет Docker, проверьте, что `/var/run/docker.sock` существует (консоль использует его, чтобы видеть контейнеры).
+- Если на Linux консоль не видит сокет Docker, проверьте, что `/var/run/docker.sock` существует (консоль использует его, чтобы видеть контейнеры и читать состояние `llama-server`).
 
 ## 11. Если что-то не работает
 
@@ -301,11 +309,16 @@ docker compose -f compose.yaml up -d --build
 | Git Bash искажает пути `/models` | Добавьте `MSYS_NO_PATHCONV=1` или используйте PowerShell. |
 | В консоли на EN/DE есть русский текст | Тексты из ваших данных (промпты, ответы моделей, журналы) никогда не переводятся. Новые надписи интерфейса нужно добавить в `console/i18n-dict.js` (`node scripts/check_i18n.js de` перечисляет недостающие). |
 | Страница отчёта пустая | Это нормально, пока нет первого `bench_results/results*.jsonl`. |
+| `doctor` пишет, что образ CUDA для проверки не скачан | Сам он 5,6 ГБ не скачивает. Спросите владельца, затем `python scripts/install.py doctor --pull`, либо используйте `--no-gpu` на ПК без видеокарты. |
+| `docker compose up` падает с «could not select device driver» / «no known GPU vendor» | Docker не видит видеокарту. Используйте `python scripts/install.py up --no-gpu`. |
+| Скрипт или `curl` получает от консоли `415`, `421`, `403` или `401` | Консоль проверяет каждый запрос: для `POST` нужен `Content-Type: application/json`, `Host` должен быть `localhost` или IP (или быть в `AI_CONSOLE_ALLOWED_HOSTS`), может потребоваться пароль (`curl -u any:ПАРОЛЬ`). См. [API.md](API.md). |
+| Браузер показывает `421`, когда консоль открыта по имени хоста | Добавьте имя в `AI_CONSOLE_ALLOWED_HOSTS` в `.env` и пересоздайте консоль. |
 
 ## 12. Безопасность
 
-- У консоли и шлюза **нет аутентификации**. Держите их на `127.0.0.1` или в доверенной подсети; никогда не публикуйте порты 8766 / 8080 / 3010 в интернет.
-- Контейнер консоли монтирует `/var/run/docker.sock`, чтобы видеть контейнеры (её код делает только вызовы чтения): доступ к консоли равен доступу к Docker на этом ПК.
+- У шлюза **нет аутентификации**; у консоли есть необязательный пароль (`AI_CONSOLE_PASSWORD`). Держите оба на `127.0.0.1` или в доверенной подсети; никогда не публикуйте порты 8766 / 8080 / 3010 в интернет.
+- Консоль отклоняет чужие имена `Host`, межсайтовые и не-JSON запросы `POST` и отправляет заголовки безопасности; поэтому страница, открытая в том же браузере, не может управлять моделями.
+- Контейнер консоли монтирует `/var/run/docker.sock`; флаг `read_only` его не защищает. Консоль отправляет через сокет только один фиксированный вид команд и работает без привилегий, но доступ к консоли всё равно равен доступу к Docker на этом ПК. Подробности: [SECURITY.md](../SECURITY.md).
 - В Gitea регистрация отключена и нужен вход; пароль и токен лежат только в `secrets/`.
 - Файлы моделей приходят от третьих лиц: проверяйте SHA-256 и читайте их лицензии.
 - О проблемах сообщайте приватно, см. [SECURITY.md](../SECURITY.md).
