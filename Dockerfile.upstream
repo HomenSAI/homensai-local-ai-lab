@@ -1,0 +1,40 @@
+ARG CUDA_VERSION=12.8.1
+FROM nvidia/cuda:${CUDA_VERSION}-devel-ubuntu24.04 AS build
+
+ARG LLAMA_COMMIT=81bc6b83f827df746eb129235488d325c49cae52
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /src
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates git cmake ninja-build build-essential pkg-config libcurl4-openssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git init . \
+    && git remote add origin https://github.com/ggml-org/llama.cpp.git \
+    && git fetch --depth 1 origin "${LLAMA_COMMIT}" \
+    && git checkout --detach FETCH_HEAD \
+    && git submodule update --init --recursive
+
+RUN cmake -S . -B build -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DGGML_CUDA=ON \
+      -DGGML_NATIVE=OFF \
+      -DCMAKE_CUDA_ARCHITECTURES=86 \
+      -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/cuda/lib64/stubs -lcuda" \
+      -DCMAKE_SHARED_LINKER_FLAGS="-L/usr/local/cuda/lib64/stubs -lcuda" \
+      -DLLAMA_BUILD_SERVER=ON \
+      -DLLAMA_BUILD_TESTS=OFF \
+    && cmake --build build --parallel 8 --target llama-server llama-cli llama-bench
+
+FROM nvidia/cuda:12.8.1-runtime-ubuntu24.04 AS runtime
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl libgomp1 libcurl4 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /src/build/bin/ /app/
+COPY scripts/llama-server-entrypoint.sh /usr/local/bin/llama-server-entrypoint
+RUN chmod 0755 /usr/local/bin/llama-server-entrypoint
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/llama-server-entrypoint"]

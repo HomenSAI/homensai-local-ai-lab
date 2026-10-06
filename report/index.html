@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Локальный AI-сервер — отчёты испытаний</title>
+  <link rel="stylesheet" href="/report/report.css">
+  <script src="/report/report.js" defer></script>
+  <script src="/report/live.js?v=1" defer></script>
+  <script src="/report/tablesort.js?v=1" defer></script>
+  <script src="/i18n-dict.js?v=3" defer></script>
+  <script src="/i18n.js?v=3" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div><p class="eyebrow">LOCAL AI SERVER · TEST LAB</p><h1>Отчёты испытаний моделей</h1><p id="generated" class="muted">Загрузка базы результатов…</p></div>
+    <nav><a href="/">← Консоль</a><a href="/BENCHMARK_RESULTS.csv" download>Скачать CSV</a><a href="/BENCHMARK_RESULTS.db" download>SQLite DB</a></nav>
+  </header>
+
+  <main>
+    <aside id="notice" class="notice" hidden></aside>
+
+    <section class="panel live-panel" id="live">
+      <div class="section-heading"><div><p class="eyebrow"><span id="livePulse" class="live-pulse"></span> LIVE · ОБНОВЛЯЕТСЯ АВТОМАТИЧЕСКИ</p><h2>Свежие испытания моделей</h2></div><span id="liveCount" class="pill">Загрузка…</span></div>
+      <p id="liveStatus" class="muted small"></p>
+      <p id="liveClock" class="muted small"></p>
+      <div id="livePlan" class="live-plan" hidden></div>
+      <aside id="liveError" class="notice" hidden></aside>
+      <div class="table-wrap"><table class="live-table"><thead><tr><th>#</th><th>Модель</th><th>Квант</th><th>Диск, ГБ</th><th>VRAM пик, МиБ</th><th>PP, ток/с</th><th>TG, ток/с</th><th>Контекст</th><th>Рус</th><th>Лог</th><th>Код</th><th>Итог</th><th>Обновлено</th></tr></thead><tbody id="liveBody"></tbody></table></div>
+      <aside id="liveFallback" class="notice" hidden></aside>
+      <details class="live-feed"><summary>Что менялось в папке испытаний (последние файлы)</summary><ul id="liveActivity"></ul></details>
+    </section>
+
+    <section class="cards" id="cards" aria-label="Сводная статистика"></section>
+
+    <section class="panel recommendations">
+      <div class="section-heading"><div><p class="eyebrow">RTX 3080 · CUDA</p><h2>Рекомендации по результатам тестов</h2></div><span class="pill">Завершённые испытания</span></div>
+      <p id="recommendationNote" class="muted small">Рекомендации формируются по реальным замерам. Скорость, точность и полнота покрытия оцениваются отдельно.</p>
+      <div class="table-wrap"><table><thead><tr><th>Сценарий</th><th>Рекомендуемый профиль</th><th>Результаты испытаний</th><th>Как использовать</th></tr></thead><tbody id="recommendationsBody"></tbody></table></div>
+      <figure class="image-preview"><img src="/media/images/qwen-image-2.1-smoke.png" alt="Тестовая генерация Qwen Image 2.1: лис читает синюю книгу у окна"><figcaption>Qwen Image 2.1 · тестовый результат, 1024×1024 · seed 42</figcaption></figure>
+    </section>
+
+    <section class="chart-grid" aria-label="Графики испытаний">
+      <article class="panel">
+        <div class="section-heading"><div><p class="eyebrow">ПРОИЗВОДИТЕЛЬНОСТЬ</p><h2>Скорость генерации</h2></div><span id="speedCount" class="pill"></span></div>
+        <p class="muted small">Медиана токенов в секунду по завершённым серверным A/B-прогонам. Неудачные и служебные проверки исключены.</p>
+        <div id="speedChart" class="bars" aria-label="Сравнение скорости генерации"></div>
+      </article>
+      <article class="panel">
+        <div class="section-heading"><div><p class="eyebrow">ОБЪЕКТИВНАЯ ОЦЕНКА</p><h2>Точность по наборам тестов</h2></div><span id="qualityCount" class="pill"></span></div>
+        <p class="muted small">Доля правильных ответов среди проверенных. Полнота покрытия указана рядом, чтобы пропуски были видны.</p>
+        <div id="qualityChart" class="bars" aria-label="Точность объективных тестов"></div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading"><div><p class="eyebrow">КАЧЕСТВО И ПОЛНОТА</p><h2>Сводка по объективным наборам</h2></div><span id="scoreCount" class="pill"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Модель</th><th>Набор</th><th>Верно / проверено</th><th>Полнота</th><th>API-ошибки</th><th>Обрезано по времени</th><th>Успешные прогоны</th></tr></thead><tbody id="scoresBody"></tbody></table></div>
+      <p class="muted small">Точность считается только по кейсам с объективным ответом. Свободные ответы требуют отдельной экспертной оценки.</p>
+    </section>
+
+    <section class="panel filters">
+      <label>Модель<select id="modelFilter"><option value="">Все модели</option></select></label>
+      <label>Suite<select id="suiteFilter"><option value="">Все suites</option></select></label>
+      <label>Источник<select id="phaseFilter"><option value="">Все источники</option></select></label>
+      <label class="search">Поиск по кейсу/ответу<input id="searchFilter" type="search" placeholder="case_id, prompt, ответ…"></label>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading"><div><p class="eyebrow">СРАВНЕНИЕ</p><h2>Запуски и измерения</h2></div><span id="runCount" class="pill"></span></div>
+      <div class="table-wrap"><table><thead><tr><th>Модель / GGUF</th><th>Suite</th><th>Источник</th><th>Статус</th><th>Загрузка</th><th>PP tok/s</th><th>TG tok/s</th><th>TTFT</th><th>RAM peak</th><th>GPU / VRAM</th><th>Coverage / score</th></tr></thead><tbody id="runsBody"></tbody></table></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading"><div><p class="eyebrow">RAW DATA</p><h2>Запросы и ответы</h2></div><span id="responseCount" class="pill"></span></div>
+      <p class="muted small">Полные prompts и ответы хранятся в SQLite/JSONL. Здесь они отображаются без усечения.</p>
+      <div id="responses" class="response-list"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading"><div><p class="eyebrow">PROVENANCE</p><h2>Файлы моделей</h2></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Модель</th><th>Файл</th><th>Quant</th><th>Размер</th><th>SHA-256</th><th>Runtime</th><th>Статус</th></tr></thead><tbody id="assetsBody"></tbody></table></div>
+    </section>
+    <footer class="muted">Локальный отчёт. Accuracy для objective задач не смешивается с coverage; free-text reviewer scores публикуются отдельно.</footer>
+  </main>
+  <footer class="site-footer" data-license>
+    <span>Результаты можно использовать и распространять со ссылкой на автора</span> ·
+    <span>Автор: <a href="https://homensai.com" target="_blank" rel="noopener author">homensai.com</a></span> · <span>Local AI Server <b data-version>v…</b></span> · <span hidden><a data-repo href="#" target="_blank" rel="noopener">GitHub ↗</a> ·</span>
+    <span>Лицензия: <a href="/legal/LICENSE-RESULTS-CC-BY-4.0.md" target="_blank" rel="noopener license">CC BY 4.0</a></span> ·
+    <a href="/legal/NOTICE-THIRD-PARTY.md" target="_blank" rel="noopener">Права третьих лиц</a>
+  </footer>
+</body>
+</html>

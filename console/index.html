@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Local AI Server · RTX 3080</title>
+  <link rel="stylesheet" href="/app.css?v=20261002-3">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">AI</span><div><strong>Local AI Server</strong><small>RTX 3080 · Docker · llama.cpp</small></div></div>
+    <nav class="tabs"><a class="tab active" href="/" aria-current="page">Модели</a><a class="tab" id="videoLink" href="#" rel="noreferrer">Генерация видео ↗</a></nav>
+    <div class="top-actions"><a id="reportLink" href="/report/" rel="noreferrer">Отчёт и результаты ↗</a><span class="local-pill">● Локальная сеть</span></div>
+  </header>
+  <main>
+    <section class="status-strip">
+      <div class="status-card"><span>Docker</span><strong id="dockerState">Проверка…</strong><small id="issueSummary">Диагностика…</small></div>
+      <div class="status-card gpu-card"><span>Видеопамять</span><strong id="gpuState">Проверка…</strong><small id="gpuDetail"></small><div class="meter"><i id="gpuMeter"></i></div></div>
+      <div class="status-card"><span>ИИ на хосте</span><strong id="activeModels">Проверка…</strong><small id="modelApiState">Все контейнеры Docker</small></div>
+      <div class="status-card job-card"><span>Что происходит сейчас</span><strong id="jobState">Нет активной задачи</strong><small id="jobDetail"></small></div>
+    </section>
+
+    <div class="page-grid">
+      <div class="col-main">
+        <section class="panel live-model-panel">
+          <div class="section-head"><div><p class="eyebrow">1 · Состояние</p><h2>Сейчас в памяти</h2></div><span id="runningModelCount" class="badge">—</span></div>
+          <div id="currentModelList" class="active-model-list"><p class="muted">Получаю состояние сервера…</p></div>
+        </section>
+
+        <section class="panel catalog-panel">
+          <div class="section-head"><div><p class="eyebrow">2 · Запуск</p><h1>Модели</h1></div><div class="head-actions"><span id="catalogCount" class="badge">—</span><button id="refreshBtn" class="icon-button" title="Обновить">↻</button></div></div>
+          <p class="muted catalog-note">«Старт» загружает модель в видеопамять, «Стоп» выгружает. Клик по карточке выбирает модель для диалога.</p>
+          <div class="catalog-tools"><input id="catalogSearch" type="search" placeholder="Поиск по названию…" aria-label="Поиск модели" autocomplete="off"><label class="check"><input id="catalogOnlyRunning" type="checkbox"> только запущенные</label></div>
+          <div id="modelList" class="catalog-grid"><p class="muted">Загрузка каталога…</p></div>
+          <section id="jobPanel" class="job-panel" hidden>
+            <div class="section-head"><div><h2 id="jobTitle">Выполнение</h2></div><span id="jobStatus" class="badge">—</span></div>
+            <pre id="jobLog" class="job-log"></pre>
+            <div id="jobResult" class="result-box" hidden></div>
+          </section>
+        </section>
+
+        <section class="panel tests-panel">
+          <div class="section-head"><div><p class="eyebrow">Результаты испытаний · обновляются сами</p><h2>Тесты моделей</h2></div><span id="testsCount" class="badge">—</span></div>
+          <p id="testsStatus" class="muted tests-note">Загрузка результатов…</p>
+          <div id="testsPlan" class="tests-plan"></div>
+          <div class="tests-toolbar" role="group" aria-label="Сортировка результатов">
+            <label class="tb-field">Сортировать по<select id="testsMetric"></select></label>
+            <button type="button" id="testsDir" class="chip-button strong"></button>
+            <label class="check"><input type="checkbox" id="testsOnlyWith"> только модели с этим тестом</label>
+          </div>
+          <div id="testsList" class="tests-list" tabindex="0" aria-label="Результаты тестов, новые сверху"></div>
+        </section>
+
+        <section id="chatPanel" class="panel interaction-panel">
+          <div class="section-head chat-head">
+            <div><p class="eyebrow">3 · Диалог</p><h2 id="interactionTitle">Диалог с моделью</h2></div>
+            <div class="chat-picker"><select id="chatModel" aria-label="Модель для диалога"></select><span id="chatModelState" class="badge">—</span></div>
+          </div>
+          <div id="chatLog" class="chat-log"><div class="empty-state">Выберите модель в каталоге или в списке справа сверху.</div></div>
+          <div id="chatLoad" class="chat-load" hidden><div class="cl-line"><span id="clText"></span><b id="clPct"></b></div><div class="plan-bar plan-bar-cur"><i id="clBar"></i></div><small id="clSub"></small></div>
+          <form id="chatForm" class="composer">
+            <div id="imageAttachRow" class="attach-row" hidden><label class="file-pick">Добавить изображение<input type="file" id="visionFile" accept="image/*"></label><span id="visionFileName" class="muted"></span></div>
+            <textarea id="promptInput" rows="3" placeholder="Напишите сообщение модели…" required></textarea>
+            <div class="composer-footer"><small id="chatHint">Локальный OpenAI-compatible API</small><span id="apiAddress" class="api-address">API: —</span><button id="sendBtn" class="button primary" type="submit">Отправить</button></div>
+          </form>
+        </section>
+      </div>
+
+      <aside class="col-side">
+        <section class="panel gpu-chart-panel">
+          <div class="section-head"><div><p class="eyebrow">Телеметрия</p><h2>Загрузка GPU</h2></div><strong id="gpuPercent" class="gpu-percent">—%</strong></div>
+          <p id="gpuChartNote" class="muted chart-note">Опрос каждые 5 секунд · последние 5 минут</p>
+          <svg id="gpuChart" class="gpu-chart" viewBox="0 0 700 210" role="img" aria-label="График загрузки GPU"></svg>
+        </section>
+
+        <section class="panel issues-panel">
+          <div class="section-head"><div><p class="eyebrow">Диагностика</p><h2>Ошибки и предупреждения</h2></div><span id="issueCount" class="badge">Проверка…</span></div>
+          <div id="issueList" class="issue-list"><p class="muted">Проверяю Docker, GPU и контейнеры…</p></div>
+        </section>
+
+        <section class="panel unload-timer-panel">
+          <div class="section-head"><div><p class="eyebrow">Автовыгрузка</p><h2>Таймер выгрузки</h2></div><strong id="unloadCountdown" class="countdown">—</strong></div>
+          <div class="timer-controls">
+            <input id="unloadSeconds" type="number" min="1" max="604800" step="1" value="900" aria-label="Секунд до выгрузки">
+            <span class="muted">сек</span>
+            <button id="unloadTimerStart" class="button primary" type="button">Начать отсчёт</button>
+            <button id="unloadTimerCancel" class="button secondary" type="button" hidden>Отменить</button>
+          </div>
+          <p id="unloadTimerState" class="muted">После отсчёта все модели шлюза будут выгружены.</p>
+        </section>
+
+        <section class="panel host-ai-panel">
+          <div class="section-head"><div><p class="eyebrow">Весь хост</p><h2>ИИ-контейнеры</h2></div><span id="hostAiCount" class="badge">Проверка…</span></div>
+          <div id="hostAiList" class="host-ai-grid"><p class="muted">Опрашиваю Docker…</p></div>
+          <details id="hostAiStoppedBox" class="host-ai-stopped" hidden><summary id="hostAiStoppedTitle">Остановленные</summary><div id="hostAiStopped" class="stopped-list"></div></details>
+        </section>
+      </aside>
+    </div>
+    <footer><span>Панель доступна из локальной сети без пароля.</span><span>Модели загружаются через llama-swap из папки моделей (<code>MODEL_DIR</code>).</span></footer>
+  </main>
+  <footer class="site-footer" data-license>
+    <span>Результаты можно использовать и распространять со ссылкой на автора</span> ·
+    <span>Автор: <a href="https://homensai.com" target="_blank" rel="noopener author">homensai.com</a></span> · <span>Local AI Server <b data-version>v…</b></span> · <span hidden><a data-repo href="#" target="_blank" rel="noopener">GitHub ↗</a> ·</span>
+    <span>Лицензия: <a href="/legal/LICENSE-RESULTS-CC-BY-4.0.md" target="_blank" rel="noopener license">CC BY 4.0</a></span> ·
+    <a href="/legal/NOTICE-THIRD-PARTY.md" target="_blank" rel="noopener">Права третьих лиц</a>
+  </footer>
+  <script src="/i18n-dict.js?v=3"></script>
+  <script src="/i18n.js?v=3"></script>
+  <script src="/app.js?v=20261006-3" defer></script>
+</body>
+</html>

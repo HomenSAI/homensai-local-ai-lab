@@ -1,0 +1,12 @@
+53107f530aa52eb00912263ab1ee29bd199261c87cd7b4ad4ca1318c1fe33ee3  ../Ternary-Bonsai-2-27B-PTQ1_0.gguf
+cbb7c4bd88d9a6313a82c5a8441c4cce7d431876f8250404d16a340d74260a04  ../Qwen3/Qwen3.5-9B-Q5_K_S-4.60bpw.gguf
+362f85a2d7dbc0259e926d5ac33ca0d0f17fd3753496d65bfd2106384c929d3f  ../Qwen3/Qwen3.5-9B-UD-Q4_K_XL.gguf
+5a40d1f771686432172a4981018a0d30d03a5aaf5793a5badd5416573362a232  ../Qwen3/mmproj-F16.gguf
+c5415f8989bf88a8288f1b55a3cc371af53c07b0faa220a63bd7a990cfaba078  ../MiniCPM5/MiniCPM5-2B-Q8_0.gguf
+57df08640f0534a1aac075d1c8bdacdb2b7e5815da6f4e5cfd39ecac3a3f0c26  ../MiniCPM5/MiniCPM5-2.6B-DSpark.gguf
+5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2  ../Spark/Spark-X2.5-4B-Q8_0.gguf
+317eb69c11673c9de1e1f0d459b253999804ec71ac4c23c17ecf5fbe24e259a1  ../audio/ggml-large-v3-turbo-q8_0.bin
+4b53321654dd3bf0aa8dd6bb821fdcb1c9053ca735070e359a23cbb9f97268ce  ../Qwen-Image-2.1/qwen-image-2.1-Q5_K_M.gguf
+67d1659bfe71b89d50b45a4ad1a9e5b997e5bb16ce5da66a6a6167abd569e9e2  ../Qwen-Image-2.1/text_encoder/Qwen3VL-8B-Instruct-Q4_K_M.gguf
+ca524100ebf825c9a870db1c580d03879e0da0ab2541697e2458e64891cf9d38  ../Qwen-Image-2.1/text_encoder/mmproj-Qwen3VL-8B-Instruct-F16.gguf
+bb21f7473051e1ac368515dd3f2e15cd44d7a11748ee8823e1ddca3e4876b7c9  ../Qwen-Image-2.1/vae/qwen_image_2.1_vae_bf16.safetensors

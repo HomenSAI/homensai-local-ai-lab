@@ -1,0 +1,5 @@
+FROM python:3.12-alpine
+RUN apk add --no-cache git openssh-client
+COPY scripts/versioner.py /app/versioner.py
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+CMD ["python", "/app/versioner.py"]

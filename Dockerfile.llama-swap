@@ -1,0 +1,25 @@
+ARG UPSTREAM_IMAGE=local/ai-server-upstream:local
+ARG PRISM_IMAGE=local/ai-server-bonsai:local
+
+FROM ${PRISM_IMAGE} AS prism-runtime
+
+FROM ${UPSTREAM_IMAGE} AS gateway
+ARG LLAMA_SWAP_VERSION=260
+ARG LLAMA_SWAP_SHA256=d856a908507560cbdc253300bcf49092c7ead3c85098687428b0c9d4832ff46d
+
+RUN set -eux; \
+    curl -fL --retry 3 --retry-delay 2 \
+      "https://github.com/mostlygeek/llama-swap/releases/download/v${LLAMA_SWAP_VERSION}/llama-swap_${LLAMA_SWAP_VERSION}_linux_amd64.tar.gz" \
+      -o /tmp/llama-swap.tar.gz; \
+    echo "${LLAMA_SWAP_SHA256}  /tmp/llama-swap.tar.gz" | sha256sum -c -; \
+    mkdir -p /tmp/llama-swap /usr/local/bin /opt/prism; \
+    tar -xzf /tmp/llama-swap.tar.gz -C /tmp/llama-swap; \
+    install -m 0755 /tmp/llama-swap/llama-swap /usr/local/bin/llama-swap; \
+    rm -rf /tmp/llama-swap /tmp/llama-swap.tar.gz
+
+# Keep each CUDA runtime's server and matching shared libraries in a separate
+# directory. Model weights are bind-mounted at runtime and never enter the image.
+COPY --from=prism-runtime /app/ /opt/prism/
+
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/llama-swap", "-config", "/etc/llama-swap/config.yaml", "-listen", "0.0.0.0:8080"]

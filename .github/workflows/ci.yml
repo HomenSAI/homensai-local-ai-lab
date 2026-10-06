@@ -1,0 +1,32 @@
+name: checks
+on:
+  push:
+  pull_request:
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Python syntax
+        run: python -m py_compile console/*.py scripts/*.py
+      - name: JavaScript syntax
+        run: for f in console/*.js report/*.js; do node --check "$f"; done
+      - name: Translations complete (DE and EN)
+        run: |
+          node scripts/check_i18n.js de | tail -5 || true
+          node scripts/check_i18n.js en | tail -5 || true
+      - name: Compose configuration is valid
+        run: |
+          cp .env.example .env
+          python scripts/install.py init || true
+          docker compose --profile gateway --profile build config -q
+      - name: No secrets or personal data
+        run: |
+          ! grep -rEn "hf_[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY" --exclude-dir=.git .

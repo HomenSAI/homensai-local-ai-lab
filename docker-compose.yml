@@ -1,0 +1,477 @@
+name: local-ai-server
+
+x-model-volume: &model-volume
+  - type: bind
+    source: ${MODEL_DIR:?Set MODEL_DIR in ai-server/.env}
+    target: /models
+    read_only: true
+    bind:
+      create_host_path: false
+
+x-media-volume: &media-volume
+  - type: bind
+    source: ${MEDIA_DIR:?Set MEDIA_DIR in ai-server/.env}
+    target: /media
+    bind:
+      create_host_path: false
+
+x-runtime: &runtime
+  init: true
+  restart: "no"
+  gpus: all
+  volumes: *model-volume
+
+x-llama-runtime: &llama-runtime
+  <<: *runtime
+  networks:
+    default:
+      aliases:
+        - llama-active
+
+x-upstream: &upstream
+  image: local/ai-server-upstream:local
+  build:
+    context: .
+    dockerfile: Dockerfile.upstream
+    args:
+      LLAMA_COMMIT: ${UPSTREAM_LLAMA_COMMIT:?Set UPSTREAM_LLAMA_COMMIT}
+
+x-bonsai: &bonsai-image
+  image: local/ai-server-bonsai:local
+  build:
+    context: .
+    dockerfile: Dockerfile.bonsai
+    args:
+      PRISM_COMMIT: ${PRISM_LLAMA_COMMIT:?Set PRISM_LLAMA_COMMIT}
+
+x-whisper: &whisper-image
+  image: local/ai-server-whisper:local
+  build:
+    context: .
+    dockerfile: Dockerfile.whisper
+    args:
+      WHISPER_COMMIT: ${WHISPER_CPP_COMMIT:?Set WHISPER_CPP_COMMIT}
+
+x-llama-environment: &llama-environment
+  LLAMA_HOST: 0.0.0.0
+  LLAMA_GPU_LAYERS: all
+  LLAMA_THREADS: ${LLAMA_THREADS:-4}
+  LLAMA_THREADS_BATCH: ${LLAMA_THREADS_BATCH:-8}
+  LLAMA_FLASH_ATTN: "on"
+  LLAMA_PARALLEL: "1"
+  LLAMA_METRICS: "1"
+  LLAMA_BATCH_SIZE: ${LLAMA_BATCH_SIZE:-512}
+  LLAMA_UBATCH_SIZE: ${LLAMA_UBATCH_SIZE:-128}
+  LLAMA_JINJA: "1"
+  LLAMA_SPEC_TYPE: none
+  LLAMA_SPEC_DRAFT_N_MAX: ""
+  LLAMA_SPEC_DRAFT_NGL: ""
+  LLAMA_SPEC_DRAFT_MODEL: ""
+  LLAMA_CACHE_TYPE_K: ""
+  LLAMA_CACHE_TYPE_V: ""
+  LLAMA_TEMPERATURE: ""
+  LLAMA_TOP_P: ""
+  LLAMA_TOP_K: ""
+  LLAMA_MIN_P: ""
+
+services:
+  stats-report:
+    image: nginx:alpine
+    container_name: ai-stats-report
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${REPORT_PORT:-8765}:80"
+    volumes:
+      - type: bind
+        source: ./nginx-report.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+        bind:
+          create_host_path: false
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep nginx > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  report-builder:
+    # Keeps report/live-data.json in sync with bench_results/ so the report shows new tests automatically.
+    image: python:3.12-slim
+    container_name: ai-report-builder
+    restart: unless-stopped
+    init: true
+    command: ["python", "/app/build_live_report.py", "--watch", "--interval", "15"]
+    environment:
+      BENCH_DIR: /data
+      OUT_DIR: /out
+      RESULTS_DB: /db/llm-results.sqlite
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - type: bind
+        source: ./scripts/build_live_report.py
+        target: /app/build_live_report.py
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./bench_results
+        target: /data
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./report
+        target: /out
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./results-db
+        target: /db
+        bind:
+          create_host_path: false
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    cpus: 0.25
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,time,datetime as d;t=json.load(open('/out/live-status.json'))['checked_utc'];assert time.time()-d.datetime.fromisoformat(t.replace('Z','+00:00')).timestamp()<90"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  gitea:
+    # Local Git server: every version of the model-test reports is committed here by report-versioner (web UI :3010, SSH :2222).
+    image: gitea/gitea:1.22.6-rootless
+    container_name: ai-gitea
+    restart: unless-stopped
+    init: true
+    environment:
+      GITEA__security__INSTALL_LOCK: "true"
+      GITEA__database__DB_TYPE: sqlite3
+      GITEA__server__DOMAIN: ${AI_CONSOLE_BIND_IP:-127.0.0.1}
+      GITEA__server__ROOT_URL: http://${AI_CONSOLE_BIND_IP:-127.0.0.1}:${GITEA_WEB_PORT:-3010}/
+      GITEA__server__SSH_DOMAIN: ${AI_CONSOLE_BIND_IP:-127.0.0.1}
+      GITEA__server__SSH_PORT: ${GITEA_SSH_PORT:-2222}
+      GITEA__server__SSH_LISTEN_PORT: "2222"
+      GITEA__server__START_SSH_SERVER: "true"
+      GITEA__service__DISABLE_REGISTRATION: "true"
+      GITEA__service__REQUIRE_SIGNIN_VIEW: "true"
+      GITEA__log__LEVEL: warn
+    ports:
+      - "127.0.0.1:${GITEA_WEB_PORT:-3010}:3000"
+      - "${AI_CONSOLE_BIND_IP:-127.0.0.1}:${GITEA_WEB_PORT:-3010}:3000"
+      - "127.0.0.1:${GITEA_SSH_PORT:-2222}:2222"
+      - "${AI_CONSOLE_BIND_IP:-127.0.0.1}:${GITEA_SSH_PORT:-2222}:2222"
+    volumes:
+      - gitea-data:/var/lib/gitea
+      - gitea-config:/etc/gitea
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/api/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  report-versioner:
+    # Commits a snapshot of results/tables/plan to the Gitea repository whenever something changes (tags v0001, v0002, ...).
+    image: local/ai-server-versioner:local
+    build:
+      context: .
+      dockerfile: Dockerfile.versioner
+    container_name: ai-report-versioner
+    restart: unless-stopped
+    init: true
+    depends_on:
+      gitea:
+        condition: service_healthy
+    environment:
+      GIT_URL: http://gitea:3000/${GITEA_REPORT_OWNER:-reports-admin}/${GITEA_REPORT_REPO:-model-test-reports}.git
+      GIT_TOKEN_FILE: /run/secrets/gitea_token
+      BENCH_DIR: /data
+      REPORT_DIR: /report
+      DB_FILE: /db/llm-results.sqlite
+      WORK_DIR: /work
+      INTERVAL: "60"
+    secrets:
+      - gitea_token
+    volumes:
+      - type: bind
+        source: ./bench_results
+        target: /data
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./report
+        target: /report
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./results-db
+        target: /db
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./legal
+        target: /legal
+        read_only: true
+        bind:
+          create_host_path: false
+      - versioner-work:/work
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: 0.25
+    healthcheck:
+      test: ["CMD-SHELL", "test -d /work/.git || exit 1"]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
+
+  ai-console:
+    image: local/ai-server-console:local
+    build:
+      context: .
+      dockerfile: Dockerfile.console
+    container_name: ai-model-console
+    restart: unless-stopped
+    init: true
+    gpus: all
+    ports:
+      - "127.0.0.1:${AI_CONSOLE_PORT:-8766}:8766"
+      - "${AI_CONSOLE_BIND_IP:-127.0.0.1}:${AI_CONSOLE_PORT:-8766}:8766"
+    volumes:
+      - type: bind
+        source: ./report
+        target: /app/report
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./BENCHMARK_RESULTS.csv
+        target: /app/downloads/BENCHMARK_RESULTS.csv
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./BENCHMARK_RESULTS.db
+        target: /app/downloads/BENCHMARK_RESULTS.db
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./media/images/qwen-image-2.1-smoke.png
+        target: /app/downloads/qwen-image-2.1-smoke.png
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MODEL_DIR:?Set MODEL_DIR in ai-server/.env}
+        target: /models
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./benchmark/q4kv-20260929/recommended-settings-q4kv-20260929.json
+        target: /app/recommended-settings.json
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./config/llama-swap.yaml
+        target: /app/llama-swap.yaml
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: volume
+        source: llm-models-fast
+        target: /models-fast
+        read_only: true
+      - type: bind
+        source: ./report
+        target: /report-data
+        read_only: true
+        bind:
+          create_host_path: false
+      - ai-console-state:/state
+    environment:
+      AI_CONSOLE_PORT: "8766"
+      AI_GATEWAY_URL: http://llama-swap-gateway:8080
+      MODEL_DIR: /models
+      PUBLIC_REPO_URL: ${PUBLIC_REPO_URL:-}
+      VIDEO_CONTAINER: video-generation-comfyui-video-1   # separate project Video Studio; only used to refuse starting an LLM while it holds the GPU
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8766/health', timeout=3).read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  whisper:
+    <<: [*whisper-image, *runtime]
+    profiles: ["whisper"]
+    pull_policy: never
+    ports:
+      - "${HOST_BIND_IP:-127.0.0.1}:${WHISPER_PORT:-8082}:8082"
+    volumes:
+      - type: bind
+        source: ${MODEL_DIR:?Set MODEL_DIR in ai-server/.env}
+        target: /models
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MEDIA_DIR:?Set MEDIA_DIR in ai-server/.env}
+        target: /media
+        bind:
+          create_host_path: false
+    command:
+      - --model
+      - ${WHISPER_MODEL:-/models/302_Whisper-large-v3-turbo/ggml-large-v3-turbo-q8_0.bin}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8082"
+      - --inference-path
+      - /inference
+      - --convert
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8082/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5m
+
+  media-tools:
+    <<: *whisper-image
+    profiles: ["media-tools"]
+    pull_policy: never
+    init: true
+    restart: "no"
+    volumes: *media-volume
+    entrypoint: ["ffmpeg"]
+    command: ["-version"]
+
+  qwen-image:
+    image: local/ai-server-qwen-image:local
+    build:
+      context: .
+      dockerfile: Dockerfile.qwen-image
+      args:
+        STABLE_DIFFUSION_CPP_COMMIT: ${STABLE_DIFFUSION_CPP_COMMIT:?Set STABLE_DIFFUSION_CPP_COMMIT}
+    profiles: ["qwen-image"]
+    pull_policy: never
+    init: true
+    restart: "no"
+    gpus: all
+    volumes:
+      - type: bind
+        source: ${MODEL_DIR:?Set MODEL_DIR in ai-server/.env}
+        target: /models
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${MEDIA_DIR:?Set MEDIA_DIR in ai-server/.env}
+        target: /media
+        bind:
+          create_host_path: false
+    environment:
+      QWEN_IMAGE_MODEL: ${QWEN_IMAGE_MODEL:-/models/301_Qwen-Image-2.1/qwen-image-2.1-Q5_K_M.gguf}
+      QWEN_IMAGE_VAE: ${QWEN_IMAGE_VAE:-/models/301_Qwen-Image-2.1/vae/qwen_image_2.1_vae_bf16.safetensors}
+      QWEN_IMAGE_LLM: ${QWEN_IMAGE_LLM:-/models/015_Qwen3-VL-8B/Qwen3VL-8B-Instruct-Q4_K_M.gguf}
+      QWEN_IMAGE_MMPROJ: ${QWEN_IMAGE_MMPROJ:-/models/015_Qwen3-VL-8B/mmproj/mmproj-Qwen3VL-8B-Instruct-F16.gguf}
+    entrypoint: ["/app/bin/sd-cli"]
+
+  llama-swap-gateway:
+    image: local/ai-server-llama-swap:260
+    build:
+      context: .
+      dockerfile: Dockerfile.llama-swap
+      args:
+        LLAMA_SWAP_VERSION: "260"
+        LLAMA_SWAP_SHA256: d856a908507560cbdc253300bcf49092c7ead3c85098687428b0c9d4832ff46d
+    profiles: ["gateway"]
+    pull_policy: never
+    container_name: ai-llama-swap-gateway
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 100s
+    gpus: all
+    ports:
+      - "127.0.0.1:${GATEWAY_PORT:-8080}:8080"
+    volumes:
+      # 2026-09-29: models are served from an ext4 Docker volume (SHA256-verified copies of the model library files).
+      # A host-drive bind over WSL 9p read at ~22-45 MB/s and made cold loads take 6-14 min; ext4 loads in 11-29 s.
+      # Rollback: docker-compose.before-fastvol-20260929.yml
+      - type: volume
+        source: llm-models-fast
+        target: /models
+        read_only: true
+      - type: bind
+        source: ./config/llama-swap.yaml
+        target: /etc/llama-swap/config.yaml
+        read_only: true
+        bind:
+          create_host_path: false
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/health >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  # Build-only helpers: they create the runtime images the gateway is built on (nothing is started from them).
+  #   docker compose --profile build build build-upstream build-bonsai
+  build-upstream:
+    <<: *upstream
+    profiles: ["build"]
+    pull_policy: never
+    restart: "no"
+    entrypoint: ["true"]
+
+  build-bonsai:
+    <<: *bonsai-image
+    profiles: ["build"]
+    pull_policy: never
+    restart: "no"
+    entrypoint: ["true"]
+
+secrets:
+  gitea_token:
+    file: ./secrets/gitea-token
+
+volumes:
+  gitea-data:
+  gitea-config:
+  versioner-work:
+  ai-console-state:
+  llm-models-fast:
+    external: true

@@ -1,0 +1,360 @@
+{
+ "files": {
+  ".env.example": {
+   "bytes": 2536,
+   "sha256": "e1e26fb72ec8b1ef07057a23be580df4623ef8ece681379b20954f46f1f08232"
+  },
+  ".gitattributes": {
+   "bytes": 64,
+   "sha256": "ded9f23a509b96724276948ec60172c230e01762f976a1a1f76c76080f14da51"
+  },
+  ".github/workflows/ci.yml": {
+   "bytes": 1070,
+   "sha256": "4444cfa0110858e20ade5a6bf298d687795332e547767ec3ff5d95bca528fe32"
+  },
+  ".gitignore": {
+   "bytes": 750,
+   "sha256": "6b5b696cbf6125f58ada04ac2aa0c7077b9cdb0c8b9826f5cb70b2024e404c37"
+  },
+  "AGENTS.md": {
+   "bytes": 3051,
+   "sha256": "ae30c154a6d8d8b353359dddd87e8a5f390b0d6a93eee7cc8386969d671384a9"
+  },
+  "bench_results/.gitkeep": {
+   "bytes": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "CHANGELOG.md": {
+   "bytes": 1335,
+   "sha256": "865c66375052ca59ece60f0e20a05a83036c0cdd3a2d34410bcdaa63322b59bf"
+  },
+  "CLAUDE.md": {
+   "bytes": 1188,
+   "sha256": "3a3d776731f411aa3bc99ea2b3f648435df0f76dfbb53c307fd4a6230999a8df"
+  },
+  "config/generation-feedback.json": {
+   "bytes": 9152,
+   "sha256": "8534d55b8f19f001a4d9aba375e3f4dbcdceafff32ea26fae30e83b5899a84a6"
+  },
+  "config/llama-swap.yaml": {
+   "bytes": 9877,
+   "sha256": "45e208641df2ec55390d41d2be4be99d3f18a0e70330c51925ab3ef287bf1902"
+  },
+  "console/app.css": {
+   "bytes": 39152,
+   "sha256": "44e754b185807108fd36f7cb79cde5bc099c62f97bb9cc2a04527ae2be1d15b7"
+  },
+  "console/app.js": {
+   "bytes": 63435,
+   "sha256": "69daf4a7302a83f71922f7f04ab54e5c9216c4b120f8b3cb24c6d1abeb4cf881"
+  },
+  "console/container_server.py": {
+   "bytes": 57837,
+   "sha256": "a69d02de48ac6dad5a6c72e741c1a06daff908f449e0c9091ac7e2201ec37b00"
+  },
+  "console/i18n-dict.js": {
+   "bytes": 86790,
+   "sha256": "63d773e6e12a40f40c437c0189a84820865f47f6ed992df9d0faba28708ca75f"
+  },
+  "console/i18n.js": {
+   "bytes": 4472,
+   "sha256": "d1eabe0cf1d197912a18ce72300ead5a206c8bb8c8640974f52a4f9b72a754ac"
+  },
+  "console/index.html": {
+   "bytes": 9608,
+   "sha256": "38f465b397a9b825b5a37b8131fdd192e184969f4f15bd43eb7da4fc0cd81ec6"
+  },
+  "console/tests_feed.py": {
+   "bytes": 2045,
+   "sha256": "9c29b592bfb1ebe2759ff73812862d2383855983b01c73fa568391ba781beea0"
+  },
+  "console/video.html": {
+   "bytes": 11897,
+   "sha256": "be642863c69c0675ebcc4fefb62cb944d784f65f4bd52f6497cf1e24e73fdf7f"
+  },
+  "CONTRIBUTING.md": {
+   "bytes": 1287,
+   "sha256": "2f124286bd3b4bbfe1168d6671861e757f98c551dc2871d978d53f15dd163593"
+  },
+  "docker-compose.yml": {
+   "bytes": 13831,
+   "sha256": "28e38361312d320346c861d72bcd4d567edb4e93c84b5eb409d2b9e83e28b935"
+  },
+  "Dockerfile.bonsai": {
+   "bytes": 1567,
+   "sha256": "46c6968c138784c0aca28d322256f0b448a02c37724d6c8d95ae2cd010d8d509"
+  },
+  "Dockerfile.console": {
+   "bytes": 335,
+   "sha256": "a422b76e1ce74137178c12d6c32faf2bcb26469499494ad49abea53c1d2509f6"
+  },
+  "Dockerfile.llama-swap": {
+   "bytes": 1165,
+   "sha256": "3d18ffe131029c3a6e83da5102d156d489056cc7a31871aedeb01e7ed1987227"
+  },
+  "Dockerfile.qwen-image": {
+   "bytes": 1469,
+   "sha256": "592d6384f1f036545e75bec936fb05ebe30d5d782a057379f0946663619c88fa"
+  },
+  "Dockerfile.upstream": {
+   "bytes": 1564,
+   "sha256": "18cd47e2cb01e196f6e0813eaf197f369977a75772327858d43f0f7f51f667d2"
+  },
+  "Dockerfile.versioner": {
+   "bytes": 195,
+   "sha256": "a27fb79e0085b70094c345c34a4f165807127d986895119762950f094a1cee4c"
+  },
+  "Dockerfile.whisper": {
+   "bytes": 1605,
+   "sha256": "615c1bd45166516a1e2af6aeff12fe166973f41b7a9a44c4feed2319d5930ee1"
+  },
+  "docs/AI_OPERATOR.de.md": {
+   "bytes": 6452,
+   "sha256": "9fb87a2c592e60a8aff6acf7f27d170bf425c2c0c22772222554a3a43d5c57df"
+  },
+  "docs/AI_OPERATOR.en.md": {
+   "bytes": 5914,
+   "sha256": "4e69cfdb4e9ac7248d954ea9aa32be4faa9e9b64152b011867d3bdf5e72a5345"
+  },
+  "docs/AI_OPERATOR.ru.md": {
+   "bytes": 9511,
+   "sha256": "98b7dadba63e1aecd38bc786ed4c6ce3bd0e9a7f4a6bebb93e427358fb3084e2"
+  },
+  "docs/API.md": {
+   "bytes": 3360,
+   "sha256": "bb75ac209176dea7a129830b3cd72d0494f578a56ef9b55ed1a0368fa6eeb670"
+  },
+  "docs/ARCHITECTURE.md": {
+   "bytes": 3662,
+   "sha256": "ceada599897c6fe4679587c6fbc5ff6e1cfd6e002b101b6ad44eddcb6c894fa8"
+  },
+  "docs/DESIGN.de.md": {
+   "bytes": 4611,
+   "sha256": "148f44be0ab7384ec43dae0221965cf8e5e73d542bb139ee565744b965dce0ee"
+  },
+  "docs/DESIGN.en.md": {
+   "bytes": 4176,
+   "sha256": "151b76fb98140af55507874ba0fbe85ee3bceebb5c95715f816339154b3d8bfd"
+  },
+  "docs/DESIGN.ru.md": {
+   "bytes": 7045,
+   "sha256": "18b8d45753c94b65708b12ee925c2b2a62f100c7dcef86c98649ffcdd5983131"
+  },
+  "docs/GITHUB_REPO.md": {
+   "bytes": 2705,
+   "sha256": "d5519cf7acf90b2a8d9ea94773481649eff68565112cf4337b18e71ddd257db7"
+  },
+  "docs/INSTALL.de.md": {
+   "bytes": 22771,
+   "sha256": "844f5570988a5d7c842499f57813a4bc80c91bee2d4831a6148f1975beadd17f"
+  },
+  "docs/INSTALL.en.md": {
+   "bytes": 21275,
+   "sha256": "7f38c1e473b3a63a2aedb0c96011f0b170c2ff99bf05d786f5323a69aa6acbfe"
+  },
+  "docs/INSTALL.ru.md": {
+   "bytes": 30501,
+   "sha256": "5535d17ea51a7d7c872882647088816b20c844698e3dd0410fb8eca4a6a0f954"
+  },
+  "docs/METHODOLOGY.de.md": {
+   "bytes": 5860,
+   "sha256": "ab1793b6f6c622bbd9707f0fa4b96ddf2822e268cafc1254e05053547bed2e0d"
+  },
+  "docs/METHODOLOGY.en.md": {
+   "bytes": 5276,
+   "sha256": "7a59c79e60fba0634834d221d167edf3b64f6fd47e4fdf0cdd507ddc0e82b065"
+  },
+  "docs/METHODOLOGY.ru.md": {
+   "bytes": 8328,
+   "sha256": "88f1e37bff4ee4b738ead3fbb969be1878147db97ad4660d197ba8db4bbce8db"
+  },
+  "docs/RESULTS_FORMAT.md": {
+   "bytes": 4651,
+   "sha256": "d34652eed6228189f3525f05b51be9d5b63c3310b64553aafcaa1494228bcad2"
+  },
+  "hermes-telemetry/app.py": {
+   "bytes": 13920,
+   "sha256": "891ed622b4899bd73d1f816cf42087b17248c1470fe084c71c5c7647bdbb0012"
+  },
+  "hermes-telemetry/compose.yaml": {
+   "bytes": 1051,
+   "sha256": "10b7ab7f7eca65beaf4787409bd06bda4433b3c9053b932dd4976d6faa2cafd1"
+  },
+  "hermes-telemetry/Dockerfile": {
+   "bytes": 321,
+   "sha256": "0402401d6e56d8cdc1703d5057245bcc2cb80fa87531e2e9859ce705e3a7dcdb"
+  },
+  "hermes-telemetry/README.md": {
+   "bytes": 2798,
+   "sha256": "5f2872a2222593c745d9f1024552c9c287d2b795ea687dbc2a60eb381d2c59e8"
+  },
+  "legal/LICENSE-CODE-MIT.txt": {
+   "bytes": 1154,
+   "sha256": "8174fe3f38bda91ac64c0de13c6a1faa5a8ad0339189a6c3c71d222bfa8b401c"
+  },
+  "legal/LICENSE-RESULTS-CC-BY-4.0.md": {
+   "bytes": 3833,
+   "sha256": "9189cabc32caec6179ca9aa3d12c58d04f7e64d3e7cf817a348d6ba94fb6d184"
+  },
+  "legal/NOTICE-THIRD-PARTY.md": {
+   "bytes": 4847,
+   "sha256": "1950ba5d8006c3eabde53db8ae92696041f69a0f5cb055cb47c6a9dc4ef9ca22"
+  },
+  "legal/README.md": {
+   "bytes": 972,
+   "sha256": "4c2754fcca0056172980aea29afc4d55a3964de2e2afe7ba455eecfd9c5205ca"
+  },
+  "LICENSE": {
+   "bytes": 1154,
+   "sha256": "8174fe3f38bda91ac64c0de13c6a1faa5a8ad0339189a6c3c71d222bfa8b401c"
+  },
+  "media/images/.gitkeep": {
+   "bytes": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "MODELS.md": {
+   "bytes": 11371,
+   "sha256": "060f5c0abbf540d2e095479e6034aa874f2e945ba5bb239a8a438c5587ffc6ce"
+  },
+  "MODELS.sha256": {
+   "bytes": 1305,
+   "sha256": "62856e8aaac67e83cf6589462c9aa431fb8fb27d7dec50165153b9c046833c8a"
+  },
+  "nginx-report.conf": {
+   "bytes": 221,
+   "sha256": "67d938e0117c129b8a29ecbe95a121eb6f86b80a720e2c2c27af24878a294f65"
+  },
+  "PROMPT_FOR_AI.md": {
+   "bytes": 13690,
+   "sha256": "9ec35eb4c3b178114534387c84fc06c3027bd35ebc766065acd7a92e3e5b24e1"
+  },
+  "PROVENANCE.md": {
+   "bytes": 8858,
+   "sha256": "f0390da035ac5fd73b5bcf089bf5632146b7a3180e4982fc9c476354e92ce216"
+  },
+  "README.de.md": {
+   "bytes": 4670,
+   "sha256": "9299a22faf984fae2b1b757a82d9600a1f09932972a922672c9721c6bd2cddf8"
+  },
+  "README.md": {
+   "bytes": 4263,
+   "sha256": "188619c37745877055ef059e547db0c5afa9a6ddc934a37756a66d18d1b2e76b"
+  },
+  "README.ru.md": {
+   "bytes": 6387,
+   "sha256": "5b2ff4eabe4f0d5a50b0d25d114b5fb649247d4d8d0c61194d32e4906457ac84"
+  },
+  "report/index.html": {
+   "bytes": 8507,
+   "sha256": "e626a9cea0b3f2525e5c0ca383746ded379fbebb39b8d06a77efd94599b91098"
+  },
+  "report/live.js": {
+   "bytes": 6006,
+   "sha256": "c1e286f3ac8b8c6f6b8b65fcdcf8c44a5f46bf074e379c86fdb1bfaefa38070f"
+  },
+  "report/report.css": {
+   "bytes": 6937,
+   "sha256": "1e53b5be601c9336847fd046f7e50ece533a8d988742cbc74080c2fc66de440e"
+  },
+  "report/report.js": {
+   "bytes": 17301,
+   "sha256": "8023bb02e470021715859b633a4dc7428d783475024756f17386e5e6c1ddc118"
+  },
+  "report/tablesort.js": {
+   "bytes": 5368,
+   "sha256": "b6263f2eda6f95f0a367feb8369379fec073a6f7e995d79492f53b1be3e36a04"
+  },
+  "results-db/.gitkeep": {
+   "bytes": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "results-db/README.md": {
+   "bytes": 1951,
+   "sha256": "c92d9343e37a21e888efa04743c97ccd88fafbdff86671bd0af3b95991539350"
+  },
+  "results-public/results-summary.csv": {
+   "bytes": 2177,
+   "sha256": "9f18ec5b83a02fb9959c8eac053701cf33bf43ba37ec840c13df1d2e3b429b97"
+  },
+  "results-public/results-summary.json": {
+   "bytes": 7230,
+   "sha256": "33cece4a750aae4d062b0183722ba699b58ca8fca7d21bfff2159ea0a9c15ceb"
+  },
+  "results-public/RESULTS.md": {
+   "bytes": 6998,
+   "sha256": "2ed270dc3e3ee9c592e49babd0b15df57b95ef9a8524a96495d23b1dea4f95c1"
+  },
+  "scripts/build-gateway.ps1": {
+   "bytes": 639,
+   "sha256": "0a8e0abf01ed6f450d6e3b9fe8472c8f129eaef001263224e8fbe296d7554284"
+  },
+  "scripts/build_live_report.py": {
+   "bytes": 34060,
+   "sha256": "7ffac16a2eed95bd402cb24ab581834aafc9ed4469bdece633f2b3d582f93380"
+  },
+  "scripts/check_i18n.js": {
+   "bytes": 1888,
+   "sha256": "51ac3b83018dfe4adb341534064d7fd38aada7441b1b87f30c59d5ed77da8d9a"
+  },
+  "scripts/configure-openwebui-gateway.ps1": {
+   "bytes": 2650,
+   "sha256": "17ec42b095e6aba3bbada0398515447dda1a8ef7c61bf1c03dc2b7a5b6a9c83a"
+  },
+  "scripts/install.py": {
+   "bytes": 9030,
+   "sha256": "d67470e7a8a25487cf2ca5200bf5717e52607ea26641eabac25876dfe1df9618"
+  },
+  "scripts/llama-server-entrypoint.sh": {
+   "bytes": 1912,
+   "sha256": "b18a2195937943f276087bdfd4ae348b70141efa85699a511f0fc9b7e17e040e"
+  },
+  "scripts/make_public_results.py": {
+   "bytes": 5628,
+   "sha256": "8781fb20de274d89ff9e9fedd13fbe8a7ea8162e87a700d881290eed4416b5eb"
+  },
+  "scripts/setup_git.py": {
+   "bytes": 5835,
+   "sha256": "70836eab884005e444e57df72d8895ad310a083601ee41952483a77154ecb459"
+  },
+  "scripts/start-gateway.ps1": {
+   "bytes": 2395,
+   "sha256": "093309247a4ac5aad7a2c4c0c241109a3525f6d9a0129e80c8261cf67e78cea7"
+  },
+  "scripts/status-gateway.ps1": {
+   "bytes": 1149,
+   "sha256": "c7f89786491fcf10a8b0c8edab524f9f02b7d0fedb67ed1d56e9c105fe2c4123"
+  },
+  "scripts/stop-gateway.ps1": {
+   "bytes": 444,
+   "sha256": "517c40a4a483c793d2bd3cdcd1d14474ec4e9b26509ed9f51614f6e1832e1003"
+  },
+  "scripts/test-gateway-race.py": {
+   "bytes": 5562,
+   "sha256": "a00f4b33e3c9e4903ffc5909fe1e2a970cccea706df251f7abdc3af25ac31370"
+  },
+  "scripts/test-gateway-switching.ps1": {
+   "bytes": 7137,
+   "sha256": "cd2c17341dbead5b7efc0a0f3b4bb1a46d71d52a10a5ff3a1daf18fd51d9b269"
+  },
+  "scripts/test-gateway-vision.py": {
+   "bytes": 6375,
+   "sha256": "213a123053bced03cd21675bdc4b6fa01b54dcbe3088f4ba074cbbe7ee5400dd"
+  },
+  "scripts/versioner.py": {
+   "bytes": 7372,
+   "sha256": "1c18386eda92fb23abed7d0b61b0ad6b3a05385f79bf48cbf248c63d7a1b8f97"
+  },
+  "SECURITY.md": {
+   "bytes": 1293,
+   "sha256": "cf4f3460565f1c9e5d847e8881c0ec85dd962a3a69da62ad7a610a746c3eccef"
+  },
+  "VERSION": {
+   "bytes": 6,
+   "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03"
+  },
+  "VERSIONS.md": {
+   "bytes": 7453,
+   "sha256": "b843d8b491656e3a4619eee789f75c9ecb3e6b391d2305ab8a0af91da8f41512"
+  }
+ }
+}

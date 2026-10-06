@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "purpose": "Что и на каком устройстве считается при генерации видео и фото, откуда консоль берёт обратную связь (этап, шаг, устройство, ресурсы) и какие замеры реально получены. Читается страницей «Генерация видео» (console/video.py); значения expected_* уточняются по истории запусков.",
+  "updated": "2026-09-30",
+  "video": {
+    "engine": "ComfyUI + Wan 2.1 T2V 1.3B, контейнер video-generation-comfyui-video-1",
+    "settings_file": "video-generation/config/video-generation-settings.json",
+    "feedback_channels": [
+      {
+        "id": "container_logs",
+        "what": "Этап, устройство и шаг сэмплера из журнала контейнера (docker logs --timestamps)",
+        "poll_seconds": 3
+      },
+      {
+        "id": "comfy_history",
+        "what": "Итог задачи, время исполнения и имя файла: GET /history/<prompt_id>",
+        "poll_seconds": 3
+      },
+      {
+        "id": "gpu_sampler",
+        "what": "nvidia-smi каждые 2 с: занятая VRAM, загрузка GPU, мощность, температура",
+        "poll_seconds": 2
+      },
+      {
+        "id": "ffprobe",
+        "what": "Проверка готового файла (кодек, разрешение, длительность) через ffprobe внутри контейнера"
+      }
+    ],
+    "text_encoder": {
+      "model": "umt5_xxl_fp8_e4m3fn_scaled.safetensors (6,4 ГБ)",
+      "device_default": "cpu",
+      "options": {
+        "cpu": "Проверенный профиль: помещается в 10 ГБ VRAM с запасом, но кодирование текста медленное (минуты), GPU в это время простаивает.",
+        "default": "Энкодер на GPU (--lowvram сам выгрузит его перед сэмплированием). Быстрее, требует ≥ 8,5 ГБ свободной VRAM."
+      },
+      "note": "Загрузка GPU почти нулевая на этапе encode при device=cpu — это ожидаемо, а не зависание."
+    },
+    "phases": [
+      {
+        "id": "load",
+        "label": "Загрузка весов энкодера",
+        "device": "диск → RAM",
+        "starts_at_log": "got prompt"
+      },
+      {
+        "id": "encode",
+        "label": "Кодирование текста",
+        "device_from_log": "CLIP/text encoder model load device: (\\w+)",
+        "starts_at_log": "CLIP/text encoder model load device"
+      },
+      {
+        "id": "sample",
+        "label": "Сэмплирование (шаги диффузии)",
+        "device": "gpu",
+        "starts_at_log": "model_type FLOW",
+        "progress_regex": "(\\d+)/(\\d+) \\["
+      },
+      {
+        "id": "decode",
+        "label": "Декодирование VAE и сохранение",
+        "device": "gpu",
+        "starts_at_log": "Requested to load WanVAE"
+      },
+      {
+        "id": "done",
+        "label": "Готово",
+        "starts_at_log": "Prompt executed in"
+      }
+    ],
+    "expected_seconds": {
+      "container_startup": 65,
+      "load": 36,
+      "encode": {
+        "cpu": 497,
+        "default": 88
+      },
+      "sampling_first_step": 41,
+      "decode": 20,
+      "sampling_step_per_frames_sq": 0.0048,
+      "assemble": 8
+    },
+    "alerts": {
+      "min_free_vram_mib": 8500,
+      "explain_idle_gpu_when_device": "cpu",
+      "idle_gpu_util_below_percent": 15,
+      "no_progress_warn_seconds": 900
+    },
+    "measured_runs": [
+      {
+        "date": "2026-09-30",
+        "frames": 17,
+        "steps": 10,
+        "text_encoder_device": "cpu",
+        "phases_s": {
+          "load": 36,
+          "encode": 497,
+          "sample": 55,
+          "decode": 13
+        },
+        "comfy_total_s": 604,
+        "job_total_s": 717,
+        "peak_vram_mib": 4911,
+        "note": "GPU работал меньше 2 из 10 минут; остальное — CPU-кодирование текста."
+      },
+      {
+        "date": "2026-09-30",
+        "frames": 17,
+        "steps": 10,
+        "text_encoder_device": "gpu",
+        "phases_s": {
+          "load": 4,
+          "encode": 101,
+          "sample": 62,
+          "decode": 80
+        },
+        "comfy_total_s": 247,
+        "job_total_s": 314,
+        "peak_vram_mib": 9992,
+        "min_free_vram_mib": 62,
+        "note": "В 2,3 раза быстрее CPU-энкодера, но VRAM почти на пределе (свободно 62 МиБ), декодирование VAE замедлилось."
+      },
+      {
+        "date": "2026-09-30",
+        "frames": 81,
+        "steps": 10,
+        "text_encoder_device": "gpu",
+        "phases_s": {
+          "load": 2,
+          "encode": 76,
+          "sample": 322,
+          "decode": 19
+        },
+        "comfy_total_s": 418,
+        "job_total_s": 465,
+        "peak_vram_mib": 9273,
+        "min_free_vram_mib": 781,
+        "peak_temp_c": 81,
+        "note": "81 кадр с GPU-энкодером прошёл без ошибок; запас VRAM 781 МиБ."
+      }
+    ],
+    "expected_seconds_note": "Время шага сэмплера растёт как квадрат числа кадров: ≈ 0,0048 × кадры² секунд (17 кадров ≈ 1,4 с, 81 кадр ≈ 31 с). Поэтому короткие части считаются заметно дешевле длинных.",
+    "chunking": {
+      "purpose": "Длинное видео делается по частям (сценам) и склеивается в конце: сбой или отмена не теряют готовые части, короткие части считаются быстрее.",
+      "max_parts": 12,
+      "frames_per_part": [
+        17,
+        33,
+        49,
+        65,
+        81
+      ],
+      "part_files": "video/job_<id>/part_NN.mp4",
+      "final_file": "video/job_<id>/final.mp4",
+      "assembly": {
+        "default": "concat demuxer, -c copy (без перекодирования, проверяется по длительности)",
+        "fallback": "concat filter с перекодированием libx264 crf 18",
+        "transition": "xfade fade 0,5 с (только с перекодированием)",
+        "runs_in": "ffmpeg внутри контейнера ComfyUI"
+      },
+      "resume": "Готовые части сохраняются; «Продолжить» считает только недостающие; «Собрать из готовых» склеивает то, что уже есть.",
+      "limits": "Модель Wan 2.1 T2V не умеет продолжать предыдущий кадр: каждая часть независима. Плавного продолжения одного плана нет — используйте раскадровку из отдельных планов."
+    }
+  },
+  "image": {
+    "engine": "stable-diffusion.cpp (sd-cli) + Qwen-Image 2.1 Q5_K_M, разовый контейнер профиля compose «qwen-image»",
+    "launcher": "scripts/start-qwen-image.ps1",
+    "placement": {
+      "weights": "--offload-to-cpu: веса лежат в RAM и подгружаются на GPU частями",
+      "attention": "--diffusion-fa (flash attention)",
+      "vae": "--vae-tiling, плитка 256x256, перекрытие 0.5",
+      "text_encoder": "Qwen3-VL-8B Q4_K_M (+ mmproj для редактирования)"
+    },
+    "feedback_channels": [
+      {
+        "id": "telemetry_json",
+        "what": "<файл>.png.telemetry.json рядом с картинкой: время, пик VRAM и RAM контейнера, средняя загрузка GPU, мощность, число замеров"
+      },
+      {
+        "id": "sd_cli_stdout",
+        "what": "Строки прогресса шагов sd-cli в журнале контейнера"
+      },
+      {
+        "id": "gpu_sampler",
+        "what": "nvidia-smi: занятая VRAM и загрузка GPU"
+      }
+    ],
+    "measured_runs": [
+      {
+        "date": "2026-09-28",
+        "size": "1024x1024",
+        "steps": 20,
+        "elapsed_s": 231.7,
+        "peak_vram_mib": 7081,
+        "peak_ram_mib": 5714,
+        "avg_gpu_util_percent": 33.1,
+        "avg_power_w": 115.3
+      },
+      {
+        "date": "2026-09-29",
+        "size": "1280x832",
+        "steps": 30,
+        "elapsed_s": 304.1,
+        "peak_vram_mib": 7774,
+        "peak_ram_mib": 5794,
+        "avg_gpu_util_percent": 37.8,
+        "avg_power_w": 123.6
+      }
+    ],
+    "note": "Средняя загрузка GPU около 35%: заметная часть времени уходит на перекачку весов CPU↔GPU из-за offload. Побочный расчёт по этапам не замерялся."
+  }
+}

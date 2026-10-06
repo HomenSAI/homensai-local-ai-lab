@@ -1,0 +1,24 @@
+Model,Quant,"Size, GB","VRAM peak, MiB",Prompt tok/s,Gen tok/s,General %,German %,"Stable context, K",Math+Physics %,Chemistry %,"Code, of 20",Status
+Bonsai-2-27B,PTQ1_0,5.95,7640,860.5,46.6,100,77,128,98,100,18,admitted
+Qwen3-VL-8B,Q4_K_M,6.19,8602,3346.1,86.7,87,70,64,95,100,17,admitted
+Qwen3.5-9B,Q5_K_S,5.16,6127,2228.7,91.3,86,73,256,100,100,18,admitted
+Mistral-Nemo-12B,Q4_K_M,7.48,9565,2554.2,69.2,83,60,,,,,removed from later tests: no stable GPU context of 64K or more
+Gemma-4-E4B,Q4_K_M,5.97,5697,2029.8,94.8,79,77,,,,,removed from later tests: no stable GPU context of 64K or more
+Llama-3.1-8B,Q4_K_M,4.92,6903,3906.4,95.9,79,43,64,75,70,15,admitted
+Spark-X2.5-4B-Q8,Q8_0,4.38,5964,3646.6,79.3,79,30,256,98,100,14,admitted
+Qwen3.5-9B-MTP,UD-Q4_K_XL,7.05,8136,2048.3,82.4,78,73,256,98,100,17,admitted
+Gemma-3-12B,Q4_K_M,7.3,9469,1569.9,61.8,73,70,96,92,100,14,admitted
+Gemma-4-12B-QAT,QAT Q4_0,7.15,9112,1315.5,61.9,73,70,,,,,removed from later tests: no stable GPU context of 64K or more
+Qwen2.5-Coder-7B,Q4_K_M,4.68,6155,3688.4,100.8,73,53,64,88,90,14,admitted
+MiMo-9B,Q4_K_M,5.84,6802,1943.4,82.3,72,67,256,95,100,12,admitted
+MiMo-9B-MTP,Q4_K_M+MTP,6.1,6794,1912.3,81.9,72,67,256,95,100,12,admitted
+Ornith-1.5-9B,Q4_K_M,5.78,6574,2033.9,83.8,72,73,256,100,100,14,admitted
+Qwen3-8B,Q4_K_M,5.03,7085,3638.6,95.7,72,80,,,,,removed from later tests: no stable GPU context of 64K or more
+Spark-X2.5-4B-Q4,Q4_K_M,2.6,4303,3235.9,88.3,70,23,256,88,100,12,admitted
+Qwen2.5-VL-7B,Q4_K_M,6.04,8167,3875.4,101.3,68,43,64,78,90,10,admitted
+Gemma-4-12B,Q4_K_M,7.3,9291,1405.1,60.4,66,77,,,,,removed from later tests: no stable GPU context of 64K or more
+LFM2.5-8B-A1B,Q4_K_M,5.16,6426,5322.4,209.8,66,10,,,,,removed from later tests: no stable GPU context of 64K or more
+MiniCPM5-2B-Q4,Q4_K_M,1.56,3061,7149.6,171.6,64,17,128,82,60,12,admitted
+MiniCPM5-2B-Q8,Q8_0,2.68,3987,6596.2,138.7,59,10,128,82,40,16,admitted
+LFM2.5-2.6B,Q4_K_M,1.67,3155,6747.5,190.6,58,13,,,,,removed from later tests: no stable GPU context of 64K or more
+R1-Distill-Llama-8B,Q4_K_M,4.92,6967,3831.8,97.7,41,20,,,,,removed from later tests: no stable GPU context of 64K or more

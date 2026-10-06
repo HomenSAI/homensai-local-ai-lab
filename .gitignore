@@ -1,0 +1,44 @@
+# secrets and local configuration
+.env
+.env.local
+secrets/
+*.pem
+*.key
+id_ed25519*
+
+# data that must never be published
+bench_results/*
+!bench_results/.gitkeep
+results-db/*
+!results-db/README.md
+!results-db/.gitkeep
+report/live-data.json
+report/live-status.json
+report/report-data.json
+report/legal/
+media/images/*
+!media/images/.gitkeep
+/benchmark/
+/benchmark-output/
+video-generation/output/*
+!video-generation/output/.gitkeep
+video-generation/models/*
+!video-generation/models/.gitkeep
+video-generation/logs/
+BENCHMARK_RESULTS.csv
+BENCHMARK_RESULTS.db
+*.gguf
+*.safetensors
+*.sqlite
+*.log
+
+# build / editor noise
+__pycache__/
+*.pyc
+*.bak
+*.bak-*
+.DS_Store
+Thumbs.db
+drive-export/
+github-package/
+backup/

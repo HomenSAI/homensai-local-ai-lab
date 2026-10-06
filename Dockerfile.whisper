@@ -1,0 +1,40 @@
+ARG CUDA_VERSION=12.8.1
+FROM nvidia/cuda:${CUDA_VERSION}-devel-ubuntu24.04 AS build
+
+ARG WHISPER_COMMIT=d09f61a708f3487afa956ff578e60eae5e7a233c
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /src
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates git cmake ninja-build build-essential pkg-config libcurl4-openssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git init . \
+    && git remote add origin https://github.com/ggml-org/whisper.cpp.git \
+    && git fetch --depth 1 origin "${WHISPER_COMMIT}" \
+    && git checkout --detach FETCH_HEAD \
+    && git submodule update --init --recursive
+
+RUN cmake -S . -B build -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DGGML_CUDA=ON \
+      -DGGML_NATIVE=OFF \
+      -DCMAKE_CUDA_ARCHITECTURES=86 \
+      -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/cuda/lib64/stubs -lcuda" \
+      -DCMAKE_SHARED_LINKER_FLAGS="-L/usr/local/cuda/lib64/stubs -lcuda" \
+      -DWHISPER_BUILD_TESTS=OFF \
+      -DWHISPER_BUILD_EXAMPLES=ON \
+      -DWHISPER_BUILD_SERVER=ON \
+    && cmake --build build --parallel 8 --target whisper-server whisper-cli
+
+FROM nvidia/cuda:12.8.1-runtime-ubuntu24.04 AS runtime
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl ffmpeg libgomp1 libcurl4 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /src/build/bin/ /app/
+EXPOSE 8082
+ENTRYPOINT ["/app/whisper-server"]
+CMD ["--model", "/models/audio/ggml-large-v3-turbo-q8_0.bin", "--host", "0.0.0.0", "--port", "8082", "--inference-path", "/inference", "--convert"]

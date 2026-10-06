@@ -1,0 +1,24 @@
+# Warum es so gebaut wurde
+
+Andere Sprachen: [English](DESIGN.en.md) · [Русский](DESIGN.ru.md) · Struktur: [ARCHITECTURE.md](ARCHITECTURE.md)
+
+Zu jeder Entscheidung stehen Grund und Fundort des Wertes. Mit *gemessen* markierte Werte stammen aus unseren Läufen auf einer RTX 3080 (10 GB) und müssen auf anderer Hardware neu gemessen werden.
+
+| Entscheidung | Warum | Wo |
+|---|---|---|
+| **Ein Modell gleichzeitig im Videospeicher** | In 10 GB passt ein 7–27B-Modell mit langem Kontext; zwei Modelle ergäben winzige Kontexte oder CPU-Ausweichen. llama-swap entlädt das alte Modell vor dem Laden des nächsten | `config/llama-swap.yaml` (`ttl`, `unloadTimeout`) |
+| **llama-swap vor llama.cpp** | liefert eine OpenAI-kompatible API auf einem Port, lädt Modelle bei Bedarf und entlädt sie nach Leerlauf, sodass jeder Chat-Client oder KI-Assistent den Server nutzen kann, ohne Prozesse zu kennen | `Dockerfile.llama-swap`, Port 8080 |
+| **Festgelegte Versionen und Prüfsummen** | llama.cpp-Commits, das llama-swap-Release (SHA-256) und der Digest des Basis-Images sind fixiert, damit ein Ergebnis Monate später reproduzierbar ist | `.env`, `Dockerfile.*` |
+| **Modelle in einem Docker-Volume (ext4)** | Ein Windows-Laufwerk über WSL las mit ~22–45 MB/s, ein Kaltstart dauerte 6–14 Minuten; aus dem Volume dauert er 11–29 Sekunden (*gemessen*) | `docker-compose.yml`, `llm-models-fast` |
+| **Kontextgrößen aus Tests, nicht aus der Modellkarte** | Der Profilkontext ist das größte Fenster, bei dem das Modell startete, 3 von 3 versteckten Fakten bei 80 % Füllung fand und auf der GPU die Geschwindigkeit hielt (*gemessen*, KV-Cache f16 / q8 / q4) | `config/llama-swap.yaml`, Phase „Maximaler stabiler Kontext“ |
+| **Nur GPU, mindestens 64K für die späteren Phasen** | Überlauf in den RAM ergibt 1–3 Tokens/s, das ist kein funktionierender Server; die Regel des Autors hält den Vergleich ehrlich | [METHODOLOGY.de.md](METHODOLOGY.de.md) |
+| **Kein eingebauter LLM-Richter** | Ein Modell, das Modelle bewertet, fügt einen ungemessenen Fehler hinzu. Prüfer sind deterministisch (berechnete Antworten, exakter Vergleich, Ausführen von Tests); stattdessen prüft ein KI-Supervisor die Ergebnisse, und seine Beurteilung wird festgehalten | [AI_OPERATOR.de.md](AI_OPERATOR.de.md) |
+| **Ein KI-Assistent als Bediener, ohne Plug-in** | Der Server bietet nur normale Schnittstellen (Shell, REST, OpenAI-API, Dateien). Jeder Assistent, der Befehle ausführen kann, kann ihn bedienen, und ohne ihn läuft der Server ebenfalls | [AI_OPERATOR.de.md](AI_OPERATOR.de.md) |
+| **Konsole, Generator und Versionierer nutzen nur die Python-Standardbibliothek** | keine Abhängigkeit zum Patchen oder Prüfen, kleine Angriffsfläche, Images bauen in Sekunden | `console/`, `scripts/` |
+| **Ergebnisse werden nie überschrieben** | Verschiedene Tests bleiben getrennt; das SQLite-Archiv behält die Historie; Git behält jede Berichtsversion (`vNNNN`, `stage-<Phase>-done`, `final-<Datum>`), sodass jeder frühere Bericht wiederherstellbar ist | `scripts/build_live_report.py`, `scripts/versioner.py` |
+| **Dateibasiertes Ergebnisprotokoll** | Ein Testwerkzeug muss nur JSON-Zeilen und eine Marke in ein Log schreiben; Plan, Fortschrittsbalken und Restzeitschätzung kommen aus den Dateien, die Werkzeuge bleiben austauschbar | [RESULTS_FORMAT.md](RESULTS_FORMAT.md) |
+| **Videogenerierung ist ein eigenes Projekt** | Video braucht die ganze GPU, hat einen eigenen Release-Zyklus, eigene 10 GB Modelldateien und ein eigenes Publikum | Repository Video Studio |
+| **Oberflächentext in einer Sprache, Übersetzung zur Laufzeit** | kein Build-Schritt; Nutzerdaten sind von der Übersetzung ausgenommen, damit Prompts und Antworten exakt bleiben; `scripts/check_i18n.js` findet Lücken | `console/i18n*.js` |
+| **Kein Passwort, standardmäßig lokale Bindung** | Das Werkzeug ist für einen vertrauenswürdigen PC oder ein solches Netz; schwache Authentifizierung gäbe nur falsche Sicherheit, deshalb sagt die Doku klar: nie nach außen öffnen | [SECURITY.md](../SECURITY.md) |
+| **Docker-Socket nur lesend in die Konsole eingebunden** | Die Konsole muss sehen, welche Container die GPU belegen und ob der Videocontainer läuft; ihr Code liest nur den Containerzustand (keine Start-/Stopp-Aufrufe). Das Nur-Lese-Flag ist ein Hinweis, keine Sicherheitsgrenze: Wer die Konsole erreicht, erreicht Docker | `docker-compose.yml` |
+| **Ergebnisse CC BY 4.0, Code MIT** | Ergebnisse sollen mit Nennung des Autors weitergegeben werden; Code soll wiederverwendbar sein | `legal/` |
