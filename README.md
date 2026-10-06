@@ -5,6 +5,10 @@ Languages: English · [Русский](README.ru.md) · [Deutsch](README.de.md)
 
 Author: **Serhii Khomenko** · [homensai.com](https://homensai.com) · info@homensai.com · Results & reports: CC BY 4.0 (credit required) · Code: MIT
 
+## Purpose
+
+This project is a **lab for testing many local AI models on one computer**: every model is started through one gateway on a single GPU, run through the same automated tests, and the results are collected in one report. The measured results are in the companion repository [rtx3080-local-ai-benchmarks](https://github.com/HomenSAI/rtx3080-local-ai-benchmarks).
+
 ## What it is
 
 A self-hosted stack for a single-GPU workstation (developed on an RTX 3080 with 10 GB, Windows 10 + Docker Desktop):
