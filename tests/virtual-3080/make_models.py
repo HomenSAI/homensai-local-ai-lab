@@ -22,7 +22,7 @@ def size_of(name):
         return int(0.85e9)
     if "mtp" in base.lower() and "head" in base.lower():
         return int(0.45e9)                     # MTP head of a model, not a whole model
-    b = re.search(r"(\d+(?:\.\d+)?)B", base, re.I)
+    b = re.search(r"(\d+(?:\.\d+)?)B", base, re.I) or re.search(r"(\d+(?:\.\d+)?)B", name, re.I)   # file name, then folder
     params = float(b.group(1)) if b else 4.0
     bits = next((v for k, v in BITS if k.lower() in base.lower()), 5.0)
     return int(params * 1e9 * bits / 8)

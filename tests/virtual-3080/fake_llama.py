@@ -21,9 +21,13 @@ KV_FACTOR = {"f16": 1.0, "q8_0": 0.53, "q4_0": 0.28}
 
 
 # ---------------------------------------------------------------- the virtual card
-def billions(name):
-    m = re.search(r"(\d+(?:\.\d+)?)B", name, re.I)
-    return float(m.group(1)) if m else 4.0
+def billions(path):
+    # the file name first, then the folder: "cand/Mistral-Nemo-12B-Instruct/Mistral-Nemo-Instruct-2407-Q4_K_M.gguf"
+    for part in (os.path.basename(path), path):
+        m = re.search(r"(\d+(?:\.\d+)?)B", part, re.I)
+        if m:
+            return float(m.group(1))
+    return 4.0
 
 
 def native_context(name):
@@ -37,7 +41,7 @@ def profile(args):
     size = sum(os.path.getsize(p) for p in (model, args.get("mmproj")) if p and os.path.isfile(p))
     weights = size / 2**20
     ctx = int(args.get("ctx", 4096))
-    b = billions(os.path.basename(model))
+    b = billions(model)
     kv = ctx * b * 0.0035 * KV_FACTOR.get(args.get("ctk", "f16"), 1.0)
     gb = max(weights / 1024, 0.3)
     tg = round(min(190.0, 460.0 / gb), 1)

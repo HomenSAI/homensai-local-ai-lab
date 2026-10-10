@@ -749,12 +749,12 @@
    "sha256": "7b885057a56036e7520c74c3895b0d4dae90ecd203ec3e4ecebbb7032202edf2"
   },
   "tests/virtual-3080/fake_llama.py": {
-   "bytes": 18832,
-   "sha256": "6de513d6665828b63f2ca58acf5cb7be08de475c71aefbbf49722332b5dfd443"
+   "bytes": 19005,
+   "sha256": "5562c765e9c38e211cfc750f58aa6a57d4b77a816b473e64da896e2cb613f3b4"
   },
   "tests/virtual-3080/make_models.py": {
-   "bytes": 1897,
-   "sha256": "ce59555fbad9e6cf841311386c9872372f90ba381ec93777949e5d21357d17e8"
+   "bytes": 1970,
+   "sha256": "7f52c0e4e723f27847437c736ee497b2527821cf451e383b4e79b492e56519cc"
   },
   "tests/virtual-3080/nvidia-container-runtime-hook": {
    "bytes": 1275,
