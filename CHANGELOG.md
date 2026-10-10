@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0 - server scripts moved here from the benchmark repository
+
+- Moved from `rtx3080-local-ai-benchmarks`: PowerShell and Python scripts for model runs, media and context probes (`scripts/`), benchmark profile generators (`scripts/bench/`), Dockerfiles for the bench runner and GGUF conversion (`docker/`).
+- Added the release workflow `.github/workflows/release.yml`: it creates a GitHub release from the matching section of this changelog.
+
 ## 1.0.0 - first public package
 
 - llama-swap gateway with one-model-at-a-time loading; 15 model profiles measured on an RTX 3080 / 10 GB.
