@@ -7,6 +7,7 @@
 - `app.css` and `report.css` keep the layout, but every colour and font is now a style token (about 200 fixed colours replaced).
 - Content-Security-Policy allows the console's own fonts (`font-src 'self'`); without it the fonts would have been blocked.
 - New page "Test progress" (`/report/progress.html`, linked from the console and the report): the stage plan of the report builder in the process view A/B/C of HomenS.AI Style 1.4.0 (command centre, pipeline, terminal) with labels for model tests; display only, refreshed every 15 seconds.
+- Windows installer without Python: `scripts\install.ps1` (doctor, init, build, up, verify, all; `-NoGpu`, `-Pull`) does the same as `scripts/install.py` in the PowerShell that comes with Windows, so the PC needs only Docker Desktop. README and INSTALL (EN/RU/DE) start with the ZIP download and this script; `install.py` stays for Linux and AI assistants. CI checks that the script parses.
 - Footer: noncommercial licence of results and code with links to both licence texts; translations for the new texts (RU/EN/DE).
 
 ## 1.2.0 - test runners, noncommercial licence, security and reliability fixes (2026-10-10)

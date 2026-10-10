@@ -47,7 +47,7 @@
 
 **Программы**
 - Windows 10/11 с **Docker Desktop (движок WSL2)** и свежим драйвером NVIDIA (с поддержкой CUDA 12.8). Это проверенная конфигурация. Linux — раздел 10.
-- Docker Compose v2 (входит в Docker Desktop), Python 3.10+ (для вспомогательных скриптов, дополнительных пакетов не нужно), Git.
+- Docker Compose v2 (входит в Docker Desktop). На Windows больше ничего не нужно: установщик `scripts\install.ps1` работает во встроенном PowerShell. На Linux — Python 3.10+ (для вспомогательных скриптов, дополнительных пакетов не нужно) и Git.
 - Интернет для сборки образов и скачивания моделей.
 
 **Сначала проверьте видеокарту в Docker** (должна вывестись ваша карта):
@@ -66,6 +66,20 @@ swap=8GB
 ```
 
 ## 3. Быстрый путь: скрипт установки
+
+**Windows, на компьютере только Docker Desktop (без Python, Git и Node).** Скачайте ZIP со страницы GitHub (Code → Download ZIP), распакуйте, откройте PowerShell в распакованной папке (Shift + правый щелчок → «Открыть окно PowerShell здесь») и выполняйте по одной команде. Каждая строка ответа начинается с `[ok]`, `[warn]` или `[FAIL]`:
+
+```
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 doctor
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init
+notepad .env
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify
+```
+
+`scripts\install.ps1` делает ровно то же, что `scripts/install.py` ниже (те же шаги и проверки, `-Pull` и `-NoGpu` вместо `--pull` и `--no-gpu`, `all` — всё сразу), и работает во встроенном PowerShell Windows. Команды ниже — для Linux или ИИ-ассистента с доступом к командной строке.
+
 
 ```
 git clone https://github.com/HomenSAI/homensai-local-ai-lab.git local-ai-server

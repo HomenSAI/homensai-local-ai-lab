@@ -46,7 +46,7 @@ Only one large model fits in 10 GB of video memory, so the gateway keeps **one m
 
 **Software**
 - Windows 10/11 with **Docker Desktop (WSL2 backend)** and a current NVIDIA driver (Game Ready or Studio, CUDA 12.8-capable). This is the tested setup. For Linux see section 10.
-- Docker Compose v2 (included in Docker Desktop), Python 3.10+ (for the helper scripts, no extra packages), Git.
+- Docker Compose v2 (included in Docker Desktop). On Windows nothing else: the installer `scripts\install.ps1` runs in the built-in PowerShell. On Linux: Python 3.10+ (for the helper scripts, no extra packages) and Git.
 - Internet access for building images and downloading models.
 
 **Check the GPU in Docker first** (must print your GPU):
@@ -65,6 +65,20 @@ swap=8GB
 ```
 
 ## 3. Fast path: the installer script
+
+**Windows with only Docker Desktop (no Python, Git or Node on the PC).** Download the ZIP from the GitHub page (Code → Download ZIP), unpack it, open PowerShell in the unpacked folder (Shift + right click → "Open PowerShell window here") and run one command at a time. Each line of the output starts with `[ok]`, `[warn]` or `[FAIL]`:
+
+```
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 doctor
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init
+notepad .env
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify
+```
+
+`scripts\install.ps1` does exactly the same as `scripts/install.py` below (same steps, same checks, `-Pull` and `-NoGpu` instead of `--pull` and `--no-gpu`, `all` for everything) and works in the Windows PowerShell that comes with Windows. The commands below are for Linux or an AI assistant with a shell.
+
 
 ```
 git clone https://github.com/HomenSAI/homensai-local-ai-lab.git local-ai-server

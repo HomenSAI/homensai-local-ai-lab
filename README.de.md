@@ -19,6 +19,19 @@ Ein selbst gehosteter Stack für einen Arbeitsplatzrechner mit einer GPU (entwic
 
 ## Schnellstart
 
+**Windows (auf dem PC nur Docker Desktop – ohne Python, Git und Node):** ZIP von der GitHub-Seite laden (Code → Download ZIP), entpacken, PowerShell im Ordner öffnen und einen Befehl nach dem anderen ausführen:
+
+```
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 doctor   # Docker, GPU in Docker, Ports, Speicherplatz
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init     # .env, Ordner, Platzhalter, Netzwerk, Volume
+#  .env im Editor öffnen, MODEL_DIR setzen und die .gguf-Modelle ablegen – siehe Anleitung, Abschnitt 4.5
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build    # erster Build 15–40 Minuten
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify   # jede Zeile muss [ok] sein
+```
+
+**Linux oder ein KI-Assistent mit Shell:** dieselben Schritte mit Python 3.10+ (nur Standardbibliothek):
+
 ```
 git clone https://github.com/HomenSAI/homensai-local-ai-lab.git local-ai-server
 cd local-ai-server
@@ -43,7 +56,7 @@ Weiteres: [warum es so gebaut wurde](docs/DESIGN.de.md) · [HTTP-Schnittstellen]
 
 ## Voraussetzungen in einer Zeile
 
-NVIDIA-GPU mit mindestens 8 GB, 16–32 GB RAM, etwa 25 GB Speicher für Images plus 50–200 GB für Modelle, Docker Desktop (WSL2) mit GPU-Unterstützung, Python 3.10+, Git. Linux mit NVIDIA Container Toolkit sollte funktionieren (vom Autor nicht getestet); macOS wird nicht unterstützt (kein CUDA).
+NVIDIA-GPU mit mindestens 8 GB, 16–32 GB RAM, etwa 25 GB Speicher für Images plus 50–200 GB für Modelle, Docker Desktop (WSL2) mit GPU-Unterstützung; unter Windows sonst nichts (PowerShell-Installer), unter Linux Python 3.10+ und Git. Linux mit NVIDIA Container Toolkit sollte funktionieren (vom Autor nicht getestet); macOS wird nicht unterstützt (kein CUDA).
 
 ## Nicht enthalten
 

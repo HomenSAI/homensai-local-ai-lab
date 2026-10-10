@@ -19,6 +19,19 @@
 
 ## Быстрый старт
 
+**Windows (на компьютере только Docker Desktop — без Python, Git и Node):** скачайте ZIP со страницы GitHub (Code → Download ZIP), распакуйте, откройте PowerShell в папке и выполняйте по одной команде:
+
+```
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 doctor   # Docker, видеокарта в Docker, порты, диск
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init     # .env, папки, заглушки, сеть, том
+#  откройте .env в Блокноте, укажите MODEL_DIR и положите модели .gguf — см. инструкцию, раздел 4.5
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build    # первая сборка 15–40 минут
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify   # каждая строка должна быть [ok]
+```
+
+**Linux или ИИ-ассистент с доступом к командной строке:** те же шаги на Python 3.10+ (только стандартная библиотека):
+
 ```
 git clone https://github.com/HomenSAI/homensai-local-ai-lab.git local-ai-server
 cd local-ai-server
@@ -43,7 +56,7 @@ python scripts/install.py verify
 
 ## Требования одной строкой
 
-Видеокарта NVIDIA от 8 ГБ, 16–32 ГБ ОЗУ, около 25 ГБ диска под образы и 50–200 ГБ под модели, Docker Desktop (WSL2) с поддержкой GPU, Python 3.10+, Git. Linux с NVIDIA Container Toolkit должен работать (автор не проверял); macOS не поддерживается (нет CUDA).
+Видеокарта NVIDIA от 8 ГБ, 16–32 ГБ ОЗУ, около 25 ГБ диска под образы и 50–200 ГБ под модели, Docker Desktop (WSL2) с поддержкой GPU; на Windows больше ничего (установщик на PowerShell), на Linux — Python 3.10+ и Git. Linux с NVIDIA Container Toolkit должен работать (автор не проверял); macOS не поддерживается (нет CUDA).
 
 ## Что не входит
 

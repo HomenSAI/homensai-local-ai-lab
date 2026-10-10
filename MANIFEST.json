@@ -9,8 +9,8 @@
    "sha256": "ded9f23a509b96724276948ec60172c230e01762f976a1a1f76c76080f14da51"
   },
   ".github/workflows/ci.yml": {
-   "bytes": 1381,
-   "sha256": "d4083a0847783c66adaac23418657dd0fc54c1ae803c9b0663679983a5b651db"
+   "bytes": 1632,
+   "sha256": "648c305074b6d7168428c4e673fc05919cc5120bb93553e05a6a530cd3496347"
   },
   ".github/workflows/release.yml": {
    "bytes": 1901,
@@ -21,16 +21,16 @@
    "sha256": "6cebaca65618a35af1c2b0e2f0162f54419076467ed1f27de8513f005312d32c"
   },
   "AGENTS.md": {
-   "bytes": 3806,
-   "sha256": "4129cec433af71cc1184a87378d928632607bb2250ae8e8eab56c4f48f6ae2c0"
+   "bytes": 4078,
+   "sha256": "1e43d6b40b3ee736a0ba96c7a793671afb2ba5923b86cba05a307376b87845db"
   },
   "CHANGELOG.md": {
-   "bytes": 8193,
-   "sha256": "b25607115239eb09294c5020c717466e8a08baf8e88d3c1277d1e3288c0d69ad"
+   "bytes": 8584,
+   "sha256": "ebe3f3349729db73a1bba8901a0bc8e1241526f91752aac85ce5820c3e8a1623"
   },
   "CLAUDE.md": {
-   "bytes": 1556,
-   "sha256": "9018a632f07d3767d0bcf35d9a13d1dd3ddf253d5fdf88bb43adb20324b5e748"
+   "bytes": 1681,
+   "sha256": "aa2aa3ce21703abe19f6dd66e5ba4b88967ff6fd8246e2949996adecc8fe7364"
   },
   "CONTRIBUTING.md": {
    "bytes": 1826,
@@ -85,16 +85,16 @@
    "sha256": "f0390da035ac5fd73b5bcf089bf5632146b7a3180e4982fc9c476354e92ce216"
   },
   "README.de.md": {
-   "bytes": 5356,
-   "sha256": "093c31a8a460d9c26365539753a6a4ad399800ff0f9e3df3c74fe45f3c9ae344"
+   "bytes": 6359,
+   "sha256": "3fdc7e1bdd7ededa67a97bf166b02739204f63d73fdd4a2362a93e2b1995b047"
   },
   "README.md": {
-   "bytes": 5292,
-   "sha256": "f67d9c8ca79ba104ea6bed58e5031807dbe7a3d4eb6d3a8943eb8fe857c06db4"
+   "bytes": 6254,
+   "sha256": "376f66934ee104cfa12d72e940030e7a733c560da8aa05cc2c534e29de4954c2"
   },
   "README.ru.md": {
-   "bytes": 7407,
-   "sha256": "6ccbdefa42299ec04f5cf617cb1cd56acfdfdc9f23b919cc392e3edd87f91cbc"
+   "bytes": 8726,
+   "sha256": "d6dc0ae32ee33445666973f1b4d274392be6a79dae6aba77a65713b3590c83dd"
   },
   "SECURITY.md": {
    "bytes": 4173,
@@ -381,16 +381,16 @@
    "sha256": "86aadebb042a761c49f6d519fb3871fe358b90b40e58ae94e7dad727bab89197"
   },
   "docs/INSTALL.de.md": {
-   "bytes": 26409,
-   "sha256": "d7061bc905137df9ad6194ee78ebc174c9c9da93dde96a5fde76fddc26dc70cb"
+   "bytes": 27544,
+   "sha256": "4b7acc3db6ff0bd87ec0b1a00520b7b128d66c1f7e91fc30689a4471f623edbb"
   },
   "docs/INSTALL.en.md": {
-   "bytes": 24625,
-   "sha256": "fcf36d87dec9f8b8ba3a465af78e92a5f67abecb8095347450899f684ccc64c0"
+   "bytes": 25735,
+   "sha256": "cb56c60825e32db5af4126f8279ff8f6be1149a94f541c75099b20cff9b1a520"
   },
   "docs/INSTALL.ru.md": {
-   "bytes": 35617,
-   "sha256": "ea2a94cda21dddeed9314aa4acf8d9fb2716284e484140bb10a81aa18765fd9f"
+   "bytes": 37070,
+   "sha256": "f6039625edb13eb29c57839fb42c8cec37ca929baafec4af3e718e9525bcfe81"
   },
   "docs/METHODOLOGY.de.md": {
    "bytes": 5860,
@@ -563,6 +563,10 @@
   "scripts/inspect-gguf.py": {
    "bytes": 3332,
    "sha256": "0edf893ade53e6726c1b1b9f42f644d1b3213286db4a2c05f599e24a311d2f18"
+  },
+  "scripts/install.ps1": {
+   "bytes": 10679,
+   "sha256": "636ced9053303b62c105f474dff4662c057989495a1dd27e6831a60c6a33c204"
   },
   "scripts/install.py": {
    "bytes": 10696,

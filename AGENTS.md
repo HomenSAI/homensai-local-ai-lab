@@ -6,6 +6,8 @@ Read first: `docs/AI_OPERATOR.en.md` (your role and the supervision loop), `docs
 
 ## Install (summary)
 
+On the owner's Windows PC only Docker Desktop is installed (no Python, Git or Node): use `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 doctor | init | build | up | verify` (`-NoGpu`, `-Pull`) there. On Linux or in your own shell use the Python installer:
+
 ```
 python scripts/install.py doctor      # fix what it reports before going on (it never downloads the 5.6 GB CUDA image: ask first, then `doctor --pull`)
 python scripts/install.py init        # creates .env - ask the human for MODEL_DIR and the network address

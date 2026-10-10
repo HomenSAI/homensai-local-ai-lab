@@ -20,6 +20,12 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: JavaScript syntax
         run: for f in console/*.js report/*.js; do node --check "$f"; done
+      - name: PowerShell installer parses
+        shell: pwsh
+        run: |
+          $e = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile("scripts/install.ps1", [ref]$null, [ref]$e)
+          if ($e) { $e; exit 1 }
       - name: Translations complete (DE and EN)
         run: |
           node scripts/check_i18n.js de
