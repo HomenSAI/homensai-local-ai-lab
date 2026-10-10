@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.5.0 - documentation site in HomenS.AI Style (2026-10-10)
+
+English
+- The documentation on GitHub Pages (https://homensai.github.io/homensai-local-ai-lab/) is now built in HomenS.AI Style 1.6.0 instead of the plain GitHub theme: header with the HomenS.AI logo, menu (Home, Installation, Documentation, Results, GitHub, Contact), language switch RU / EN / DE between the translations of a page, light and dark theme, table of contents, bottom navigation with a "Documents" sheet on phones, licence line and author footer from the brand data, and the "Contact" page with the robot (`site/contact.<lang>.html`).
+- `scripts/build_site.py` (standard library only) turns every Markdown file into the `.html` page next to it (the root `README.md` becomes `index.html`), keeps the GitHub anchors of the headings, points links between documents to the pages and links to other files to GitHub; `--check` is a CI step and a unit test. The pages use the style copy in `console/style/`, no external addresses, no inline styles or scripts (Content-Security-Policy in every page) and open from the disk as well; `.nojekyll` makes GitHub Pages serve them as they are. The old page addresses (for example `docs/DESIGN.ru.html`) stay the same.
+- README (EN/RU/DE) links the site; AGENTS, CLAUDE, CONTRIBUTING and ARCHITECTURE say to rebuild the pages after changing Markdown.
+
+Русский
+- Документация на GitHub Pages (https://homensai.github.io/homensai-local-ai-lab/) теперь собирается на HomenS.AI Style 1.6.0 вместо простой темы GitHub: шапка со знаком HomenS.AI, меню (Главная, Установка, Документация, Результаты, GitHub, Контакт), переключатель языков RU / EN / DE между переводами страницы, светлая и тёмная тема, оглавление, нижняя панель с листом «Документы» на телефоне, строка лицензии и подвал автора из данных бренда, страница «Контакт» с роботом (`site/contact.<язык>.html`).
+- `scripts/build_site.py` (только стандартная библиотека) делает из каждого файла Markdown страницу `.html` рядом с ним (корневой `README.md` — `index.html`), сохраняет якоря заголовков как на GitHub, ведёт ссылки между документами на страницы, а ссылки на прочие файлы — на GitHub; `--check` — шаг CI и модульный тест. Страницы берут копию стиля из `console/style/`, без внешних адресов, inline-стилей и inline-скриптов (Content-Security-Policy в каждой странице), открываются и с диска; `.nojekyll` заставляет GitHub Pages отдавать их как есть. Прежние адреса страниц (например, `docs/DESIGN.ru.html`) не изменились.
+- README (EN/RU/DE) ссылается на сайт; AGENTS, CLAUDE, CONTRIBUTING и ARCHITECTURE требуют пересобирать страницы после правки Markdown.
+
 ## 1.4.0 - virtual RTX 3080, Git setup in the installer, documentation for installing without an AI assistant (2026-10-10)
 
 English

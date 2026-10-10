@@ -1,0 +1,24 @@
+/* Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ */
+/* Documentation site (GitHub Pages): additions to HomenS.AI Style for long Markdown pages. Only style tokens. */
+.doc-body > :first-child { margin-top: 0; }
+.doc-body > :last-child { margin-bottom: 0; }
+.doc-body h2 { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.doc-body > h2:first-child { padding-top: 0; border-top: 0; }
+.doc-body h3 { margin-top: 1.5rem; }
+.doc-body h1, .doc-body h2, .doc-body h3, .doc-body h4, main > h1 { scroll-margin-top: 4.5rem; }
+.doc-body li { margin: .2rem 0; }
+.doc-body li > pre, .doc-body li > .table-wrap { margin: .5rem 0; }
+.doc-body :not(pre) > code { background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 0 .25em; overflow-wrap: break-word; }
+.doc-body pre { border: 1px solid var(--line); }
+.doc-body pre code { font-size: .88rem; }
+.doc-body td, .doc-body th { overflow-wrap: break-word; }
+.doc-body th.n, .doc-body td.n { text-align: right; }
+.doc-body th.c, .doc-body td.c { text-align: center; }
+.doc-body blockquote { color: var(--text); background: var(--bg); padding: .5rem .8rem; border-left-color: var(--accent); border-radius: 0 8px 8px 0; }
+.doc-toc { margin-bottom: 1rem; }
+.doc-toc h2 { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 .25rem; }
+.lang-switch > summary { font-family: var(--font-mono); font-size: .85rem; }
+.page-source, .license-line { font-size: .85rem; color: var(--muted); }
+.page-source { margin: 0 0 .5rem; }
+.noscript { max-width: 960px; margin: 0 auto 1rem; padding: 0 1rem; color: var(--muted); font-size: .85rem; }
+.more-sheet[hidden] { display: none; }

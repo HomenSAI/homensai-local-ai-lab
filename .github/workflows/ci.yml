@@ -30,6 +30,8 @@ jobs:
         run: |
           node scripts/check_i18n.js de
           node scripts/check_i18n.js en
+      - name: Documentation site is up to date
+        run: python scripts/build_site.py --check
       - name: MANIFEST.json is up to date
         run: python scripts/make_manifest.py --check
       - name: Compose configuration is valid

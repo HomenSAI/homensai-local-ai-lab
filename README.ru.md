@@ -76,6 +76,8 @@ python scripts/install.py verify
 
 ## Документация
 
+Та же документация в виде сайта на HomenS.AI Style (меню, переключатель языков, светлая и тёмная тема): <https://homensai.github.io/homensai-local-ai-lab/README.ru.html>. Страницы собираются из этих файлов Markdown командой `python scripts/build_site.py`.
+
 | | English | Русский | Deutsch |
 |---|---|---|---|
 | Полное руководство по установке | [INSTALL.en.md](docs/INSTALL.en.md) | [INSTALL.ru.md](docs/INSTALL.ru.md) | [INSTALL.de.md](docs/INSTALL.de.md) |

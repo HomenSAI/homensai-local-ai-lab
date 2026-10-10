@@ -8,6 +8,6 @@ The same instructions as `AGENTS.md` (this file is read automatically by Claude 
 - One model in video memory at a time; test results are appended to `bench_results/results_*.jsonl` with progress in `bench_results/<stage>.log`; check every result for plausibility and repeat suspicious runs before you report.
 - Ask before deleting, opening ports, downloading more than 1 GB or publishing. Never expose the console or gateway to the internet, never write secrets into Git, never rewrite earlier results.
 - Console `POST` calls need `Content-Type: application/json`; never weaken `console/security.py` or the fixed `docker exec` form.
-- Changing code: standard library only in the console, keep RU/EN/DE complete (`node scripts/check_i18n.js de`), run `python -m unittest discover -s tests` and `python scripts/make_manifest.py --check`, bump `VERSION` and `CHANGELOG.md` for a release.
+- Changing code: standard library only in the console, keep RU/EN/DE complete (`node scripts/check_i18n.js de`), run `python -m unittest discover -s tests`, `python scripts/build_site.py` after changing Markdown (the `.html` pages are generated) and `python scripts/make_manifest.py --check`, bump `VERSION` and `CHANGELOG.md` for a release.
 
 Full text: [AGENTS.md](AGENTS.md).

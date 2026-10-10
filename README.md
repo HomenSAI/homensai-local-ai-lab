@@ -80,6 +80,8 @@ Only an assistant **that can run commands on this computer** can do these steps 
 
 ## Documentation
 
+The same documentation as a website in HomenS.AI Style (menu, language switch, light and dark theme): <https://homensai.github.io/homensai-local-ai-lab/>. The pages are built from these Markdown files with `python scripts/build_site.py`.
+
 | | English | Русский | Deutsch |
 |---|---|---|---|
 | Full installation guide | [INSTALL.en.md](docs/INSTALL.en.md) | [INSTALL.ru.md](docs/INSTALL.ru.md) | [INSTALL.de.md](docs/INSTALL.de.md) |

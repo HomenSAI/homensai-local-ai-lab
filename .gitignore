@@ -11,6 +11,7 @@ bench_results/*
 !bench_results/.gitkeep
 results-db/*
 !results-db/README.md
+!results-db/README.html
 !results-db/.gitkeep
 report/live-data.json
 report/live-status.json

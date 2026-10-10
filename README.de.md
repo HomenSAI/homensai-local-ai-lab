@@ -76,6 +76,8 @@ Diese Schritte kann nur ein Assistent ausführen, **der Befehle auf diesem Compu
 
 ## Dokumentation
 
+Dieselbe Dokumentation als Website in HomenS.AI Style (Menü, Sprachwahl, helles und dunkles Design): <https://homensai.github.io/homensai-local-ai-lab/README.de.html>. Die Seiten werden mit `python scripts/build_site.py` aus diesen Markdown-Dateien gebaut.
+
 | | English | Русский | Deutsch |
 |---|---|---|---|
 | Vollständige Installationsanleitung | [INSTALL.en.md](docs/INSTALL.en.md) | [INSTALL.ru.md](docs/INSTALL.ru.md) | [INSTALL.de.md](docs/INSTALL.de.md) |
