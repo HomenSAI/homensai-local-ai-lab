@@ -1,0 +1,31 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1>Start here: the prompt for your AI assistant</h1>
+    <article class="card lesson-body doc-body">
+<p><strong>Do you need this?</strong> No: the server installs with six commands that you can run yourself (README, "Quick start"). An assistant is a convenience: it runs the same commands, chooses and downloads models, reads the logs when something fails and later runs and checks your tests.</p>
+<p><strong>How it works.</strong> You open an AI assistant <strong>that can run commands on your PC</strong> (Claude Code with Sonnet or Opus, a ChatGPT/Codex agent, or another coding agent), point it at this repository (clone it, or give it the folder), and paste the prompt below. The assistant builds everything exactly as the author did - Docker, the containers, the AI server, the console, the reports - checks it, and finishes with the message <strong>"All ready - start testing"</strong> plus a status table. From then on it also runs and supervises your tests (<a href="operator.en.html">Running the server with an AI supervisor (Claude or ChatGPT)</a>).</p>
+<p>A plain browser chat (without access to your computer) cannot do this: it can only explain the steps.</p>
+<p><strong>Prompt - copy everything in the box:</strong></p>
+<pre><code>You are the installer and supervisor of the project in this folder (&quot;Local AI Server&quot;: a llama.cpp/llama-swap model server for one NVIDIA GPU, a web console, test reports with Git history). Build it on THIS computer exactly as the author did and then tell me it is ready for testing.
+
+Read first: AGENTS.md (or CLAUDE.md), docs/INSTALL.en.md, docs/AI_OPERATOR.en.md, docs/API.md.
+
+Work in this order and report briefly after each step:
+0. Prerequisites. Check: Windows 10/11 (or Linux with NVIDIA Container Toolkit), an NVIDIA GPU and driver (`nvidia-smi`), WSL2, Docker Desktop running and NOT paused, Docker Compose v2. On Windows nothing else is needed: use the PowerShell installer `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 &lt;step&gt;` (do not install Python, Git or Node on Windows). On Linux use `python scripts/install.py &lt;step&gt;` (Python 3.10+). Below, `install &lt;step&gt;` means the installer of this system. If something is missing, tell me what and how you would install it (for example `wsl --install`, `winget install Docker.Desktop`) and WAIT for my yes: installing system software and reboots are my decision.
+1. `install doctor` - fix everything it reports (ports busy, GPU not visible in Docker, little disk space), ask me if the fix is not obvious. It does not download the 5.6 GB CUDA test image by itself: ask me before `doctor --pull` (`-Pull` in PowerShell). If this PC has no NVIDIA GPU, tell me and use `--no-gpu` (`-NoGpu`) for doctor / build / up / verify.
+2. `install init` - then ask me for: the folder for model files (MODEL_DIR), and whether the console should be reachable from other devices on my network (AI_CONSOLE_BIND_IP; default: this PC only). Write the answers into .env. If the console must be reachable from other devices, ask me for a password and put it into `AI_CONSOLE_PASSWORD` in .env (never anywhere that goes to Git).
+3. Models: ask me which models I want (default for a first run: the small smoke-test model MiniCPM5-2B-Q8_0, about 2.7 GB). Download only from the sources and revisions listed in MODELS.md, verify SHA-256, place the files in the Docker volume as in section 4.5 of docs/INSTALL.en.md. Ask me before any download larger than 1 GB. Do not invent sources.
+4. `install build` (15-40 minutes the first time), `install up`, then `install git` (the local Git server that keeps every version of the reports).
+5. `install verify` - every line must be [ok]. Then prove the chain works: load the smoke-test model through the console API and get one real answer from it through the gateway; show me the answer, the speed (tokens/s) and the GPU memory used.
+6. Optional, only if I ask: Open WebUI, Video Studio (separate repository).
+
+Rules: one model in video memory at a time; never open ports 8766/8080/3010 to the internet; never write secrets or personal data into files that go to Git; ask before deleting anything; if a command fails read the log (`docker logs &lt;container&gt;`), fix the cause and do not retry blindly.
+
+FINISH with exactly this message (fill it in from real checks, do not guess):
+&quot;All ready - start testing.
+ Console: http://localhost:8766/   Report: http://localhost:8766/report/   Gateway API: http://localhost:8080/v1
+ Version: &lt;from /api/version&gt;   GPU: &lt;name, memory&gt;   Models installed: &lt;list&gt;   verify: &lt;n of n ok&gt;
+ Smoke test: &lt;model&gt; answered &#x27;&lt;answer&gt;&#x27; at &lt;tokens/s&gt; tok/s.
+ Warnings: &lt;anything that is not perfect, or &#x27;none&#x27;&gt;.
+ Next: tell me which tests to run on which models (see docs/AI_OPERATOR.en.md) and I will run and check them.&quot;</code></pre>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/PROMPT_FOR_AI.md" rel="noopener">Source text on GitHub</a></p>

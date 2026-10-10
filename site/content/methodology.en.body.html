@@ -1,0 +1,51 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="how-the-results-were-obtained">How the results were obtained</h1>
+    <nav class="card help-toc doc-toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#the-chain-core---supervisor---results---this-repository">The chain: core -&gt; supervisor -&gt; results -&gt; this repository</a></li><li><a href="#rules-set-by-the-author-they-shape-every-number">Rules set by the author (they shape every number)</a></li><li><a href="#what-was-measured-stages-in-the-order-they-ran">What was measured (stages in the order they ran)</a></li><li><a href="#limits-you-should-know">Limits you should know</a></li><li><a href="#linking-a-copy-of-the-repository-to-the-results">Linking a copy of the repository to the results</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<h2 id="the-chain-core---supervisor---results---this-repository">The chain: core -&gt; supervisor -&gt; results -&gt; this repository</h2>
+<pre><code> server core                      supervisor                         results                           published
+ gateway (llama-swap + llama.cpp) Claude (Anthropic, Claude Code     bench_results/results*.jsonl      this repository:
+ console, report builder,         sessions on the same PC, working   -&gt; report builder -&gt; SQLite       code, docs, results-public/
+ Git versioner                    under the author&#x27;s direction)      archive + live report             (Git tags v0001 ... final-&lt;date&gt;)
+ [this repository, code]          prepares, runs and checks tests    -&gt; local Gitea versions</code></pre>
+<ol>
+<li><strong>Server core</strong> - the code in this repository: the llama-swap gateway on top of pinned llama.cpp builds, the console, the report builder that merges result files without deleting older results, the versioner that commits every report version to Git. It does not judge anything by itself.</li>
+<li><strong>Supervisor</strong> - Claude, used as a coding and operations assistant on the author's PC (see <a href="operator.en.html">Running the server with an AI supervisor (Claude or ChatGPT)</a>). Under the author's direction it wrote and adapted the test scripts, ran them against the gateway one model at a time, watched the runs, repeated suspicious ones, parsed the result files and wrote the reports and conclusions.</li>
+<li><strong>Results</strong> - one JSON line per model and test in <code>bench_results/results*.jsonl</code> (format: <a href="results-format.en.html">Result files and stage plan</a>); the report builder turns them into the live report and an SQLite archive; the versioner commits every change to the local Gitea.</li>
+<li><strong>Publication</strong> - <a href="https://github.com/HomenSAI/homensai-local-ai-lab/tree/main/results-public" rel="noopener">folder of the published results (GitHub)</a> is generated from the live data by <code>scripts/make_public_results.py</code> (no raw prompts or answers) and published together with the code.</li>
+</ol>
+<h2 id="rules-set-by-the-author-they-shape-every-number">Rules set by the author (they shape every number)</h2>
+<ul>
+<li><strong>GPU only.</strong> A model that only works by spilling into RAM/CPU (1-3 tokens/s) is not counted as working.</li>
+<li><strong>Stable GPU context of at least 64K</strong> is required to take part in the later stages. 23 models went through the first stages; 8 did not reach 64K on the GPU and were removed from the later tests (they are listed in the table with the reason); 15 were admitted.</li>
+<li><strong>One model in video memory at a time</strong>; the gateway swaps models, the supervisor never runs two GPU jobs together.</li>
+<li><strong>Nothing is overwritten</strong>: a repeated test adds a new row; the archive and Git keep the earlier values.</li>
+</ul>
+<h2 id="what-was-measured-stages-in-the-order-they-ran">What was measured (stages in the order they ran)</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Stage</th><th>What it measures</th></tr></thead>
+<tbody>
+<tr><td>General test (8K context)</td><td>Russian language, logic, code, instruction following, vision; prompt and generation speed, video memory peak</td></tr>
+<tr><td>German: passive</td><td>30 forms of the German passive, exact-answer check</td></tr>
+<tr><td>Maximum stable context</td><td>the largest window at which the server starts, finds 3 of 3 hidden facts at 80% fill and keeps its speed; KV cache tried on the GPU as f16, q8 and q4</td></tr>
+<tr><td>Accelerators and embeddings</td><td>speed with and without MTP, DFlash or a draft model (14 profiles); two embedding models</td></tr>
+<tr><td>Math and physics, grade 11</td><td>40 generated tasks (20 + 20) with a computed answer; some models also with thinking enabled</td></tr>
+<tr><td>Reliability (soak)</td><td>every gateway profile goes through a series of steps: start, answers at different context sizes, video memory peak, free host memory</td></tr>
+<tr><td>Code, 20 tasks</td><td>20 programming tasks in three difficulty levels, checked by running tests</td></tr>
+<tr><td>Chemistry, grade 11</td><td>10 tasks with a computed answer</td></tr>
+<tr><td>Final profiles and report</td><td>measured contexts are moved into the gateway profiles and verified</td></tr>
+</tbody>
+</table></div>
+<p>Environment: NVIDIA GeForce RTX 3080 (10 GB), Windows 10 + Docker Desktop (WSL2), llama.cpp commit <code>81bc6b83f827df746eb129235488d325c49cae52</code>, PrismML fork <code>adfffbe41b2cabcd51fff326ab045662265062bb</code> (Bonsai model only), llama-swap v260. The runs took place between 2026-09-30 and 2026-10-06.</p>
+<h2 id="limits-you-should-know">Limits you should know</h2>
+<ul>
+<li><strong>One machine, small task sets.</strong> 10-40 tasks per test: differences of a few percent are noise. The tables are a guide, not a ranking of model quality.</li>
+<li><strong>Tests were written and checked by an AI supervisor.</strong> A checker can contain a mistake; the supervisor looked for tasks that every model fails (a sign of a wrong checker) and repeated suspicious runs, but no human re-graded every answer.</li>
+<li><strong>Tasks are generated or written by us</strong>, not copied from public benchmarks; they are therefore not comparable with published leaderboards.</li>
+<li><strong>Settings matter</strong>: quantization, context size, KV-cache type and thinking mode are part of every result; they are stored in the rows and in <code>config/llama-swap.yaml</code>.</li>
+<li><strong>The benchmark scripts themselves are not part of this release</strong> (they still contain machine-specific paths); the result files, their format and the stage plan are, so any tool can produce comparable rows.</li>
+</ul>
+<h2 id="linking-a-copy-of-the-repository-to-the-results">Linking a copy of the repository to the results</h2>
+<p>If you publish a fork, put its address into <code>.env</code> as <code>PUBLIC_REPO_URL=https://github.com/HomenSAI/homensai-local-ai-lab</code>: the console and report footers then show a "GitHub" link and the console reports it in <code>/api/version</code>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/METHODOLOGY.en.md" rel="noopener">Source text on GitHub</a></p>

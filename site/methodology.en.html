@@ -1,0 +1,92 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>How the results were obtained — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="methodology.en.html">
+  <link rel="alternate" hreflang="ru" href="methodology.ru.html">
+  <link rel="alternate" hreflang="de" href="methodology.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Main navigation">
+      <ul class="nav-main"><li><a class="nav-link" href="index.html">Home</a></li><li><a class="nav-link" href="install.en.html">Installation</a></li><li><a class="nav-link" href="docs.en.html" aria-current="page">Documentation</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Results</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.en.html">Contact</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Language"><a href="methodology.en.html" lang="en" hreflang="en" aria-label="EN – English" class="on" aria-current="true">EN</a><a href="methodology.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="methodology.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="how-the-results-were-obtained">How the results were obtained</h1>
+    <nav class="card help-toc doc-toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#the-chain-core---supervisor---results---this-repository">The chain: core -&gt; supervisor -&gt; results -&gt; this repository</a></li><li><a href="#rules-set-by-the-author-they-shape-every-number">Rules set by the author (they shape every number)</a></li><li><a href="#what-was-measured-stages-in-the-order-they-ran">What was measured (stages in the order they ran)</a></li><li><a href="#limits-you-should-know">Limits you should know</a></li><li><a href="#linking-a-copy-of-the-repository-to-the-results">Linking a copy of the repository to the results</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<h2 id="the-chain-core---supervisor---results---this-repository">The chain: core -&gt; supervisor -&gt; results -&gt; this repository</h2>
+<pre><code> server core                      supervisor                         results                           published
+ gateway (llama-swap + llama.cpp) Claude (Anthropic, Claude Code     bench_results/results*.jsonl      this repository:
+ console, report builder,         sessions on the same PC, working   -&gt; report builder -&gt; SQLite       code, docs, results-public/
+ Git versioner                    under the author&#x27;s direction)      archive + live report             (Git tags v0001 ... final-&lt;date&gt;)
+ [this repository, code]          prepares, runs and checks tests    -&gt; local Gitea versions</code></pre>
+<ol>
+<li><strong>Server core</strong> - the code in this repository: the llama-swap gateway on top of pinned llama.cpp builds, the console, the report builder that merges result files without deleting older results, the versioner that commits every report version to Git. It does not judge anything by itself.</li>
+<li><strong>Supervisor</strong> - Claude, used as a coding and operations assistant on the author's PC (see <a href="operator.en.html">Running the server with an AI supervisor (Claude or ChatGPT)</a>). Under the author's direction it wrote and adapted the test scripts, ran them against the gateway one model at a time, watched the runs, repeated suspicious ones, parsed the result files and wrote the reports and conclusions.</li>
+<li><strong>Results</strong> - one JSON line per model and test in <code>bench_results/results*.jsonl</code> (format: <a href="results-format.en.html">Result files and stage plan</a>); the report builder turns them into the live report and an SQLite archive; the versioner commits every change to the local Gitea.</li>
+<li><strong>Publication</strong> - <a href="https://github.com/HomenSAI/homensai-local-ai-lab/tree/main/results-public" rel="noopener">folder of the published results (GitHub)</a> is generated from the live data by <code>scripts/make_public_results.py</code> (no raw prompts or answers) and published together with the code.</li>
+</ol>
+<h2 id="rules-set-by-the-author-they-shape-every-number">Rules set by the author (they shape every number)</h2>
+<ul>
+<li><strong>GPU only.</strong> A model that only works by spilling into RAM/CPU (1-3 tokens/s) is not counted as working.</li>
+<li><strong>Stable GPU context of at least 64K</strong> is required to take part in the later stages. 23 models went through the first stages; 8 did not reach 64K on the GPU and were removed from the later tests (they are listed in the table with the reason); 15 were admitted.</li>
+<li><strong>One model in video memory at a time</strong>; the gateway swaps models, the supervisor never runs two GPU jobs together.</li>
+<li><strong>Nothing is overwritten</strong>: a repeated test adds a new row; the archive and Git keep the earlier values.</li>
+</ul>
+<h2 id="what-was-measured-stages-in-the-order-they-ran">What was measured (stages in the order they ran)</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Stage</th><th>What it measures</th></tr></thead>
+<tbody>
+<tr><td>General test (8K context)</td><td>Russian language, logic, code, instruction following, vision; prompt and generation speed, video memory peak</td></tr>
+<tr><td>German: passive</td><td>30 forms of the German passive, exact-answer check</td></tr>
+<tr><td>Maximum stable context</td><td>the largest window at which the server starts, finds 3 of 3 hidden facts at 80% fill and keeps its speed; KV cache tried on the GPU as f16, q8 and q4</td></tr>
+<tr><td>Accelerators and embeddings</td><td>speed with and without MTP, DFlash or a draft model (14 profiles); two embedding models</td></tr>
+<tr><td>Math and physics, grade 11</td><td>40 generated tasks (20 + 20) with a computed answer; some models also with thinking enabled</td></tr>
+<tr><td>Reliability (soak)</td><td>every gateway profile goes through a series of steps: start, answers at different context sizes, video memory peak, free host memory</td></tr>
+<tr><td>Code, 20 tasks</td><td>20 programming tasks in three difficulty levels, checked by running tests</td></tr>
+<tr><td>Chemistry, grade 11</td><td>10 tasks with a computed answer</td></tr>
+<tr><td>Final profiles and report</td><td>measured contexts are moved into the gateway profiles and verified</td></tr>
+</tbody>
+</table></div>
+<p>Environment: NVIDIA GeForce RTX 3080 (10 GB), Windows 10 + Docker Desktop (WSL2), llama.cpp commit <code>81bc6b83f827df746eb129235488d325c49cae52</code>, PrismML fork <code>adfffbe41b2cabcd51fff326ab045662265062bb</code> (Bonsai model only), llama-swap v260. The runs took place between 2026-09-30 and 2026-10-06.</p>
+<h2 id="limits-you-should-know">Limits you should know</h2>
+<ul>
+<li><strong>One machine, small task sets.</strong> 10-40 tasks per test: differences of a few percent are noise. The tables are a guide, not a ranking of model quality.</li>
+<li><strong>Tests were written and checked by an AI supervisor.</strong> A checker can contain a mistake; the supervisor looked for tasks that every model fails (a sign of a wrong checker) and repeated suspicious runs, but no human re-graded every answer.</li>
+<li><strong>Tasks are generated or written by us</strong>, not copied from public benchmarks; they are therefore not comparable with published leaderboards.</li>
+<li><strong>Settings matter</strong>: quantization, context size, KV-cache type and thinking mode are part of every result; they are stored in the rows and in <code>config/llama-swap.yaml</code>.</li>
+<li><strong>The benchmark scripts themselves are not part of this release</strong> (they still contain machine-specific paths); the result files, their format and the stage plan are, so any tool can produce comparable rows.</li>
+</ul>
+<h2 id="linking-a-copy-of-the-repository-to-the-results">Linking a copy of the repository to the results</h2>
+<p>If you publish a fork, put its address into <code>.env</code> as <code>PUBLIC_REPO_URL=https://github.com/HomenSAI/homensai-local-ai-lab</code>: the console and report footers then show a "GitHub" link and the console reports it in <code>/api/version</code>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/METHODOLOGY.en.md" rel="noopener">Source text on GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>JavaScript is required for the menu, the theme switch and the footer.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

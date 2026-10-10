@@ -1,0 +1,63 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="http-interfaces-for-operators-and-ai-supervisors">HTTP interfaces (for operators and AI supervisors)</h1>
+    <nav class="card help-toc doc-toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#rules-every-console-request-must-follow">Rules every console request must follow</a></li><li><a href="#gateway---openai-compatible-port-8080">Gateway - OpenAI-compatible, port 8080</a></li><li><a href="#console---port-8766">Console - port 8766</a></li><li><a href="#report-data">Report data</a></li><li><a href="#files-an-operator-writes">Files an operator writes</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Everything below is plain HTTP on the local machine. The gateway has no authentication: use <code>127.0.0.1</code> or a trusted LAN only. Replace <code>localhost</code> with the LAN address if you opened the console (see <code>AI_CONSOLE_BIND_IP</code>).</p>
+<h2 id="rules-every-console-request-must-follow">Rules every console request must follow</h2>
+<p>The console checks each request (see <a href="security.en.html">Security policy</a>); a script or an AI supervisor has to comply:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td><code>Host</code> header</td><td><code>localhost</code>, an IP address, or a name listed in <code>AI_CONSOLE_ALLOWED_HOSTS</code>; otherwise <code>421</code>. <code>/health</code> is exempt</td></tr>
+<tr><td>Password</td><td>If <code>AI_CONSOLE_PASSWORD</code> is set, send HTTP Basic credentials (any user name): <code>curl -u any:PASSWORD ...</code>; otherwise <code>401</code>. <code>/health</code> is exempt</td></tr>
+<tr><td><code>POST</code> content type</td><td><strong>Always</strong> <code>Content-Type: application/json</code>, also for calls without a body (<code>/api/timer/cancel</code>); otherwise <code>415</code>. With <code>curl</code> use <code>-H &quot;Content-Type: application/json&quot;</code></td></tr>
+<tr><td><code>POST</code> origin</td><td>Scripts send no <code>Origin</code> header, which is fine. A browser request from another origin gets <code>403</code></td></tr>
+<tr><td>Body</td><td>A JSON object. Empty or too large: <code>413</code>; invalid JSON or not an object: <code>400</code></td></tr>
+<tr><td>Methods</td><td><code>GET</code> and <code>POST</code> only (<code>HEAD</code>, <code>OPTIONS</code> answer <code>501</code>); the console never sends CORS headers</td></tr>
+</tbody>
+</table></div>
+<p>Every answer carries <code>Content-Security-Policy</code>, <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code> and <code>Referrer-Policy: no-referrer</code>. Error answers are <code>{&quot;error&quot;: &quot;...&quot;}</code>.</p>
+<pre><code>curl -X POST http://localhost:8766/api/start -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;model_key&quot;:&quot;MiniCPM5-2B-Q8_0&quot;}&#x27;</code></pre>
+<h2 id="gateway---openai-compatible-port-8080">Gateway - OpenAI-compatible, port 8080</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Method and path</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>GET /v1/models</code></td><td>model profiles from <code>config/llama-swap.yaml</code></td></tr>
+<tr><td><code>POST /v1/chat/completions</code></td><td>chat; <code>&quot;model&quot;</code> is a profile name; the first request to a model loads it (up to a minute). The response contains <code>usage</code> and, from llama.cpp, <code>timings</code> (<code>prompt_per_second</code>, <code>predicted_per_second</code>, <code>prompt_n</code>, <code>predicted_n</code>)</td></tr>
+<tr><td><code>POST /v1/embeddings</code></td><td>embeddings with the <code>Qwen3-Embedding-*</code> profiles</td></tr>
+<tr><td><code>GET /running</code></td><td>models currently loaded: <code>{&quot;running&quot;: [...]}</code></td></tr>
+<tr><td><code>POST /api/models/unload</code></td><td>unload every model; <code>POST /api/models/unload/&lt;model&gt;</code> unloads one</td></tr>
+<tr><td><code>GET /health</code></td><td>gateway health</td></tr>
+</tbody>
+</table></div>
+<p>Any OpenAI SDK works with <code>base_url=&quot;http://localhost:8080/v1&quot;</code> and an arbitrary API key. To switch off thinking in models that have it, add <code>&quot;chat_template_kwargs&quot;: {&quot;enable_thinking&quot;: false}</code> to the request.</p>
+<pre><code>curl http://localhost:8080/v1/chat/completions -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;model&quot;:&quot;MiniCPM5-2B-Q8_0&quot;,&quot;messages&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;Say hello in one word&quot;}],&quot;max_tokens&quot;:16,&quot;temperature&quot;:0}&#x27;</code></pre>
+<h2 id="console---port-8766">Console - port 8766</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Method and path</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>GET /health</code></td><td><code>{&quot;ok&quot;: true}</code> (needs no password and no known <code>Host</code>)</td></tr>
+<tr><td><code>GET /api/version</code></td><td><code>{&quot;name&quot;, &quot;version&quot;, &quot;author&quot;, &quot;url&quot;, &quot;repo&quot;}</code></td></tr>
+<tr><td><code>GET /api/status</code></td><td>Docker and GPU state, models in memory (<code>active_models</code>), <code>host_ai</code> containers, <code>issues</code> (must be empty on a healthy system), running job</td></tr>
+<tr><td><code>GET /api/models</code></td><td>catalog with file existence (<code>exists</code>), size, context, quantization, tuned parameters</td></tr>
+<tr><td><code>POST /api/start</code></td><td>body <code>{&quot;model_key&quot;: &quot;&lt;profile&gt;&quot;}</code>: loads a model into video memory; returns <code>{&quot;job_id&quot;}</code>; poll <code>GET /api/jobs/&lt;job_id&gt;</code> until <code>status</code> is <code>complete</code> or <code>error</code></td></tr>
+<tr><td><code>POST /api/unload</code></td><td>body <code>{&quot;model_key&quot;: &quot;&lt;profile&gt;&quot;}</code>: unloads one model</td></tr>
+<tr><td><code>POST /api/chat</code></td><td>body <code>{&quot;model_key&quot;, &quot;payload&quot;: {OpenAI chat request}}</code>: same as the gateway, with the video-memory guard</td></tr>
+<tr><td><code>GET /api/timer</code>, <code>POST /api/timer</code> <code>{&quot;seconds&quot;: 900}</code>, <code>POST /api/timer/cancel</code></td><td>unload-all timer</td></tr>
+<tr><td><code>GET /api/tests</code></td><td>all test results joined per model, the stage plan (<code>plan.stages</code>, <code>plan.overall</code>), the suites list; this is what the console table shows</td></tr>
+<tr><td><code>GET /report/</code></td><td>the report page; <code>GET /report/live-data.json</code> its data</td></tr>
+<tr><td><code>GET /legal/&lt;file&gt;</code></td><td>license and notice files</td></tr>
+</tbody>
+</table></div>
+<p><code>/api/start</code> and <code>/api/chat</code> answer <code>409</code> while the Video Studio container holds the GPU.</p>
+<h2 id="report-data">Report data</h2>
+<ul>
+<li><code>report/live-data.json</code> - written every 15 seconds by the report builder: <code>entries</code> (one per model with <code>general</code>, <code>german</code>, <code>context</code>, <code>stem</code>, <code>chem</code>, <code>code20</code> blocks), <code>plan</code> (stages, progress, time left), <code>suites</code>, <code>status</code>.</li>
+<li><code>results-db/llm-results.sqlite</code> - the archive (<code>raw_rows</code>, <code>results</code>, <code>history</code>, <code>model_scores</code>); open it read-only.</li>
+<li>Git: the local Gitea (<code>http://localhost:3010/</code>) holds every report version as tags <code>vNNNN</code>, <code>stage-&lt;id&gt;-done</code>, <code>final-&lt;date&gt;</code>.</li>
+</ul>
+<h2 id="files-an-operator-writes">Files an operator writes</h2>
+<p>Test tools write <code>bench_results/results_*.jsonl</code> and <code>bench_results/&lt;stage&gt;.log</code>: see <a href="results-format.en.html">Result files and stage plan</a>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/API.md" rel="noopener">Source text on GitHub</a></p>

@@ -1,0 +1,63 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="http-schnittstellen-für-bediener-und-ki-supervisoren">HTTP-Schnittstellen (für Bediener und KI-Supervisoren)</h1>
+    <nav class="card help-toc doc-toc" aria-label="Inhalt"><h2>Inhalt</h2><ol><li><a href="#regeln-die-jede-anfrage-an-die-konsole-einhalten-muss">Regeln, die jede Anfrage an die Konsole einhalten muss</a></li><li><a href="#gateway--openai-kompatibel-port-8080">Gateway – OpenAI-kompatibel, Port 8080</a></li><li><a href="#konsole--port-8766">Konsole – Port 8766</a></li><li><a href="#berichtsdaten">Berichtsdaten</a></li><li><a href="#dateien-die-ein-bediener-schreibt">Dateien, die ein Bediener schreibt</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Alles Folgende ist einfaches HTTP auf dem lokalen Rechner. Das Gateway hat keine Authentifizierung: Verwenden Sie nur <code>127.0.0.1</code> oder ein vertrauenswürdiges LAN. Ersetzen Sie <code>localhost</code> durch die LAN-Adresse, wenn Sie die Konsole geöffnet haben (siehe <code>AI_CONSOLE_BIND_IP</code>).</p>
+<h2 id="regeln-die-jede-anfrage-an-die-konsole-einhalten-muss">Regeln, die jede Anfrage an die Konsole einhalten muss</h2>
+<p>Die Konsole prüft jede Anfrage (siehe <a href="security.de.html">Sicherheitsrichtlinie</a>); ein Skript oder ein KI-Supervisor muss sich daran halten:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Regel</th><th>Einzelheiten</th></tr></thead>
+<tbody>
+<tr><td><code>Host</code>-Header</td><td><code>localhost</code>, eine IP-Adresse oder ein in <code>AI_CONSOLE_ALLOWED_HOSTS</code> eingetragener Name; sonst <code>421</code>. <code>/health</code> ist ausgenommen</td></tr>
+<tr><td>Passwort</td><td>Ist <code>AI_CONSOLE_PASSWORD</code> gesetzt, HTTP-Basic-Zugangsdaten senden (beliebiger Benutzername): <code>curl -u any:PASSWORD ...</code>; sonst <code>401</code>. <code>/health</code> ist ausgenommen</td></tr>
+<tr><td>Inhaltstyp bei <code>POST</code></td><td><strong>Immer</strong> <code>Content-Type: application/json</code>, auch bei Aufrufen ohne Body (<code>/api/timer/cancel</code>); sonst <code>415</code>. Mit <code>curl</code> <code>-H &quot;Content-Type: application/json&quot;</code> verwenden</td></tr>
+<tr><td>Herkunft bei <code>POST</code></td><td>Skripte senden keinen <code>Origin</code>-Header, das ist in Ordnung. Eine Browser-Anfrage von einer anderen Herkunft erhält <code>403</code></td></tr>
+<tr><td>Body</td><td>Ein JSON-Objekt. Leer oder zu groß: <code>413</code>; ungültiges JSON oder kein Objekt: <code>400</code></td></tr>
+<tr><td>Methoden</td><td>Nur <code>GET</code> und <code>POST</code> (<code>HEAD</code>, <code>OPTIONS</code> antworten mit <code>501</code>); die Konsole sendet nie CORS-Header</td></tr>
+</tbody>
+</table></div>
+<p>Jede Antwort enthält <code>Content-Security-Policy</code>, <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code> und <code>Referrer-Policy: no-referrer</code>. Fehlerantworten haben die Form <code>{&quot;error&quot;: &quot;...&quot;}</code>.</p>
+<pre><code>curl -X POST http://localhost:8766/api/start -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;model_key&quot;:&quot;MiniCPM5-2B-Q8_0&quot;}&#x27;</code></pre>
+<h2 id="gateway--openai-kompatibel-port-8080">Gateway – OpenAI-kompatibel, Port 8080</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Methode und Pfad</th><th>Zweck</th></tr></thead>
+<tbody>
+<tr><td><code>GET /v1/models</code></td><td>Modellprofile aus <code>config/llama-swap.yaml</code></td></tr>
+<tr><td><code>POST /v1/chat/completions</code></td><td>Chat; <code>&quot;model&quot;</code> ist ein Profilname; die erste Anfrage an ein Modell lädt es (bis zu einer Minute). Die Antwort enthält <code>usage</code> und, von llama.cpp, <code>timings</code> (<code>prompt_per_second</code>, <code>predicted_per_second</code>, <code>prompt_n</code>, <code>predicted_n</code>)</td></tr>
+<tr><td><code>POST /v1/embeddings</code></td><td>Embeddings mit den Profilen <code>Qwen3-Embedding-*</code></td></tr>
+<tr><td><code>GET /running</code></td><td>aktuell geladene Modelle: <code>{&quot;running&quot;: [...]}</code></td></tr>
+<tr><td><code>POST /api/models/unload</code></td><td>alle Modelle entladen; <code>POST /api/models/unload/&lt;model&gt;</code> entlädt eines</td></tr>
+<tr><td><code>GET /health</code></td><td>Zustand des Gateways</td></tr>
+</tbody>
+</table></div>
+<p>Jedes OpenAI-SDK funktioniert mit <code>base_url=&quot;http://localhost:8080/v1&quot;</code> und einem beliebigen API-Schlüssel. Um das Denken (Thinking) bei Modellen abzuschalten, die es haben, fügen Sie der Anfrage <code>&quot;chat_template_kwargs&quot;: {&quot;enable_thinking&quot;: false}</code> hinzu.</p>
+<pre><code>curl http://localhost:8080/v1/chat/completions -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;model&quot;:&quot;MiniCPM5-2B-Q8_0&quot;,&quot;messages&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;Say hello in one word&quot;}],&quot;max_tokens&quot;:16,&quot;temperature&quot;:0}&#x27;</code></pre>
+<h2 id="konsole--port-8766">Konsole – Port 8766</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Methode und Pfad</th><th>Zweck</th></tr></thead>
+<tbody>
+<tr><td><code>GET /health</code></td><td><code>{&quot;ok&quot;: true}</code> (braucht weder Passwort noch einen bekannten <code>Host</code>)</td></tr>
+<tr><td><code>GET /api/version</code></td><td><code>{&quot;name&quot;, &quot;version&quot;, &quot;author&quot;, &quot;url&quot;, &quot;repo&quot;}</code></td></tr>
+<tr><td><code>GET /api/status</code></td><td>Zustand von Docker und GPU, Modelle im Speicher (<code>active_models</code>), <code>host_ai</code>-Container, <code>issues</code> (muss auf einem gesunden System leer sein), laufender Job</td></tr>
+<tr><td><code>GET /api/models</code></td><td>Katalog mit Vorhandensein der Datei (<code>exists</code>), Größe, Kontext, Quantisierung, abgestimmten Parametern</td></tr>
+<tr><td><code>POST /api/start</code></td><td>Body <code>{&quot;model_key&quot;: &quot;&lt;profile&gt;&quot;}</code>: lädt ein Modell in den Videospeicher; gibt <code>{&quot;job_id&quot;}</code> zurück; <code>GET /api/jobs/&lt;job_id&gt;</code> abfragen, bis <code>status</code> <code>complete</code> oder <code>error</code> ist</td></tr>
+<tr><td><code>POST /api/unload</code></td><td>Body <code>{&quot;model_key&quot;: &quot;&lt;profile&gt;&quot;}</code>: entlädt ein Modell</td></tr>
+<tr><td><code>POST /api/chat</code></td><td>Body <code>{&quot;model_key&quot;, &quot;payload&quot;: {OpenAI chat request}}</code>: wie das Gateway, mit dem Videospeicher-Schutz</td></tr>
+<tr><td><code>GET /api/timer</code>, <code>POST /api/timer</code> <code>{&quot;seconds&quot;: 900}</code>, <code>POST /api/timer/cancel</code></td><td>Timer zum Entladen aller Modelle</td></tr>
+<tr><td><code>GET /api/tests</code></td><td>alle Testergebnisse pro Modell zusammengeführt, der Phasenplan (<code>plan.stages</code>, <code>plan.overall</code>), die Liste der Testsuiten; das zeigt die Tabelle der Konsole</td></tr>
+<tr><td><code>GET /report/</code></td><td>die Berichtsseite; <code>GET /report/live-data.json</code> ihre Daten</td></tr>
+<tr><td><code>GET /legal/&lt;file&gt;</code></td><td>Lizenz- und Hinweisdateien</td></tr>
+</tbody>
+</table></div>
+<p><code>/api/start</code> und <code>/api/chat</code> antworten mit <code>409</code>, solange der Video-Studio-Container die GPU belegt.</p>
+<h2 id="berichtsdaten">Berichtsdaten</h2>
+<ul>
+<li><code>report/live-data.json</code> – wird alle 15 Sekunden vom Berichtsgenerator geschrieben: <code>entries</code> (einer pro Modell mit den Blöcken <code>general</code>, <code>german</code>, <code>context</code>, <code>stem</code>, <code>chem</code>, <code>code20</code>), <code>plan</code> (Phasen, Fortschritt, Restzeit), <code>suites</code>, <code>status</code>.</li>
+<li><code>results-db/llm-results.sqlite</code> – das Archiv (<code>raw_rows</code>, <code>results</code>, <code>history</code>, <code>model_scores</code>); nur lesend öffnen.</li>
+<li>Git: Das lokale Gitea (<code>http://localhost:3010/</code>) bewahrt jede Berichtsversion als Tags <code>vNNNN</code>, <code>stage-&lt;id&gt;-done</code>, <code>final-&lt;date&gt;</code> auf.</li>
+</ul>
+<h2 id="dateien-die-ein-bediener-schreibt">Dateien, die ein Bediener schreibt</h2>
+<p>Testwerkzeuge schreiben <code>bench_results/results_*.jsonl</code> und <code>bench_results/&lt;stage&gt;.log</code>: siehe <a href="results-format.de.html">Ergebnisdateien und Phasenplan</a>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.de.html">← Dokumentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/API.de.md" rel="noopener">Quelltext auf GitHub</a></p>

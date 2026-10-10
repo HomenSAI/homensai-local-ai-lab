@@ -15,7 +15,7 @@ Andere Sprachen: [English](METHODOLOGY.en.md) · [Русский](METHODOLOGY.ru
 
 1. **Serverkern** – der Code dieses Repositorys: das llama-swap-Gateway auf festgelegten llama.cpp-Builds, die Konsole, der Berichtsgenerator (führt Ergebnisdateien zusammen, ohne ältere zu löschen) und der Versionierer, der jede Berichtsversion in Git speichert. Er beurteilt von sich aus nichts.
 2. **Supervisor** – Claude, eingesetzt als Programmier- und Betriebsassistent auf dem PC des Autors (siehe [AI_OPERATOR.de.md](AI_OPERATOR.de.md)). Im Auftrag des Autors schrieb und passte er die Testskripte an, führte sie auf dem Gateway Modell für Modell aus, beobachtete die Läufe, wiederholte verdächtige, wertete die Ergebnisdateien aus und schrieb Berichte und Schlussfolgerungen.
-3. **Ergebnisse** – eine JSON-Zeile pro Modell und Test in `bench_results/results*.jsonl` (Format: [RESULTS_FORMAT.md](RESULTS_FORMAT.md)); der Berichtsgenerator macht daraus den Live-Bericht und ein SQLite-Archiv; der Versionierer speichert jede Änderung im lokalen Gitea.
+3. **Ergebnisse** – eine JSON-Zeile pro Modell und Test in `bench_results/results*.jsonl` (Format: [RESULTS_FORMAT.de.md](RESULTS_FORMAT.de.md)); der Berichtsgenerator macht daraus den Live-Bericht und ein SQLite-Archiv; der Versionierer speichert jede Änderung im lokalen Gitea.
 4. **Veröffentlichung** – [results-public/](../results-public/) wird aus den Live-Daten durch `scripts/make_public_results.py` erzeugt (ohne rohe Prompts und Antworten) und zusammen mit dem Code veröffentlicht.
 
 ## Vom Autor gesetzte Regeln (sie prägen jede Zahl)

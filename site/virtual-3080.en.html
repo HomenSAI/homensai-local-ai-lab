@@ -1,0 +1,79 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Virtual RTX 3080: test the whole system without a GPU — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="virtual-3080.en.html">
+  <link rel="alternate" hreflang="ru" href="virtual-3080.ru.html">
+  <link rel="alternate" hreflang="de" href="virtual-3080.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Main navigation">
+      <ul class="nav-main"><li><a class="nav-link" href="index.html">Home</a></li><li><a class="nav-link" href="install.en.html">Installation</a></li><li><a class="nav-link" href="docs.en.html" aria-current="page">Documentation</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Results</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.en.html">Contact</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Language"><a href="virtual-3080.en.html" lang="en" hreflang="en" aria-label="EN – English" class="on" aria-current="true">EN</a><a href="virtual-3080.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="virtual-3080.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="virtual-rtx-3080-test-the-whole-system-without-a-gpu">Virtual RTX 3080: test the whole system without a GPU</h1>
+    <article class="card lesson-body doc-body">
+<p>This kit installs Local AI Lab on a Linux machine that has Docker but no NVIDIA card, and lets every part run as if an RTX 3080 (10 GB) were present: the gateway loads and swaps models, the console shows video memory and GPU load, the test runner measures speed, context and quality, the report builder, the progress page and the Git versioner work on the results. <strong>No model is real</strong>: answers are fixed texts and all numbers are simulated. Use it to learn the system, to rehearse an installation, or to test changes before running them on the real card. Never install it on a computer with a real NVIDIA GPU.</p>
+<h2 id="what-is-simulated">What is simulated</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Part</th><th>Stand-in</th><th>File</th></tr></thead>
+<tbody>
+<tr><td>NVIDIA driver in Docker (<code>--gpus all</code>, <code>gpus: all</code>)</td><td>a hook with the name Docker looks for; it copies the virtual <code>nvidia-smi</code> into every GPU container</td><td><code>nvidia-container-runtime-hook</code></td></tr>
+<tr><td><code>nvidia-smi</code></td><td>"NVIDIA GeForce RTX 3080, 10240 MiB"; used memory and load come from the running virtual model servers</td><td><code>nvidia-smi</code></td></tr>
+<tr><td>llama.cpp <code>llama-server</code>, <code>llama-bench</code> and <code>llama-swap</code></td><td>one Python program with the same paths and APIs (<code>/health</code>, <code>/v1/chat/completions</code> with <code>timings</code>, <code>/tokenize</code>, <code>/slots</code>, <code>/metrics</code>, <code>/v1/embeddings</code>, <code>/v1/models</code>, <code>/running</code>, unload); video memory = file size + KV cache for the context and cache type; a model that does not fit stops with "out of memory" like the real one</td><td><code>fake_llama.py</code>, <code>Dockerfile</code>, <code>curl</code></td></tr>
+<tr><td>model files</td><td>sparse <code>.gguf</code> files with plausible sizes (they take almost no disk)</td><td><code>make_models.py</code></td></tr>
+</tbody>
+</table></div>
+<h2 id="steps-linux-docker-engine-as-root-or-with-sudo">Steps (Linux, Docker Engine, as root or with sudo)</h2>
+<pre><code># 1. the virtual driver: Docker must find it when it starts
+sudo cp tests/virtual-3080/nvidia-container-runtime-hook tests/virtual-3080/nvidia-smi /usr/local/bin/
+sudo systemctl restart docker
+docker run --rm --gpus all python:3.12-slim nvidia-smi      # must print the RTX 3080 line
+
+# 2. the system, as in the guide (Linux path)
+python3 scripts/install.py doctor
+python3 scripts/install.py init                              # then set MODEL_DIR in .env to any empty folder
+docker build -t local/ai-server-llama-swap:260 tests/virtual-3080    # the virtual gateway instead of the CUDA builds
+docker run --rm -v llm-models-fast:/models -v &quot;$PWD&quot;:/lab:ro python:3.12-slim \
+    python /lab/tests/virtual-3080/make_models.py /lab /models          # the virtual model files
+python3 scripts/install.py build --no-gpu                    # console and versioner (the CUDA images are not needed)
+python3 scripts/install.py up
+python3 scripts/install.py git
+python3 scripts/install.py verify                            # every line [ok]
+
+# 3. the tests
+docker compose --profile bench up -d --build bench-runner</code></pre>
+<p>Then open <a href="http://localhost:8766/" rel="noopener">http://localhost:8766/</a> (console), <a href="http://localhost:8766/report/progress.html" rel="noopener">http://localhost:8766/report/progress.html</a> (test progress) and <a href="http://localhost:3010/" rel="noopener">http://localhost:3010/</a> (versions).</p>
+<p>Test report of 10.10.2026 (in Russian): <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/tests/virtual-3080/REPORT.ru.md">test report of 10.10.2026, in Russian (GitHub)</a>.</p>
+<p><strong>To remove it:</strong> <code>docker compose --profile bench --profile gateway down</code>, <code>docker volume rm llm-models-fast</code>, delete <code>/usr/local/bin/nvidia-container-runtime-hook</code> and <code>/usr/local/bin/nvidia-smi</code>, restart Docker.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/tests/virtual-3080/README.md" rel="noopener">Source text on GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>JavaScript is required for the menu, the theme switch and the footer.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

@@ -22,3 +22,7 @@
 .page-source { margin: 0 0 .5rem; }
 .noscript { max-width: 960px; margin: 0 auto 1rem; padding: 0 1rem; color: var(--muted); font-size: .85rem; }
 .more-sheet[hidden] { display: none; }
+.doc-cards { align-items: stretch; }
+.doc-cards .doc-card { margin: 0; }
+.doc-card h3 { margin-top: 0; }
+.doc-meta { font-size: .9rem; color: var(--muted); }

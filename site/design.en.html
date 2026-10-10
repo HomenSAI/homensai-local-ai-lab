@@ -1,0 +1,69 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Why it was built this way — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="design.en.html">
+  <link rel="alternate" hreflang="ru" href="design.ru.html">
+  <link rel="alternate" hreflang="de" href="design.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Main navigation">
+      <ul class="nav-main"><li><a class="nav-link" href="index.html">Home</a></li><li><a class="nav-link" href="install.en.html">Installation</a></li><li><a class="nav-link" href="docs.en.html" aria-current="page">Documentation</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Results</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.en.html">Contact</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Language"><a href="design.en.html" lang="en" hreflang="en" aria-label="EN – English" class="on" aria-current="true">EN</a><a href="design.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="design.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="why-it-was-built-this-way">Why it was built this way</h1>
+    <article class="card lesson-body doc-body">
+<p>Each decision below lists the reason and where the value lives. Values marked <em>measured</em> come from our own runs on an RTX 3080 (10 GB) and are meant to be re-measured on other hardware.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Decision</th><th>Why</th><th>Where</th></tr></thead>
+<tbody>
+<tr><td><strong>One model in video memory at a time</strong></td><td>10 GB hold one 7-27B model with a long context; two models would force tiny contexts or CPU fallback. llama-swap unloads the old model before it loads the next</td><td><code>config/llama-swap.yaml</code> (<code>ttl</code>, <code>unloadTimeout</code>)</td></tr>
+<tr><td><strong>llama-swap in front of llama.cpp</strong></td><td>gives an OpenAI-compatible API on one port, loads models on demand and unloads them after an idle time, so any chat client or AI assistant can use the server without knowing about processes</td><td><code>Dockerfile.llama-swap</code>, port 8080</td></tr>
+<tr><td><strong>Pinned versions and checksums</strong></td><td>llama.cpp commits, the llama-swap release (SHA-256) and the base image digest are fixed so that a result can be reproduced months later</td><td><code>.env</code>, <code>Dockerfile.*</code></td></tr>
+<tr><td><strong>Models in a Docker (ext4) volume</strong></td><td>a Windows-drive bind over WSL read at ~22-45 MB/s and a cold load took 6-14 minutes; from the volume it takes 11-29 seconds (<em>measured</em>)</td><td><code>docker-compose.yml</code>, <code>llm-models-fast</code></td></tr>
+<tr><td><strong>Context sizes taken from tests, not from the model card</strong></td><td>the profile context is the largest window at which the model started, found 3 of 3 hidden facts at 80% fill and kept its speed on the GPU (<em>measured</em>, KV cache f16 / q8 / q4)</td><td><code>config/llama-swap.yaml</code>, stage "Maximum stable context"</td></tr>
+<tr><td><strong>GPU only, 64K minimum for the later stages</strong></td><td>spilling into RAM gives 1-3 tokens/s, which is not a working server; the author's rule keeps the comparison honest</td><td><a href="methodology.en.html">How the results were obtained</a></td></tr>
+<tr><td><strong>No built-in LLM judge</strong></td><td>a model grading models adds an unmeasured error. Checkers are deterministic (computed answers, exact match, running tests); a supervising AI reviews the results instead and its review is written down</td><td><a href="operator.en.html">Running the server with an AI supervisor (Claude or ChatGPT)</a></td></tr>
+<tr><td><strong>An AI assistant as the operator, no plug-in</strong></td><td>the server exposes only normal interfaces (shell, REST, OpenAI API, files). Any assistant that can run commands can operate it, and the server works without one</td><td><a href="operator.en.html">Running the server with an AI supervisor (Claude or ChatGPT)</a></td></tr>
+<tr><td><strong>Console and report on HomenS.AI Style</strong></td><td>one design for all HomenS.AI projects: colours, fonts, logo, header, footer and both themes come from the style package (<code>console/style/</code>, version 1.6.0, pinned by <code>&lt;meta name=&quot;homensai-style&quot;&gt;</code>); <code>app.css</code> and <code>report.css</code> hold only the layout and use the style tokens; no external addresses</td><td><code>console/style/</code>, <code>console/app.css</code>, <code>report/report.css</code></td></tr>
+<tr><td><strong>Console, builder and versioner use only the Python standard library</strong></td><td>no dependency to patch or audit, small attack surface, the images build in seconds</td><td><code>console/</code>, <code>scripts/</code></td></tr>
+<tr><td><strong>Results are never overwritten</strong></td><td>different tests are kept apart; the SQLite archive keeps history; Git keeps every version of the reports (<code>vNNNN</code>, <code>stage-&lt;id&gt;-done</code>, <code>final-&lt;date&gt;</code>) so that any past report can be restored</td><td><code>scripts/build_live_report.py</code>, <code>scripts/versioner.py</code></td></tr>
+<tr><td><strong>File-based result protocol</strong></td><td>a test tool only has to append JSON lines and a marker to a log; the plan, progress bar and time-left estimate come from the files, so the tools stay replaceable</td><td><a href="results-format.en.html">Result files and stage plan</a></td></tr>
+<tr><td><strong>Video generation is a separate project</strong></td><td>video needs the whole GPU, has its own release cycle, its own 10 GB of model files and its own audience</td><td>Video Studio repository</td></tr>
+<tr><td><strong>Interface text in one language, translated at run time</strong></td><td>no build step; user data is excluded from translation so prompts and answers stay exact; <code>scripts/check_i18n.js</code> finds gaps</td><td><code>console/i18n*.js</code></td></tr>
+<tr><td><strong>Local binding by default, a guard in front of every request, an optional password</strong></td><td>the tool is for a trusted PC or LAN. The console accepts only safe <code>Host</code> names and same-origin <code>application/json</code> POST requests, so a web page opened in the operator's browser cannot start or stop models; <code>AI_CONSOLE_PASSWORD</code> adds HTTP Basic authentication for LAN use. It is still not a substitute for a firewall: never expose it to the internet</td><td><code>console/security.py</code>, <a href="security.en.html">Security policy</a></td></tr>
+<tr><td><strong>Docker socket mounted into the console</strong></td><td>the console must see which containers hold the GPU and whether the video container runs, and it reads llama-server status inside a container with <code>docker exec</code>. The <code>read_only</code> flag is not a security boundary and the socket is root-equivalent, so the console only ever sends one fixed kind of command (curl against <code>127.0.0.1</code> status endpoints of a plain-named container), runs with all capabilities dropped and <code>no-new-privileges</code>, and the password and host checks guard every call. Anyone who gets full control of the console gets Docker</td><td><code>docker-compose.yml</code>, <code>console/container_server.py</code></td></tr>
+<tr><td><strong>Results CC BY-NC 4.0, code PolyForm Noncommercial 1.0.0</strong></td><td>results and code may travel freely for noncommercial use, always with credit to the author; commercial use needs an agreement with the author</td><td><code>legal/</code></td></tr>
+</tbody>
+</table></div>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/DESIGN.en.md" rel="noopener">Source text on GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>JavaScript is required for the menu, the theme switch and the footer.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

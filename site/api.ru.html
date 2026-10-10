@@ -1,0 +1,104 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>HTTP-интерфейсы (для операторов и ИИ-супервизоров) — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="api.en.html">
+  <link rel="alternate" hreflang="ru" href="api.ru.html">
+  <link rel="alternate" hreflang="de" href="api.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти к содержанию</a>
+  <header class="topbar">
+    <a class="brand" href="index.ru.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Основная навигация">
+      <ul class="nav-main"><li><a class="nav-link" href="index.ru.html">Главная</a></li><li><a class="nav-link" href="install.ru.html">Установка</a></li><li><a class="nav-link" href="docs.ru.html" aria-current="page">Документация</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Результаты</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.ru.html">Контакт</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Язык"><a href="api.en.html" lang="en" hreflang="en" aria-label="EN – English">EN</a><a href="api.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="api.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский" class="on" aria-current="true">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="http-интерфейсы-для-операторов-и-ии-супервизоров">HTTP-интерфейсы (для операторов и ИИ-супервизоров)</h1>
+    <nav class="card help-toc doc-toc" aria-label="Содержание"><h2>Содержание</h2><ol><li><a href="#правила-которым-должен-следовать-каждый-запрос-к-консоли">Правила, которым должен следовать каждый запрос к консоли</a></li><li><a href="#шлюз--совместимый-с-openai-порт-8080">Шлюз — совместимый с OpenAI, порт 8080</a></li><li><a href="#консоль--порт-8766">Консоль — порт 8766</a></li><li><a href="#данные-отчёта">Данные отчёта</a></li><li><a href="#файлы-которые-пишет-оператор">Файлы, которые пишет оператор</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Всё, что описано ниже, — обычный HTTP на локальной машине. У шлюза нет аутентификации: используйте только <code>127.0.0.1</code> или доверенную локальную сеть. Замените <code>localhost</code> на LAN-адрес, если вы открыли консоль в сеть (см. <code>AI_CONSOLE_BIND_IP</code>).</p>
+<h2 id="правила-которым-должен-следовать-каждый-запрос-к-консоли">Правила, которым должен следовать каждый запрос к консоли</h2>
+<p>Консоль проверяет каждый запрос (см. <a href="security.ru.html">Политика безопасности</a>); скрипт или ИИ-супервизор обязан их соблюдать:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Правило</th><th>Подробности</th></tr></thead>
+<tbody>
+<tr><td>Заголовок <code>Host</code></td><td><code>localhost</code>, IP-адрес или имя из <code>AI_CONSOLE_ALLOWED_HOSTS</code>; иначе <code>421</code>. <code>/health</code> не проверяется</td></tr>
+<tr><td>Пароль</td><td>Если задан <code>AI_CONSOLE_PASSWORD</code>, отправляйте учётные данные HTTP Basic (имя пользователя любое): <code>curl -u any:PASSWORD ...</code>; иначе <code>401</code>. <code>/health</code> не проверяется</td></tr>
+<tr><td>Тип содержимого <code>POST</code></td><td><strong>Всегда</strong> <code>Content-Type: application/json</code>, в том числе для вызовов без тела (<code>/api/timer/cancel</code>); иначе <code>415</code>. С <code>curl</code> используйте <code>-H &quot;Content-Type: application/json&quot;</code></td></tr>
+<tr><td>Источник <code>POST</code></td><td>Скрипты не отправляют заголовок <code>Origin</code>, и это нормально. Запрос браузера с другого источника получает <code>403</code></td></tr>
+<tr><td>Тело</td><td>Объект JSON. Пустое или слишком большое: <code>413</code>; недопустимый JSON или не объект: <code>400</code></td></tr>
+<tr><td>Методы</td><td>Только <code>GET</code> и <code>POST</code> (<code>HEAD</code>, <code>OPTIONS</code> отвечают <code>501</code>); консоль никогда не отправляет заголовки CORS</td></tr>
+</tbody>
+</table></div>
+<p>Каждый ответ содержит <code>Content-Security-Policy</code>, <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code> и <code>Referrer-Policy: no-referrer</code>. Ответы с ошибкой имеют вид <code>{&quot;error&quot;: &quot;...&quot;}</code>.</p>
+<pre><code>curl -X POST http://localhost:8766/api/start -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;model_key&quot;:&quot;MiniCPM5-2B-Q8_0&quot;}&#x27;</code></pre>
+<h2 id="шлюз--совместимый-с-openai-порт-8080">Шлюз — совместимый с OpenAI, порт 8080</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Метод и путь</th><th>Назначение</th></tr></thead>
+<tbody>
+<tr><td><code>GET /v1/models</code></td><td>профили моделей из <code>config/llama-swap.yaml</code></td></tr>
+<tr><td><code>POST /v1/chat/completions</code></td><td>чат; <code>&quot;model&quot;</code> — имя профиля; первый запрос к модели загружает её (до минуты). Ответ содержит <code>usage</code> и, от llama.cpp, <code>timings</code> (<code>prompt_per_second</code>, <code>predicted_per_second</code>, <code>prompt_n</code>, <code>predicted_n</code>)</td></tr>
+<tr><td><code>POST /v1/embeddings</code></td><td>эмбеддинги с профилями <code>Qwen3-Embedding-*</code></td></tr>
+<tr><td><code>GET /running</code></td><td>модели, загруженные сейчас: <code>{&quot;running&quot;: [...]}</code></td></tr>
+<tr><td><code>POST /api/models/unload</code></td><td>выгрузить все модели; <code>POST /api/models/unload/&lt;model&gt;</code> выгружает одну</td></tr>
+<tr><td><code>GET /health</code></td><td>состояние шлюза</td></tr>
+</tbody>
+</table></div>
+<p>Подойдёт любой OpenAI SDK с <code>base_url=&quot;http://localhost:8080/v1&quot;</code> и произвольным ключом API. Чтобы отключить размышление у моделей, которые его поддерживают, добавьте в запрос <code>&quot;chat_template_kwargs&quot;: {&quot;enable_thinking&quot;: false}</code>.</p>
+<pre><code>curl http://localhost:8080/v1/chat/completions -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;model&quot;:&quot;MiniCPM5-2B-Q8_0&quot;,&quot;messages&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;Say hello in one word&quot;}],&quot;max_tokens&quot;:16,&quot;temperature&quot;:0}&#x27;</code></pre>
+<h2 id="консоль--порт-8766">Консоль — порт 8766</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Метод и путь</th><th>Назначение</th></tr></thead>
+<tbody>
+<tr><td><code>GET /health</code></td><td><code>{&quot;ok&quot;: true}</code> (не требует пароля и известного <code>Host</code>)</td></tr>
+<tr><td><code>GET /api/version</code></td><td><code>{&quot;name&quot;, &quot;version&quot;, &quot;author&quot;, &quot;url&quot;, &quot;repo&quot;}</code></td></tr>
+<tr><td><code>GET /api/status</code></td><td>состояние Docker и GPU, модели в памяти (<code>active_models</code>), контейнеры <code>host_ai</code>, <code>issues</code> (в исправной системе должен быть пуст), выполняемое задание</td></tr>
+<tr><td><code>GET /api/models</code></td><td>каталог с наличием файла (<code>exists</code>), размером, контекстом, квантованием, настроенными параметрами</td></tr>
+<tr><td><code>POST /api/start</code></td><td>тело <code>{&quot;model_key&quot;: &quot;&lt;profile&gt;&quot;}</code>: загружает модель в видеопамять; возвращает <code>{&quot;job_id&quot;}</code>; опрашивайте <code>GET /api/jobs/&lt;job_id&gt;</code>, пока <code>status</code> не станет <code>complete</code> или <code>error</code></td></tr>
+<tr><td><code>POST /api/unload</code></td><td>тело <code>{&quot;model_key&quot;: &quot;&lt;profile&gt;&quot;}</code>: выгружает одну модель</td></tr>
+<tr><td><code>POST /api/chat</code></td><td>тело <code>{&quot;model_key&quot;, &quot;payload&quot;: {OpenAI chat request}}</code>: то же, что шлюз, но с защитой видеопамяти</td></tr>
+<tr><td><code>GET /api/timer</code>, <code>POST /api/timer</code> <code>{&quot;seconds&quot;: 900}</code>, <code>POST /api/timer/cancel</code></td><td>таймер выгрузки всех моделей</td></tr>
+<tr><td><code>GET /api/tests</code></td><td>все результаты тестов, сведённые по моделям, план этапов (<code>plan.stages</code>, <code>plan.overall</code>), список наборов тестов; именно это показывает таблица консоли</td></tr>
+<tr><td><code>GET /report/</code></td><td>страница отчёта; <code>GET /report/live-data.json</code> — её данные</td></tr>
+<tr><td><code>GET /legal/&lt;file&gt;</code></td><td>файлы лицензий и уведомлений</td></tr>
+</tbody>
+</table></div>
+<p><code>/api/start</code> и <code>/api/chat</code> отвечают <code>409</code>, пока контейнер Video Studio держит видеокарту.</p>
+<h2 id="данные-отчёта">Данные отчёта</h2>
+<ul>
+<li><code>report/live-data.json</code> — каждые 15 секунд записывается сборщиком отчёта: <code>entries</code> (по одной на модель с блоками <code>general</code>, <code>german</code>, <code>context</code>, <code>stem</code>, <code>chem</code>, <code>code20</code>), <code>plan</code> (этапы, прогресс, оставшееся время), <code>suites</code>, <code>status</code>.</li>
+<li><code>results-db/llm-results.sqlite</code> — архив (<code>raw_rows</code>, <code>results</code>, <code>history</code>, <code>model_scores</code>); открывайте его только для чтения.</li>
+<li>Git: локальный Gitea (<code>http://localhost:3010/</code>) хранит каждую версию отчёта в виде тегов <code>vNNNN</code>, <code>stage-&lt;id&gt;-done</code>, <code>final-&lt;date&gt;</code>.</li>
+</ul>
+<h2 id="файлы-которые-пишет-оператор">Файлы, которые пишет оператор</h2>
+<p>Инструменты тестов пишут <code>bench_results/results_*.jsonl</code> и <code>bench_results/&lt;stage&gt;.log</code>: см. <a href="results-format.ru.html">Файлы результатов и план этапов</a>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.ru.html">← Документация</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/API.ru.md" rel="noopener">Исходный текст на GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>Для меню, переключения темы и подвала нужен JavaScript.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

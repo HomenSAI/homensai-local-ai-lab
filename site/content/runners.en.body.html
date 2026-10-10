@@ -1,0 +1,35 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="benchmarks-the-test-runners">Benchmarks: the test runners</h1>
+    <nav class="card help-toc doc-toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#tests-scripts-and-result-files">Tests, scripts and result files</a></li><li><a href="#run-everything-in-docker">Run (everything in Docker)</a></li><li><a href="#differences-from-the-published-run">Differences from the published run</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>These scripts produced the published results of <a href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">rtx3080-local-ai-benchmarks</a> (23 models on an RTX 3080 / 10 GB, 2026-09-29 – 2026-10-06). That repository holds only the results; the code to repeat the tests is here.</p>
+<h2 id="tests-scripts-and-result-files">Tests, scripts and result files</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Test (folder in the results repository)</th><th>Phase</th><th>Runner</th><th>Tasks</th><th>Result file in <code>bench_results/</code></th></tr></thead>
+<tbody>
+<tr><td>01-general-quality</td><td><code>general</code></td><td><code>bench_top.py</code> (model list <code>TOP</code>) + <code>bench_all.py</code></td><td><code>qtasks.py</code>, 3 code tasks from <code>coding_tasks.py</code>, pictures from <code>make_images.py</code></td><td><code>results_all.jsonl</code></td></tr>
+<tr><td>02-german-passive</td><td><code>german</code>, <code>german_fix</code></td><td><code>german_all.py</code>, <code>german_fix.py</code> (re-run of empty answers), <code>qa_bench.py</code></td><td><code>qa_tasks.py</code></td><td><code>results_german.jsonl</code>, <code>results_german_fix.jsonl</code></td></tr>
+<tr><td>03-max-context</td><td><code>context</code></td><td><code>bench_ctx.py</code> + <code>mneedle.py</code> (3 hidden facts at 80 % fill)</td><td>filler text from the Python standard library</td><td><code>results_ctx.jsonl</code>, <code>results_ctx_trials.jsonl</code></td></tr>
+<tr><td>04-soak-reliability</td><td><code>soak</code></td><td><code>soak.py</code> (through the gateway on port 8080)</td><td>profiles of <code>config/llama-swap.yaml</code></td><td><code>results_soak.jsonl</code></td></tr>
+<tr><td>05-math-physics-grade11</td><td><code>stem</code></td><td><code>bench_stem.py</code></td><td><code>stem_tasks.py</code></td><td><code>results_stem.jsonl</code></td></tr>
+<tr><td>06-chemistry-grade11</td><td><code>chem</code></td><td><code>bench_chem.py</code></td><td><code>chem_tasks.py</code></td><td><code>results_chem.jsonl</code></td></tr>
+<tr><td>07-coding-20</td><td><code>code20</code></td><td><code>bench_code20.py</code>, tests in a sandbox without network (<code>code_eval_harness.py</code>)</td><td><code>coding_tasks.py</code></td><td><code>results_code20.jsonl</code></td></tr>
+<tr><td>08-accelerators-embeddings</td><td><code>accel</code></td><td><code>bench_accel.py</code></td><td>speculative-decoding profiles of <code>config/llama-swap.yaml</code>, embedding models</td><td><code>results_accel.jsonl</code></td></tr>
+</tbody>
+</table></div>
+<p><code>bench_top.py</code> and <code>bench_all.py</code> hold the shared parts: the model list, starting a model in its own container (<code>bench-srv</code>, port 8090, image <code>local/ai-server-llama-swap:260</code>, models from the Docker volume <code>llm-models-fast</code>), the RAM guard and the checkers.
+After the context test, <code>gen_profiles_from_ctx.py</code> and <code>finalize_profiles.py</code> turn the measured windows into gateway profiles (<code>config/llama-swap-ctx.yaml</code> → <code>config/llama-swap-final.yaml</code>, candidates that are not live until you copy them); <code>exclude_not_gpu.md</code> lists the models removed by the 64K rule.</p>
+<h2 id="run-everything-in-docker">Run (everything in Docker)</h2>
+<p>Build the gateway images first (<code>docs/INSTALL.*</code>, sections on the build), put the models into the volume <code>llm-models-fast</code> and fill the paths in <code>TOP</code> of <code>bench_top.py</code>. Then:</p>
+<pre><code>docker compose --profile bench up -d --build bench-runner</code></pre>
+<p>The runner copies these scripts into <code>bench_results/</code>, draws the vision pictures and runs the phases in the order of <code>BENCH_PHASES</code> (default <code>general german context german_fix accel stem chem code20</code>; add <code>soak</code> to test the gateway profiles). Each phase writes its log (<code>bench_full.log</code>, <code>bench_ctx.log</code>, ...) with the finish marker the console expects, so the console shows the stage, the progress bar and the time left. Every phase skips finished models, so a restart continues where it stopped. To run other phases: <code>BENCH_PHASES=&quot;stem chem&quot;</code> in <code>.env</code>, delete <code>bench_results/run_all.log</code> and start the runner again. Stop it with <code>docker compose --profile bench stop bench-runner</code>.</p>
+<p>The runner controls Docker on this PC through the Docker socket (it starts and stops the model containers and the gateway): start it only for a test run.</p>
+<h2 id="differences-from-the-published-run">Differences from the published run</h2>
+<ul>
+<li>The vision pictures of the published run were not kept; <code>make_images.py</code> redraws the same content (shapes, order code, 7 dots), so vision scores are comparable but not identical.</li>
+<li>The code sandbox now uses the plain <code>python:3.12-slim</code> image (<code>SANDBOX_IMAGE</code>) and copies the files into it, so it works inside the runner container.</li>
+<li>The filler text of the context test is rebuilt from the Python standard library of the runner image; results can differ slightly between Python versions.</li>
+<li>Tested in the cloud without a GPU: the runner container, the phases, the logs and markers, the code sandbox (reference solutions pass, a broken one fails) and the pictures. A full run needs the NVIDIA GPU and the models.</li>
+</ul>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/benchmarks/README.md" rel="noopener">Source text on GitHub</a></p>

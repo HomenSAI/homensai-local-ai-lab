@@ -1,0 +1,72 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Hier beginnen: der Prompt für Ihren KI-Assistenten — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="prompt.en.html">
+  <link rel="alternate" hreflang="ru" href="prompt.ru.html">
+  <link rel="alternate" hreflang="de" href="prompt.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+  <header class="topbar">
+    <a class="brand" href="index.de.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Hauptnavigation">
+      <ul class="nav-main"><li><a class="nav-link" href="index.de.html">Start</a></li><li><a class="nav-link" href="install.de.html">Installation</a></li><li><a class="nav-link" href="docs.de.html" aria-current="page">Dokumentation</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Ergebnisse</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.de.html">Kontakt</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Sprache"><a href="prompt.en.html" lang="en" hreflang="en" aria-label="EN – English">EN</a><a href="prompt.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch" class="on" aria-current="true">DE</a><a href="prompt.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1>Hier beginnen: der Prompt für Ihren KI-Assistenten</h1>
+    <article class="card lesson-body doc-body">
+<p><strong>Brauchen Sie das?</strong> Nein: Der Server lässt sich mit sechs Befehlen selbst installieren (README, „Schnellstart“). Ein Assistent ist eine Erleichterung: Er führt dieselben Befehle aus, wählt und lädt Modelle, liest bei Fehlern die Logs und führt später Ihre Tests aus und prüft sie.</p>
+<p><strong>So funktioniert es.</strong> Sie öffnen einen KI-Assistenten, <strong>der Befehle auf Ihrem PC ausführen kann</strong> (Claude Code mit Sonnet oder Opus, ein ChatGPT-/Codex-Agent oder ein anderer Coding-Agent), zeigen ihm dieses Repository (klonen oder den Ordner geben) und fügen den folgenden Prompt ein. Der Assistent baut alles genau wie der Autor – Docker, die Container, den KI-Server, die Konsole, die Berichte –, prüft es und endet mit der Meldung <strong>„Alles bereit – jetzt testen“</strong> samt Statustabelle. Danach führt und überwacht er auch Ihre Tests (<a href="operator.de.html">Betrieb des Servers mit einem KI-Supervisor (Claude oder ChatGPT)</a>).</p>
+<p>Ein gewöhnlicher Browser-Chat (ohne Zugriff auf Ihren Rechner) kann das nicht: Er kann die Schritte nur erklären.</p>
+<p><strong>Prompt – alles aus dem Kasten kopieren:</strong></p>
+<pre><code>Du bist Installateur und Supervisor des Projekts in diesem Ordner („Local AI Server“: ein llama.cpp/llama-swap-Modellserver für eine NVIDIA-GPU, eine Web-Konsole, Testberichte mit Git-Historie). Baue ihn auf DIESEM Computer genau so, wie der Autor es getan hat, und melde mir danach, dass er testbereit ist.
+
+Lies zuerst: AGENTS.md (oder CLAUDE.md), docs/INSTALL.de.md, docs/AI_OPERATOR.de.md, docs/API.md.
+
+Arbeite in dieser Reihenfolge und berichte nach jedem Schritt kurz:
+0. Voraussetzungen. Prüfe: Windows 10/11 (oder Linux mit NVIDIA Container Toolkit), NVIDIA-GPU und -Treiber (`nvidia-smi`), WSL2, laufendes und NICHT pausiertes Docker Desktop, Docker Compose v2. Unter Windows wird sonst nichts gebraucht: verwende den PowerShell-Installer `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 &lt;Schritt&gt;` (installiere unter Windows kein Python, Git oder Node). Unter Linux `python scripts/install.py &lt;Schritt&gt;` (Python 3.10+). Unten bedeutet `install &lt;Schritt&gt;` den Installer dieses Systems. Fehlt etwas, sage mir was und wie du es installieren würdest (z. B. `wsl --install`, `winget install Docker.Desktop`) und WARTE auf mein „Ja“: Systemsoftware und Neustarts entscheide ich.
+1. `install doctor` – behebe alles, was gemeldet wird (belegte Ports, GPU in Docker nicht sichtbar, wenig Speicher); frage mich, wenn die Lösung nicht offensichtlich ist. Das 5,6-GB-CUDA-Image lädt er nicht von selbst: frage mich vor `doctor --pull` (`-Pull` in PowerShell). Hat der PC keine NVIDIA-GPU, sage es mir und verwende `--no-gpu` (`-NoGpu`) für doctor / build / up / verify.
+2. `install init` – frage mich dann nach: dem Ordner für Modelldateien (MODEL_DIR) und ob die Konsole von anderen Geräten im Netzwerk erreichbar sein soll (AI_CONSOLE_BIND_IP; Standard: nur dieser PC). Schreibe die Antworten in .env. Soll die Konsole von anderen Geräten erreichbar sein, frage mich nach einem Passwort und trage es in `AI_CONSOLE_PASSWORD` in .env ein (nie dorthin, was in Git landet).
+3. Modelle: Frage, welche Modelle ich möchte (Standard für den ersten Lauf: das kleine Testmodell MiniCPM5-2B-Q8_0, etwa 2,7 GB). Lade nur aus den in MODELS.md genannten Quellen und Revisionen, prüfe SHA-256, lege die Dateien wie in Abschnitt 4.5 von docs/INSTALL.de.md ins Docker-Volume. Frage mich vor jedem Download über 1 GB. Erfinde keine Quellen.
+4. `install build` (beim ersten Mal 15–40 Minuten), `install up`, dann `install git` (der lokale Git-Server, der jede Version der Berichte aufbewahrt).
+5. `install verify` – jede Zeile muss [ok] sein. Beweise dann, dass die Kette funktioniert: Lade das Testmodell über die Konsolen-API und hole über das Gateway eine echte Antwort; zeige mir Antwort, Geschwindigkeit (Tokens/s) und belegten Videospeicher.
+6. Optional und nur auf meine Bitte: Open WebUI, Video Studio (eigenes Repository).
+
+Regeln: ein Modell gleichzeitig im Videospeicher; öffne die Ports 8766/8080/3010 nie ins Internet; schreibe keine Geheimnisse oder personenbezogenen Daten in Dateien, die in Git landen; frage vor jedem Löschen; scheitert ein Befehl, lies das Log (`docker logs &lt;Container&gt;`), behebe die Ursache und wiederhole nicht blind.
+
+BEENDE mit genau dieser Meldung (aus echten Prüfungen ausfüllen, nicht raten):
+„Alles bereit – jetzt testen.
+ Konsole: http://localhost:8766/   Bericht: http://localhost:8766/report/   Gateway-API: http://localhost:8080/v1
+ Version: &lt;aus /api/version&gt;   GPU: &lt;Name, Speicher&gt;   Modelle: &lt;Liste&gt;   verify: &lt;n von n ok&gt;
+ Test: Modell &lt;Name&gt; antwortete „&lt;Antwort&gt;“ mit &lt;Tokens/s&gt; Tok/s.
+ Warnungen: &lt;alles, was nicht perfekt ist, oder „keine“&gt;.
+ Als Nächstes: sagen Sie mir, welche Tests auf welchen Modellen laufen sollen (siehe docs/AI_OPERATOR.de.md), ich führe sie aus und prüfe sie.“</code></pre>
+    </article>
+    <p class="doc-meta"><a href="docs.de.html">← Dokumentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/PROMPT_FOR_AI.md" rel="noopener">Quelltext auf GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>Für Menü, Designwechsel und Fußzeile wird JavaScript benötigt.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

@@ -54,7 +54,7 @@ python scripts/install.py verify
 | Задача | Сами | Что добавляет ИИ-ассистент |
 |---|---|---|
 | Установить | шесть команд выше, по одной | выполнит их за вас и исправит то, что покажут `doctor` / `verify` |
-| Модели | скачать файлы из [MODELS.md](MODELS.md), положить в том Docker (руководство, раздел 4.5) | подберёт модели под вашу видеокарту, проверит SHA-256 |
+| Модели | скачать файлы из [MODELS.ru.md](MODELS.ru.md), положить в том Docker (руководство, раздел 4.5) | подберёт модели под вашу видеокарту, проверит SHA-256 |
 | Пользоваться | консоль в браузере (ниже) | — |
 | Запустить тесты | одна команда (ниже) | следит за прогоном, проверяет правдоподобность чисел, повторяет сомнительные прогоны |
 | Что-то не работает | руководство, раздел 11 «Неполадки» | читает журналы контейнеров и устраняет причину |
@@ -70,20 +70,20 @@ python scripts/install.py verify
 | Ход тестов (этапы, текущая модель, оставшееся время) | http://localhost:8766/report/progress.html |
 | API, совместимый с OpenAI, для других программ (Open WebUI, скрипты, редакторы кода) | http://localhost:8080/v1 |
 | Все версии отчётов (локальный Git) | http://localhost:3010/ (вход — в `secrets/gitea-admin.txt`) |
-| Запустить тесты | `docker compose --profile bench up -d --build bench-runner` ([benchmarks/README.md](benchmarks/README.md)) |
+| Запустить тесты | `docker compose --profile bench up -d --build bench-runner` ([benchmarks/README.md](benchmarks/README.ru.md)) |
 
-**Попробовать без видеокарты:** [tests/virtual-3080/](tests/virtual-3080/README.md) ставит всю систему на Linux-машину с Docker и виртуальной RTX 3080 (условные числа) — чтобы освоить систему или проверить изменения.
+**Попробовать без видеокарты:** [tests/virtual-3080/](tests/virtual-3080/README.ru.md) ставит всю систему на Linux-машину с Docker и виртуальной RTX 3080 (условные числа) — чтобы освоить систему или проверить изменения.
 
 ## Документация
 
-Та же документация в виде сайта на HomenS.AI Style (меню, переключатель языков, светлая и тёмная тема): <https://homensai.github.io/homensai-local-ai-lab/README.ru.html>. Страницы собираются из этих файлов Markdown командой `python scripts/build_site.py`.
+Та же документация в виде сайта на ядре HomenS.AI Style (меню, кнопки EN | DE | RU, светлая и тёмная тема, каждая страница на трёх языках): <https://homensai.github.io/homensai-local-ai-lab/site/index.ru.html>. Страницы собираются из этих файлов Markdown командой `python scripts/build_site.py` (нужна копия ядра стиля, см. CONTRIBUTING).
 
 | | English | Русский | Deutsch |
 |---|---|---|---|
 | Полное руководство по установке | [INSTALL.en.md](docs/INSTALL.en.md) | [INSTALL.ru.md](docs/INSTALL.ru.md) | [INSTALL.de.md](docs/INSTALL.de.md) |
-| Обзор | [README.md](README.md) | этот файл | [README.de.md](README.de.md) |
+| Обзор | [README.ru.md](README.ru.md) | этот файл | [README.de.md](README.de.md) |
 
-Ещё: [почему сделано так](docs/DESIGN.ru.md) · [HTTP-интерфейсы](docs/API.md) · [формат файлов результатов](docs/RESULTS_FORMAT.md) · [происхождение кода](PROVENANCE.md) · [тексты страницы репозитория](docs/GITHUB_REPO.md) · [архитектура](docs/ARCHITECTURE.md) · [политика безопасности](SECURITY.md) · [участие](CONTRIBUTING.md) · [журнал изменений](CHANGELOG.md) · [список моделей](MODELS.md) · [файлы лицензий](legal/)
+Ещё: [почему сделано так](docs/DESIGN.ru.md) · [HTTP-интерфейсы](docs/API.ru.md) · [формат файлов результатов](docs/RESULTS_FORMAT.ru.md) · [происхождение кода](PROVENANCE.md) · [тексты страницы репозитория](docs/GITHUB_REPO.md) · [архитектура](docs/ARCHITECTURE.ru.md) · [политика безопасности](SECURITY.ru.md) · [участие](CONTRIBUTING.md) · [журнал изменений](CHANGELOG.md) · [список моделей](MODELS.ru.md) · [файлы лицензий](legal/)
 
 ## Требования одной строкой
 
@@ -91,7 +91,7 @@ python scripts/install.py verify
 
 ## Что не входит
 
-Веса моделей (скачайте сами и соблюдайте их лицензии), ваши собственные результаты тестов (`bench_results/`, появляются при прогоне), видео, секреты. Раннеры тестов лежат в [benchmarks/](benchmarks/README.md); опубликованные результаты — в [rtx3080-local-ai-benchmarks](https://github.com/HomenSAI/rtx3080-local-ai-benchmarks). У шлюза **нет пароля**, пароль консоли (`AI_CONSOLE_PASSWORD`) необязателен: используйте оба только на `127.0.0.1` или в доверенной сети, никогда в интернете. Консоль также отклоняет межсайтовые запросы и чужие имена `Host` ([SECURITY.md](SECURITY.md)).
+Веса моделей (скачайте сами и соблюдайте их лицензии), ваши собственные результаты тестов (`bench_results/`, появляются при прогоне), видео, секреты. Раннеры тестов лежат в [benchmarks/](benchmarks/README.ru.md); опубликованные результаты — в [rtx3080-local-ai-benchmarks](https://github.com/HomenSAI/rtx3080-local-ai-benchmarks). У шлюза **нет пароля**, пароль консоли (`AI_CONSOLE_PASSWORD`) необязателен: используйте оба только на `127.0.0.1` или в доверенной сети, никогда в интернете. Консоль также отклоняет межсайтовые запросы и чужие имена `Host` ([SECURITY.ru.md](SECURITY.ru.md)).
 
 ## Лицензия и указание авторства
 

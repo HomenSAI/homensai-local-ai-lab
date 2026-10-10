@@ -1,0 +1,75 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Политика безопасности — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="security.en.html">
+  <link rel="alternate" hreflang="ru" href="security.ru.html">
+  <link rel="alternate" hreflang="de" href="security.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти к содержанию</a>
+  <header class="topbar">
+    <a class="brand" href="index.ru.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Основная навигация">
+      <ul class="nav-main"><li><a class="nav-link" href="index.ru.html">Главная</a></li><li><a class="nav-link" href="install.ru.html">Установка</a></li><li><a class="nav-link" href="docs.ru.html" aria-current="page">Документация</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Результаты</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.ru.html">Контакт</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Язык"><a href="security.en.html" lang="en" hreflang="en" aria-label="EN – English">EN</a><a href="security.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="security.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский" class="on" aria-current="true">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="политика-безопасности">Политика безопасности</h1>
+    <nav class="card help-toc doc-toc" aria-label="Содержание"><h2>Содержание</h2><ol><li><a href="#модель-угроз">Модель угроз</a></li><li><a href="#чего-репозиторий-никогда-не-должен-содержать">Чего репозиторий никогда не должен содержать</a></li><li><a href="#как-сообщить-об-уязвимости">Как сообщить об уязвимости</a></li><li><a href="#цепочка-поставок">Цепочка поставок</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<h2 id="модель-угроз">Модель угроз</h2>
+<p>Консоль (порт 8766) и шлюз (порт 8080) рассчитаны на <code>127.0.0.1</code> или <strong>доверенную локальную сеть</strong>. Они не защищены для работы в интернете. <strong>Никогда не публикуйте порты 8766, 8080, 3010 или 8767 в интернет</strong>; ограничьте правило брандмауэра своей подсетью.</p>
+<p>Как консоль защищает себя (<code>console/security.py</code>, <code>console/container_server.py</code>):</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Угроза</th><th>Защита</th></tr></thead>
+<tbody>
+<tr><td>Веб-страница в браузере оператора запускает, останавливает или выгружает модели (межсайтовая подделка запроса)</td><td>Каждый <code>POST</code> должен иметь <code>Content-Type: application/json</code> (чужая страница не может отправить такой запрос без предварительного запроса CORS, который консоль никогда не разрешает), не должен приходить с другого источника (проверяются <code>Origin</code>, <code>Sec-Fetch-Site</code>), иначе ответ — <code>415</code> / <code>403</code></td></tr>
+<tr><td>DNS rebinding (чужое имя хоста, указывающее на ваш ПК)</td><td>В качестве <code>Host</code> принимаются только <code>localhost</code>, IP-адреса и имена из <code>AI_CONSOLE_ALLOWED_HOSTS</code>; всё остальное получает <code>421</code> (<code>/health</code> — исключение для проверки состояния контейнера)</td></tr>
+<tr><td>Консолью пользуется другой человек в локальной сети</td><td>Задайте <code>AI_CONSOLE_PASSWORD</code> в <code>.env</code>: тогда консоль требует HTTP Basic-аутентификацию (любое имя пользователя) для всего, кроме <code>/health</code>. Используйте его всегда, когда <code>AI_CONSOLE_BIND_IP</code> не равен <code>127.0.0.1</code>. Basic-аутентификация передаёт пароль без шифрования: в недоверенной сети поставьте перед консолью обратный прокси с TLS или VPN</td></tr>
+<tr><td>Встраивание во фреймы, угадывание типа содержимого, внедрённые скрипты</td><td>Каждый ответ содержит <code>Content-Security-Policy</code> (только свои скрипты, без фреймов), <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Referrer-Policy: no-referrer</code></td></tr>
+<tr><td>Выход за пределы каталога в <code>/report/</code> и <code>/legal/</code></td><td>Пути разрешаются и должны оставаться внутри папки; покрыто тестами</td></tr>
+<tr><td>Сокет Docker</td><td>См. ниже</td></tr>
+</tbody>
+</table></div>
+<h3 id="сокет-docker">Сокет Docker</h3>
+<p>Контейнер консоли монтирует <code>/var/run/docker.sock</code>. Флаг <code>read_only</code> у этого монтирования <strong>не</strong> является границей безопасности, а сокет равнозначен правам root на хосте. Консоль использует его, чтобы получать список контейнеров и выполнять одну фиксированную команду внутри контейнера модели (<code>curl</code> к адресу <code>/health</code>, <code>/slots</code> или <code>/metrics</code> у <code>llama-server</code> на <code>127.0.0.1</code>). Любую другую команду код отклоняет: имя контейнера должно быть простым именем Docker, а URL — соответствовать этой фиксированной форме (<code>docker_exec_read</code>, покрыто тестами). Контейнер работает с <code>cap_drop: ALL</code>, <code>no-new-privileges</code> и корневой файловой системой только для чтения. И всё же <strong>тот, кто получит полный контроль над консолью, получит Docker на этом ПК</strong>, поэтому держите доступ из сети минимальным и задайте пароль.</p>
+<h3 id="известные-ограничения">Известные ограничения</h3>
+<ul>
+<li>У шлюза (llama-swap, порт 8080) нет никакой аутентификации; он опубликован только на <code>127.0.0.1</code>. Не меняйте это без обратного прокси с аутентификацией.</li>
+<li><code>scripts/setup_git.py</code> один раз передаёт сгенерированный пароль администратора Gitea в <code>docker exec</code> в командной строке; другие пользователи демона Docker на том же ПК могут ненадолго его увидеть. Пароль хранится в <code>secrets/gitea-admin.txt</code> (игнорируется Git).</li>
+<li>У Basic-аутентификации нет ограничения частоты попыток и нет блокировки.</li>
+</ul>
+<h2 id="чего-репозиторий-никогда-не-должен-содержать">Чего репозиторий никогда не должен содержать</h2>
+<p>Пароли, токены, SSH-ключи (папка <code>secrets/</code> игнорируется Git), <code>.env</code> с личными значениями (в репозиторий попадает только <code>.env.example</code>; <code>.env</code> игнорируется, поэтому в нём можно хранить <code>AI_CONSOLE_PASSWORD</code>), веса моделей, личные данные. Если вы что-то такое найдёте, сообщите, пожалуйста, как описано ниже.</p>
+<h2 id="как-сообщить-об-уязвимости">Как сообщить об уязвимости</h2>
+<p>Пожалуйста, <strong>не</strong> открывайте публичный issue по проблемам безопасности. Напишите на info [at] homensai [dot] com (автор: Serhii Khomenko, <a href="https://homensai.com">https://homensai.com</a>) и опишите проблему, затронутый файл и способ воспроизведения. Вы получите ответ как можно скорее; пожалуйста, дайте разумное время на исправление до раскрытия.</p>
+<h2 id="цепочка-поставок">Цепочка поставок</h2>
+<p>Базовые образы, коммиты llama.cpp / whisper.cpp / stable-diffusion.cpp и llama-swap (SHA-256 релиза) закреплены; файлы моделей перед использованием следует сверить с суммами SHA-256 в <code>MODELS.md</code> или на странице модели. <code>MANIFEST.json</code> перечисляет размер и SHA-256 каждого файла репозитория; <code>python scripts/make_manifest.py --check</code> проверяет его (CI делает то же самое). <code>python scripts/install.py doctor</code> никогда не скачивает тестовый образ CUDA размером 5,6 ГБ, если вы не передали <code>--pull</code>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.ru.html">← Документация</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/SECURITY.ru.md" rel="noopener">Исходный текст на GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>Для меню, переключения темы и подвала нужен JavaScript.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

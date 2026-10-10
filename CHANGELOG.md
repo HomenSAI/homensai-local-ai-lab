@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.6.0 - documentation site on the HomenS.AI Style site builder, every page in three languages, console on Style 1.8.1 (2026-10-10)
+
+English
+- The documentation site (https://homensai.github.io/homensai-local-ai-lab/site/) is now built by the site builder of HomenS.AI Style 1.8.1 (`tools/site.py`, SITE_RULES.md of the core): the fixed frame of every HomenS.AI site with logo, menu (Home, Installation, Documentation, Results, GitHub, Contact), language buttons EN | DE | RU instead of a drop-down list, theme button, footer from the brand data, "Top" button, menu at the bottom of the screen on phones and the Contact page with the robot. The core's check passes: 48 pages, all rules met.
+- 16 pages in English, Russian and German: Home, Installation, a Documentation section with cards and 13 documents as its subpages. Translated into Russian and German: API, architecture, result format, models and profiles, security policy, test runners and the virtual RTX 3080 guide (`*.ru.md`, `*.de.md` next to the English files); Russian and German documents now link to each other instead of the English files.
+- `scripts/build_site.py` writes `site/site.json` and `site/content/` from the Markdown files and runs the core's builder (`--style <folder of homensai-style>`); links that showed a file name show the page title; the e-mail address is not written as plain text; the old addresses (`index.html`, `README.ru.html`, `docs/*.html` ...) redirect to the new pages. `--check` (CI and a unit test) works without the core.
+- Console, report, test progress and contact pages: HomenS.AI Style 1.8.1 (the place of residence is no longer published, the e-mail address is built by the script), language buttons EN | DE | RU instead of the drop-down list (`?lang=` is remembered and removed from the address), version marks `?v=` against stale cached files.
+
+Русский
+- Сайт документации (https://homensai.github.io/homensai-local-ai-lab/site/) теперь собирается сборщиком сайтов HomenS.AI Style 1.8.1 (`tools/site.py`, SITE_RULES.md ядра): неизменный каркас всех сайтов HomenS.AI — знак, меню (Главная, Установка, Документация, Результаты, GitHub, Контакт), кнопки языка EN | DE | RU вместо выпадающего списка, кнопка темы, подвал из данных бренда, кнопка «Наверх», меню внизу экрана на телефоне и страница «Контакт» с роботом. Проверка ядра пройдена: 48 страниц, все правила выполнены.
+- 16 страниц на английском, русском и немецком: Главная, Установка, раздел «Документация» с карточками и 13 документами-подстраницами. На русский и немецкий переведены: API, архитектура, формат результатов, модели и профили, политика безопасности, раннеры тестов и руководство по виртуальной RTX 3080 (`*.ru.md`, `*.de.md` рядом с английскими); русские и немецкие документы ссылаются друг на друга, а не на английские файлы.
+- `scripts/build_site.py` пишет `site/site.json` и `site/content/` из файлов Markdown и запускает сборщик ядра (`--style <папка homensai-style>`); ссылки, где был виден путь к файлу, показывают название страницы; адрес почты не пишется открытым текстом; прежние адреса (`index.html`, `README.ru.html`, `docs/*.html` …) переадресуют на новые страницы. `--check` (CI и модульный тест) работает без ядра.
+- Консоль, отчёт, ход тестов и «Контакт»: HomenS.AI Style 1.8.1 (место жительства больше не публикуется, адрес почты собирает скрипт), кнопки языка EN | DE | RU вместо выпадающего списка (`?lang=` запоминается и убирается из адреса), метки версии `?v=` против устаревших файлов в кеше.
+
 ## 1.5.0 - documentation site in HomenS.AI Style (2026-10-10)
 
 English

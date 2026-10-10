@@ -1,0 +1,63 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="http-интерфейсы-для-операторов-и-ии-супервизоров">HTTP-интерфейсы (для операторов и ИИ-супервизоров)</h1>
+    <nav class="card help-toc doc-toc" aria-label="Содержание"><h2>Содержание</h2><ol><li><a href="#правила-которым-должен-следовать-каждый-запрос-к-консоли">Правила, которым должен следовать каждый запрос к консоли</a></li><li><a href="#шлюз--совместимый-с-openai-порт-8080">Шлюз — совместимый с OpenAI, порт 8080</a></li><li><a href="#консоль--порт-8766">Консоль — порт 8766</a></li><li><a href="#данные-отчёта">Данные отчёта</a></li><li><a href="#файлы-которые-пишет-оператор">Файлы, которые пишет оператор</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Всё, что описано ниже, — обычный HTTP на локальной машине. У шлюза нет аутентификации: используйте только <code>127.0.0.1</code> или доверенную локальную сеть. Замените <code>localhost</code> на LAN-адрес, если вы открыли консоль в сеть (см. <code>AI_CONSOLE_BIND_IP</code>).</p>
+<h2 id="правила-которым-должен-следовать-каждый-запрос-к-консоли">Правила, которым должен следовать каждый запрос к консоли</h2>
+<p>Консоль проверяет каждый запрос (см. <a href="security.ru.html">Политика безопасности</a>); скрипт или ИИ-супервизор обязан их соблюдать:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Правило</th><th>Подробности</th></tr></thead>
+<tbody>
+<tr><td>Заголовок <code>Host</code></td><td><code>localhost</code>, IP-адрес или имя из <code>AI_CONSOLE_ALLOWED_HOSTS</code>; иначе <code>421</code>. <code>/health</code> не проверяется</td></tr>
+<tr><td>Пароль</td><td>Если задан <code>AI_CONSOLE_PASSWORD</code>, отправляйте учётные данные HTTP Basic (имя пользователя любое): <code>curl -u any:PASSWORD ...</code>; иначе <code>401</code>. <code>/health</code> не проверяется</td></tr>
+<tr><td>Тип содержимого <code>POST</code></td><td><strong>Всегда</strong> <code>Content-Type: application/json</code>, в том числе для вызовов без тела (<code>/api/timer/cancel</code>); иначе <code>415</code>. С <code>curl</code> используйте <code>-H &quot;Content-Type: application/json&quot;</code></td></tr>
+<tr><td>Источник <code>POST</code></td><td>Скрипты не отправляют заголовок <code>Origin</code>, и это нормально. Запрос браузера с другого источника получает <code>403</code></td></tr>
+<tr><td>Тело</td><td>Объект JSON. Пустое или слишком большое: <code>413</code>; недопустимый JSON или не объект: <code>400</code></td></tr>
+<tr><td>Методы</td><td>Только <code>GET</code> и <code>POST</code> (<code>HEAD</code>, <code>OPTIONS</code> отвечают <code>501</code>); консоль никогда не отправляет заголовки CORS</td></tr>
+</tbody>
+</table></div>
+<p>Каждый ответ содержит <code>Content-Security-Policy</code>, <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code> и <code>Referrer-Policy: no-referrer</code>. Ответы с ошибкой имеют вид <code>{&quot;error&quot;: &quot;...&quot;}</code>.</p>
+<pre><code>curl -X POST http://localhost:8766/api/start -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;model_key&quot;:&quot;MiniCPM5-2B-Q8_0&quot;}&#x27;</code></pre>
+<h2 id="шлюз--совместимый-с-openai-порт-8080">Шлюз — совместимый с OpenAI, порт 8080</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Метод и путь</th><th>Назначение</th></tr></thead>
+<tbody>
+<tr><td><code>GET /v1/models</code></td><td>профили моделей из <code>config/llama-swap.yaml</code></td></tr>
+<tr><td><code>POST /v1/chat/completions</code></td><td>чат; <code>&quot;model&quot;</code> — имя профиля; первый запрос к модели загружает её (до минуты). Ответ содержит <code>usage</code> и, от llama.cpp, <code>timings</code> (<code>prompt_per_second</code>, <code>predicted_per_second</code>, <code>prompt_n</code>, <code>predicted_n</code>)</td></tr>
+<tr><td><code>POST /v1/embeddings</code></td><td>эмбеддинги с профилями <code>Qwen3-Embedding-*</code></td></tr>
+<tr><td><code>GET /running</code></td><td>модели, загруженные сейчас: <code>{&quot;running&quot;: [...]}</code></td></tr>
+<tr><td><code>POST /api/models/unload</code></td><td>выгрузить все модели; <code>POST /api/models/unload/&lt;model&gt;</code> выгружает одну</td></tr>
+<tr><td><code>GET /health</code></td><td>состояние шлюза</td></tr>
+</tbody>
+</table></div>
+<p>Подойдёт любой OpenAI SDK с <code>base_url=&quot;http://localhost:8080/v1&quot;</code> и произвольным ключом API. Чтобы отключить размышление у моделей, которые его поддерживают, добавьте в запрос <code>&quot;chat_template_kwargs&quot;: {&quot;enable_thinking&quot;: false}</code>.</p>
+<pre><code>curl http://localhost:8080/v1/chat/completions -H &quot;Content-Type: application/json&quot; \
+  -d &#x27;{&quot;model&quot;:&quot;MiniCPM5-2B-Q8_0&quot;,&quot;messages&quot;:[{&quot;role&quot;:&quot;user&quot;,&quot;content&quot;:&quot;Say hello in one word&quot;}],&quot;max_tokens&quot;:16,&quot;temperature&quot;:0}&#x27;</code></pre>
+<h2 id="консоль--порт-8766">Консоль — порт 8766</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Метод и путь</th><th>Назначение</th></tr></thead>
+<tbody>
+<tr><td><code>GET /health</code></td><td><code>{&quot;ok&quot;: true}</code> (не требует пароля и известного <code>Host</code>)</td></tr>
+<tr><td><code>GET /api/version</code></td><td><code>{&quot;name&quot;, &quot;version&quot;, &quot;author&quot;, &quot;url&quot;, &quot;repo&quot;}</code></td></tr>
+<tr><td><code>GET /api/status</code></td><td>состояние Docker и GPU, модели в памяти (<code>active_models</code>), контейнеры <code>host_ai</code>, <code>issues</code> (в исправной системе должен быть пуст), выполняемое задание</td></tr>
+<tr><td><code>GET /api/models</code></td><td>каталог с наличием файла (<code>exists</code>), размером, контекстом, квантованием, настроенными параметрами</td></tr>
+<tr><td><code>POST /api/start</code></td><td>тело <code>{&quot;model_key&quot;: &quot;&lt;profile&gt;&quot;}</code>: загружает модель в видеопамять; возвращает <code>{&quot;job_id&quot;}</code>; опрашивайте <code>GET /api/jobs/&lt;job_id&gt;</code>, пока <code>status</code> не станет <code>complete</code> или <code>error</code></td></tr>
+<tr><td><code>POST /api/unload</code></td><td>тело <code>{&quot;model_key&quot;: &quot;&lt;profile&gt;&quot;}</code>: выгружает одну модель</td></tr>
+<tr><td><code>POST /api/chat</code></td><td>тело <code>{&quot;model_key&quot;, &quot;payload&quot;: {OpenAI chat request}}</code>: то же, что шлюз, но с защитой видеопамяти</td></tr>
+<tr><td><code>GET /api/timer</code>, <code>POST /api/timer</code> <code>{&quot;seconds&quot;: 900}</code>, <code>POST /api/timer/cancel</code></td><td>таймер выгрузки всех моделей</td></tr>
+<tr><td><code>GET /api/tests</code></td><td>все результаты тестов, сведённые по моделям, план этапов (<code>plan.stages</code>, <code>plan.overall</code>), список наборов тестов; именно это показывает таблица консоли</td></tr>
+<tr><td><code>GET /report/</code></td><td>страница отчёта; <code>GET /report/live-data.json</code> — её данные</td></tr>
+<tr><td><code>GET /legal/&lt;file&gt;</code></td><td>файлы лицензий и уведомлений</td></tr>
+</tbody>
+</table></div>
+<p><code>/api/start</code> и <code>/api/chat</code> отвечают <code>409</code>, пока контейнер Video Studio держит видеокарту.</p>
+<h2 id="данные-отчёта">Данные отчёта</h2>
+<ul>
+<li><code>report/live-data.json</code> — каждые 15 секунд записывается сборщиком отчёта: <code>entries</code> (по одной на модель с блоками <code>general</code>, <code>german</code>, <code>context</code>, <code>stem</code>, <code>chem</code>, <code>code20</code>), <code>plan</code> (этапы, прогресс, оставшееся время), <code>suites</code>, <code>status</code>.</li>
+<li><code>results-db/llm-results.sqlite</code> — архив (<code>raw_rows</code>, <code>results</code>, <code>history</code>, <code>model_scores</code>); открывайте его только для чтения.</li>
+<li>Git: локальный Gitea (<code>http://localhost:3010/</code>) хранит каждую версию отчёта в виде тегов <code>vNNNN</code>, <code>stage-&lt;id&gt;-done</code>, <code>final-&lt;date&gt;</code>.</li>
+</ul>
+<h2 id="файлы-которые-пишет-оператор">Файлы, которые пишет оператор</h2>
+<p>Инструменты тестов пишут <code>bench_results/results_*.jsonl</code> и <code>bench_results/&lt;stage&gt;.log</code>: см. <a href="results-format.ru.html">Файлы результатов и план этапов</a>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.ru.html">← Документация</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/API.ru.md" rel="noopener">Исходный текст на GitHub</a></p>

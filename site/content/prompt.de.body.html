@@ -1,0 +1,31 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1>Hier beginnen: der Prompt für Ihren KI-Assistenten</h1>
+    <article class="card lesson-body doc-body">
+<p><strong>Brauchen Sie das?</strong> Nein: Der Server lässt sich mit sechs Befehlen selbst installieren (README, „Schnellstart“). Ein Assistent ist eine Erleichterung: Er führt dieselben Befehle aus, wählt und lädt Modelle, liest bei Fehlern die Logs und führt später Ihre Tests aus und prüft sie.</p>
+<p><strong>So funktioniert es.</strong> Sie öffnen einen KI-Assistenten, <strong>der Befehle auf Ihrem PC ausführen kann</strong> (Claude Code mit Sonnet oder Opus, ein ChatGPT-/Codex-Agent oder ein anderer Coding-Agent), zeigen ihm dieses Repository (klonen oder den Ordner geben) und fügen den folgenden Prompt ein. Der Assistent baut alles genau wie der Autor – Docker, die Container, den KI-Server, die Konsole, die Berichte –, prüft es und endet mit der Meldung <strong>„Alles bereit – jetzt testen“</strong> samt Statustabelle. Danach führt und überwacht er auch Ihre Tests (<a href="operator.de.html">Betrieb des Servers mit einem KI-Supervisor (Claude oder ChatGPT)</a>).</p>
+<p>Ein gewöhnlicher Browser-Chat (ohne Zugriff auf Ihren Rechner) kann das nicht: Er kann die Schritte nur erklären.</p>
+<p><strong>Prompt – alles aus dem Kasten kopieren:</strong></p>
+<pre><code>Du bist Installateur und Supervisor des Projekts in diesem Ordner („Local AI Server“: ein llama.cpp/llama-swap-Modellserver für eine NVIDIA-GPU, eine Web-Konsole, Testberichte mit Git-Historie). Baue ihn auf DIESEM Computer genau so, wie der Autor es getan hat, und melde mir danach, dass er testbereit ist.
+
+Lies zuerst: AGENTS.md (oder CLAUDE.md), docs/INSTALL.de.md, docs/AI_OPERATOR.de.md, docs/API.md.
+
+Arbeite in dieser Reihenfolge und berichte nach jedem Schritt kurz:
+0. Voraussetzungen. Prüfe: Windows 10/11 (oder Linux mit NVIDIA Container Toolkit), NVIDIA-GPU und -Treiber (`nvidia-smi`), WSL2, laufendes und NICHT pausiertes Docker Desktop, Docker Compose v2. Unter Windows wird sonst nichts gebraucht: verwende den PowerShell-Installer `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 &lt;Schritt&gt;` (installiere unter Windows kein Python, Git oder Node). Unter Linux `python scripts/install.py &lt;Schritt&gt;` (Python 3.10+). Unten bedeutet `install &lt;Schritt&gt;` den Installer dieses Systems. Fehlt etwas, sage mir was und wie du es installieren würdest (z. B. `wsl --install`, `winget install Docker.Desktop`) und WARTE auf mein „Ja“: Systemsoftware und Neustarts entscheide ich.
+1. `install doctor` – behebe alles, was gemeldet wird (belegte Ports, GPU in Docker nicht sichtbar, wenig Speicher); frage mich, wenn die Lösung nicht offensichtlich ist. Das 5,6-GB-CUDA-Image lädt er nicht von selbst: frage mich vor `doctor --pull` (`-Pull` in PowerShell). Hat der PC keine NVIDIA-GPU, sage es mir und verwende `--no-gpu` (`-NoGpu`) für doctor / build / up / verify.
+2. `install init` – frage mich dann nach: dem Ordner für Modelldateien (MODEL_DIR) und ob die Konsole von anderen Geräten im Netzwerk erreichbar sein soll (AI_CONSOLE_BIND_IP; Standard: nur dieser PC). Schreibe die Antworten in .env. Soll die Konsole von anderen Geräten erreichbar sein, frage mich nach einem Passwort und trage es in `AI_CONSOLE_PASSWORD` in .env ein (nie dorthin, was in Git landet).
+3. Modelle: Frage, welche Modelle ich möchte (Standard für den ersten Lauf: das kleine Testmodell MiniCPM5-2B-Q8_0, etwa 2,7 GB). Lade nur aus den in MODELS.md genannten Quellen und Revisionen, prüfe SHA-256, lege die Dateien wie in Abschnitt 4.5 von docs/INSTALL.de.md ins Docker-Volume. Frage mich vor jedem Download über 1 GB. Erfinde keine Quellen.
+4. `install build` (beim ersten Mal 15–40 Minuten), `install up`, dann `install git` (der lokale Git-Server, der jede Version der Berichte aufbewahrt).
+5. `install verify` – jede Zeile muss [ok] sein. Beweise dann, dass die Kette funktioniert: Lade das Testmodell über die Konsolen-API und hole über das Gateway eine echte Antwort; zeige mir Antwort, Geschwindigkeit (Tokens/s) und belegten Videospeicher.
+6. Optional und nur auf meine Bitte: Open WebUI, Video Studio (eigenes Repository).
+
+Regeln: ein Modell gleichzeitig im Videospeicher; öffne die Ports 8766/8080/3010 nie ins Internet; schreibe keine Geheimnisse oder personenbezogenen Daten in Dateien, die in Git landen; frage vor jedem Löschen; scheitert ein Befehl, lies das Log (`docker logs &lt;Container&gt;`), behebe die Ursache und wiederhole nicht blind.
+
+BEENDE mit genau dieser Meldung (aus echten Prüfungen ausfüllen, nicht raten):
+„Alles bereit – jetzt testen.
+ Konsole: http://localhost:8766/   Bericht: http://localhost:8766/report/   Gateway-API: http://localhost:8080/v1
+ Version: &lt;aus /api/version&gt;   GPU: &lt;Name, Speicher&gt;   Modelle: &lt;Liste&gt;   verify: &lt;n von n ok&gt;
+ Test: Modell &lt;Name&gt; antwortete „&lt;Antwort&gt;“ mit &lt;Tokens/s&gt; Tok/s.
+ Warnungen: &lt;alles, was nicht perfekt ist, oder „keine“&gt;.
+ Als Nächstes: sagen Sie mir, welche Tests auf welchen Modellen laufen sollen (siehe docs/AI_OPERATOR.de.md), ich führe sie aus und prüfe sie.“</code></pre>
+    </article>
+    <p class="doc-meta"><a href="docs.de.html">← Dokumentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/PROMPT_FOR_AI.md" rel="noopener">Quelltext auf GitHub</a></p>

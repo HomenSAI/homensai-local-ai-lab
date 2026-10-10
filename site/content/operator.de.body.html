@@ -1,0 +1,61 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="betrieb-des-servers-mit-einem-ki-supervisor-claude-oder-chatgpt">Betrieb des Servers mit einem KI-Supervisor (Claude oder ChatGPT)</h1>
+    <nav class="card help-toc doc-toc" aria-label="Inhalt"><h2>Inhalt</h2><ol><li><a href="#die-idee">Die Idee</a></li><li><a href="#was-der-assistent-braucht">Was der Assistent braucht</a></li><li><a href="#übergabe-was-sie-dem-assistenten-sagen">Übergabe: was Sie dem Assistenten sagen</a></li><li><a href="#wie-die-konsole-skripte-und-assistenten-behandelt">Wie die Konsole Skripte und Assistenten behandelt</a></li><li><a href="#die-überwachungsschleife-was-der-assistent-tut">Die Überwachungsschleife (was der Assistent tut)</a></li><li><a href="#regeln-für-den-assistenten">Regeln für den Assistenten</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<h2 id="die-idee">Die Idee</h2>
+<p>Dieses Projekt ist dafür gebaut, von einem <strong>KI-Assistenten installiert, gestartet und überwacht</strong> zu werden – Claude oder ChatGPT. Sie müssen die Installationsanleitung nicht von Hand abarbeiten: Sie geben dem Assistenten das Repository (oder nur <code>docs/INSTALL.de.md</code>), er installiert, startet die Tests, beobachtet die Ergebnisse, beurteilt ihre Richtigkeit und hält die Git-Historie der Berichte in Ordnung.</p>
+<ul>
+<li><strong>Der Server läuft von selbst.</strong> Gateway, Konsole, Berichtsgenerator und Git-Versionierer laufen ohne KI; die KI ist nur der Bediener.</li>
+<li><strong>Die KI ist der Supervisor.</strong> Sie entscheidet, welche Tests auf welchen Modellen laufen, startet sie, prüft die Plausibilität der Zahlen (Zeitüberschreitungen, leere Antworten, Ausreißer, Modelle, die auf die CPU ausgewichen sind), wiederholt verdächtige Läufe und schreibt Schlussfolgerungen. Einen zweiten, eingebauten „Richter“ enthält der Server absichtlich nicht (siehe <a href="design.de.html">Warum es so gebaut wurde</a>).</li>
+<li><strong>Auf der Serverseite ist nichts Besonderes nötig</strong> – es gibt kein Plug-in zu installieren. Der Supervisor nutzt, was schon da ist: die Shell auf diesem PC, die REST-API der Konsole (<a href="api.de.html">HTTP-Schnittstellen (für Bediener und KI-Supervisoren)</a>), das OpenAI-kompatible Gateway auf Port 8080, die Ergebnisdateien (<a href="results-format.de.html">Ergebnisdateien und Phasenplan</a>) und das Git-Repository der Berichtsversionen.</li>
+</ul>
+<h2 id="was-der-assistent-braucht">Was der Assistent braucht</h2>
+<p>Der Assistent muss <strong>Befehle auf dem Rechner ausführen können, auf dem der Server läuft</strong> (oder ihn über einen sicheren Kanal erreichen). Typische Wege:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Assistent</th><th>Zugriff</th><th>Hinweise</th></tr></thead>
+<tbody>
+<tr><td><strong>Claude Code</strong> (CLI / Desktop / IDE)</td><td>arbeitet im geklonten Repository-Ordner und führt Shell-Befehle aus; liest <code>CLAUDE.md</code> automatisch</td><td>einfachste Variante</td></tr>
+<tr><td><strong>Claude Desktop / Claude mit lokalen Werkzeugen</strong></td><td>lokale Datei- und Befehlswerkzeuge (zum Beispiel ein MCP-Server für Dateisystem und Shell, den Sie selbst aktivieren)</td><td>Sie bestimmen erlaubte Ordner und Befehle</td></tr>
+<tr><td><strong>ChatGPT-Agenten mit lokalem Zugriff</strong> (Codex CLI / Desktop-Agent)</td><td>arbeitet im geklonten Ordner; liest <code>AGENTS.md</code> automatisch</td><td>gleiche Idee</td></tr>
+<tr><td><strong>ChatGPT-/Claude-Browser-Chat ohne lokalen Zugriff</strong></td><td>kann <code>localhost</code> nicht erreichen; kann nur <em>beraten</em>, während Sie Ausgaben einfügen</td><td>für Zugriff bräuchte man einen Tunnel – <strong>nicht empfohlen</strong>, die Konsole hat kein Passwort</td></tr>
+</tbody>
+</table></div>
+<p>Wenn Sie den Server dennoch einem entfernten Assistenten öffnen, stellen Sie ihn hinter einen Tunnel mit Authentifizierung oder VPN und geben Sie zunächst nur Lesezugriff. Veröffentlichen Sie die Ports 8766, 8080, 3010 und 8767 nie unverändert im Internet.</p>
+<h2 id="übergabe-was-sie-dem-assistenten-sagen">Übergabe: was Sie dem Assistenten sagen</h2>
+<p>Öffnen Sie den Assistenten im Repository-Ordner (oder hängen Sie <code>docs/INSTALL.de.md</code> an) und schreiben Sie:</p>
+<pre><code>Du bist Installateur und Supervisor dieses Projekts „Local AI Server“ (lies AGENTS.md / CLAUDE.md, docs/INSTALL.de.md, docs/AI_OPERATOR.de.md).
+1. Installiere es auf diesem Rechner nach docs/INSTALL.de.md: führe `python scripts/install.py doctor` aus, behebe die Meldungen, dann init, build, up, verify. `doctor` lädt das 5,6-GB-CUDA-Prüfimage nie von selbst: frage mich vor `doctor --pull`. Auf einem PC ohne NVIDIA-GPU `--no-gpu` verwenden.
+   Frage mich vor jeder unumkehrbaren Aktion, vor Downloads über 1 GB und bei jeder Entscheidung, die ich treffen muss (Modellordner, Netzwerkadresse).
+2. Lege die von mir genannten Modelle wie in Abschnitt 4.5 ins Docker-Volume. Erfinde keine Download-Quellen; prüfe SHA-256.
+3. Führe die gewünschten Tests auf den gewünschten Modellen aus (Ergebnisdateien: docs/RESULTS_FORMAT.md). Ein Modell nach dem anderen; das Gateway wechselt Modelle selbst.
+4. Überwache: prüfe nach jedem Test die Plausibilität, wiederhole verdächtige Läufe und berichte mir in einer kurzen Tabelle: Modell, Test, Punktzahl, Geschwindigkeit, Auffälligkeiten.
+5. Öffne Konsole und Gateway nie ins Internet, schreibe keine Geheimnisse in Dateien, die in Git landen, lösche keine meiner Daten.</code></pre>
+<h2 id="wie-die-konsole-skripte-und-assistenten-behandelt">Wie die Konsole Skripte und Assistenten behandelt</h2>
+<p>Die Konsole prüft jede Anfrage (<a href="api.de.html">HTTP-Schnittstellen (für Bediener und KI-Supervisoren)</a>, <a href="security.de.html">Sicherheitsrichtlinie</a>). Ihre Befehle müssen das einhalten; eine Ablehnung ist eine Information, kein Hindernis, das man umgeht:</p>
+<ul>
+<li><code>POST</code>-Aufrufe brauchen <code>-H &quot;Content-Type: application/json&quot;</code> (auch ohne Body), z. B. <code>curl -X POST http://localhost:8766/api/start -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;model_key&quot;:&quot;...&quot;}&#x27;</code>. <code>415</code> heißt: Der Header fehlt.</li>
+<li>Hat der Mensch <code>AI_CONSOLE_PASSWORD</code> gesetzt, fragen Sie ihn danach und verwenden <code>curl -u any:PASSWORT</code>; schreiben Sie es nie in Dateien, die in Git landen, in Ergebnisdateien oder in einen Bericht. <code>401</code> heißt: Passwort nötig.</li>
+<li><code>421</code> heißt: nicht erlaubter Hostname; verwenden Sie <code>localhost</code> oder die IP-Adresse; fragen Sie den Menschen, bevor Sie Namen in <code>AI_CONSOLE_ALLOWED_HOSTS</code> eintragen.</li>
+<li>Schalten Sie diese Prüfungen nicht ab, ändern Sie weder <code>console/security.py</code> noch das Passwort, um einen Aufruf durchzubringen; melden Sie die Ablehnung dem Menschen.</li>
+</ul>
+<h2 id="die-überwachungsschleife-was-der-assistent-tut">Die Überwachungsschleife (was der Assistent tut)</h2>
+<ol>
+<li><strong>Zustand prüfen</strong>: <code>python scripts/install.py verify</code>, <code>curl localhost:8766/api/status</code> (<code>issues</code> muss leer sein; „Gateway gestoppt“ ist nur erwartet, solange Tests die GPU belegen).</li>
+<li><strong>Modelle und Tests wählen</strong> zusammen mit dem Menschen; sicherstellen, dass die Modelldateien existieren (<code>curl localhost:8766/api/models</code> → <code>exists: true</code>).</li>
+<li><strong>Test ausführen</strong>: Anfragen an <code>http://localhost:8080/v1/chat/completions</code> mit dem Profilnamen des Modells senden (das Gateway lädt es, die erste Antwort dauert bis zu einer Minute), messen und pro Modell und Test eine JSON-Zeile in <code>bench_results/results_&lt;Test&gt;.jsonl</code> im dokumentierten Format anhängen. Fortschrittszeilen und eine Abschlussmarke in <code>bench_results/&lt;Test&gt;.log</code> schreiben (<code>PROGRESS i/n</code>, <code>&lt;NAME&gt;-FINISHED</code>), damit die Konsole Phase, Fortschrittsbalken und Restzeit zeigt.</li>
+<li><strong>Ergebnis beurteilen</strong>: mit anderen Modellen und früheren Ergebnissen vergleichen (<code>/api/tests</code>); achten auf leere oder abgeschnittene Antworten, <code>finish_reason</code> ungleich <code>stop</code>, eingebrochene Geschwindigkeit (CPU-Ausweichen; <code>vram</code> und <code>host_free_min_gb</code> ansehen), Punktzahlen, die einer Wiederholung widersprechen, Aufgaben, an denen alle Modelle scheitern (eher ein falscher Prüfer als ein schwaches Modell).</li>
+<li><strong>Festhalten</strong>: Berichtsgenerator und Versionierer erledigen das automatisch (SQLite-Archiv, <code>vNNNN</code>-Tags im lokalen Gitea). Schlussfolgerungen in <code>bench_results/report.md</code> ergänzen (die ersten Zeilen erscheinen auf der Berichtsseite).</li>
+<li><strong>Dem Menschen berichten</strong>: Tabelle plus Liste verdächtiger Funde und was wiederholt wurde.</li>
+</ol>
+<h2 id="regeln-für-den-assistenten">Regeln für den Assistenten</h2>
+<ul>
+<li>Ein Modell gleichzeitig im Videospeicher; keinen zweiten GPU-Job starten, solange ein Test oder ein Video-Rendering läuft.</li>
+<li>Ergebnisse früherer Läufe nie ändern oder löschen; neue Zeilen anhängen (das Archiv behält alte Werte, aber die Historie ist der Beleg).</li>
+<li>Keine Prompts oder Antworten mit personenbezogenen Daten in Git; das Repository soll teilbar sein (Ergebnisse unter CC BY-NC 4.0 mit Nennung von <a href="https://homensai.com">https://homensai.com</a>).</li>
+<li>Vor Folgendem den Menschen fragen: Dateien oder Volumes löschen, Netzwerkadressen in <code>.env</code> ändern, Ports öffnen, große Dateien laden, etwas veröffentlichen.</li>
+<li>Den Schutz der Konsole nicht abschwächen (Host-/Origin-/Passwort-Prüfung, die feste Form von <code>docker exec</code>) und das Passwort nie veröffentlichen; wird ein Aufruf abgelehnt, das melden.</li>
+<li>Ein Modell, das nicht geladen wurde, wird als <code>{&quot;model&quot;: ..., &quot;load_ok&quot;: false, &quot;error&quot;: &quot;kurzer Grund&quot;}</code> erfasst (keine Pfade in <code>error</code>); es wird als fehlgeschlagen angezeigt, nicht versteckt. Erhält eine Ergebniszeile <code>invalid_items</code>, lieferte der Prüfer unmögliche Punktzahlen: Prüfer korrigieren und eine neue Zeile anhängen (<a href="results-format.de.html">Ergebnisdateien und Phasenplan</a>).</li>
+<li>Schlägt ein Befehl fehl, das Log lesen (<code>docker logs &lt;Container&gt;</code>), die Ursache beheben, nicht blind wiederholen.</li>
+</ul>
+    </article>
+    <p class="doc-meta"><a href="docs.de.html">← Dokumentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/AI_OPERATOR.de.md" rel="noopener">Quelltext auf GitHub</a></p>

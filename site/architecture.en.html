@@ -1,0 +1,89 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Architecture — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="architecture.en.html">
+  <link rel="alternate" hreflang="ru" href="architecture.ru.html">
+  <link rel="alternate" hreflang="de" href="architecture.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Main navigation">
+      <ul class="nav-main"><li><a class="nav-link" href="index.html">Home</a></li><li><a class="nav-link" href="install.en.html">Installation</a></li><li><a class="nav-link" href="docs.en.html" aria-current="page">Documentation</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Results</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.en.html">Contact</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Language"><a href="architecture.en.html" lang="en" hreflang="en" aria-label="EN – English" class="on" aria-current="true">EN</a><a href="architecture.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="architecture.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="architecture">Architecture</h1>
+    <nav class="card help-toc doc-toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#components">Components</a></li><li><a href="#design-decisions">Design decisions</a></li><li><a href="#related-project">Related project</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<pre><code> browser ──► console :8766 (Python, stdlib only) ──► gateway :8080 (llama-swap) ──► llama-server (one model in VRAM)
+                │  │                                      ▲
+                │  └─ docker.sock (container list; status of llama-server via a fixed `docker exec curl`; refuses an LLM start while Video Studio holds the GPU)
+                │
+                ├─ /report/  ◄── report/live-data.json ◄── report-builder ◄── bench_results/results*.jsonl
+                │                                              └──► results-db/llm-results.sqlite (never loses old results)
+                └─ /legal/   license and third-party notices
+
+ report-versioner ──(every minute, only on change)──► gitea :3010  tags v0001..., stage-&lt;id&gt;-done, final-&lt;date&gt;</code></pre>
+<h2 id="components">Components</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Path</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td><code>docker-compose.nogpu.yml</code></td><td>Override for a machine without an NVIDIA GPU: the console starts without requesting one (<code>install.py up --no-gpu</code>).</td></tr>
+<tr><td><code>docker-compose.yml</code></td><td>All services. Profiles: <code>gateway</code> (llama-swap), <code>build</code> (base image builders), <code>whisper</code>, <code>qwen-image</code>, <code>media-tools</code> (optional).</td></tr>
+<tr><td><code>Dockerfile.upstream</code> / <code>.bonsai</code></td><td>llama.cpp (CUDA 12.8, architecture 86) and the PrismML fork, built from pinned commits.</td></tr>
+<tr><td><code>Dockerfile.llama-swap</code></td><td>llama-swap v260 (SHA-256 checked) on top of the upstream image, with the Bonsai runtime copied to <code>/opt/prism</code>.</td></tr>
+<tr><td><code>config/llama-swap.yaml</code></td><td>One profile per model: file, context size, KV-cache type, speculative decoding, TTL. Edit it to add or remove models.</td></tr>
+<tr><td><code>console/</code></td><td><code>container_server.py</code> (HTTP server, Docker/gateway access), <code>security.py</code> (Host / Origin / password checks and security headers), <code>tests_feed.py</code> (test table feed); static <code>index.html</code>, <code>app.js</code>, <code>app.css</code>, <code>shell.js</code> (theme button, author footer); <code>i18n.js</code> + <code>i18n-dict.js</code> (RU/EN/DE); <code>style/</code>: HomenS.AI Style 1.6.0 (stylesheet, fonts, logo, scripts), served at <code>/style/</code>.</td></tr>
+<tr><td><code>report/</code></td><td>Static report page; <code>live-data.json</code> and <code>live-status.json</code> are written by the builder. <code>progress.html</code> + <code>progress.js</code>: test progress (stage plan from <code>live-data.json</code>) in the process view A/B/C of HomenS.AI Style; <code>contact.html</code> + <code>contact.js</code>: the contact block of the style (required in every HomenS.AI project).</td></tr>
+<tr><td><code>scripts/build_live_report.py</code></td><td>Collects result files, merges them into SQLite (<code>raw_rows</code>, <code>results</code>, <code>history</code>, <code>model_scores</code>), builds the stage plan, the progress and the time-left estimate.</td></tr>
+<tr><td><code>scripts/versioner.py</code>, <code>scripts/setup_git.py</code></td><td>Report versioning into Gitea and its one-time setup.</td></tr>
+<tr><td><code>scripts/install.py</code></td><td>doctor / init / build / up / verify (<code>--no-gpu</code>, <code>doctor --pull</code>).</td></tr>
+<tr><td><code>scripts/build_site.py</code></td><td>Builds the documentation site (GitHub Pages): turns the Markdown files into <code>site/site.json</code> and <code>site/content/</code> and runs the site builder of HomenS.AI Style, which writes <code>site/&lt;page&gt;.&lt;lang&gt;.html</code> and copies the core into <code>site/style/</code>; old page addresses become redirects; <code>--check</code> for CI.</td></tr>
+<tr><td><code>scripts/make_manifest.py</code></td><td>Writes / checks <code>MANIFEST.json</code> (size and SHA-256 of every tracked file).</td></tr>
+<tr><td><code>tests/</code></td><td>Standard-library unit tests: console security, report builder, public results, installer, manifest (<code>python -m unittest discover -s tests</code>).</td></tr>
+<tr><td><code>hermes-telemetry/</code></td><td>Small metrics exporter (GPU, llama).</td></tr>
+<tr><td><code>benchmarks/</code>, <code>docker/bench-runner/</code></td><td>Test runners of the published results and their container (profile <code>bench</code>); they write <code>bench_results/</code>. See <code>benchmarks/README.md</code>.</td></tr>
+<tr><td><code>legal/</code></td><td>CC BY-NC 4.0 (results), PolyForm Noncommercial 1.0.0 (code), third-party notices.</td></tr>
+</tbody>
+</table></div>
+<h2 id="design-decisions">Design decisions</h2>
+<ul>
+<li><strong>One model at a time.</strong> 10 GB of video memory fits one large model; llama-swap unloads the old model before loading the next. The console blocks LLM start while video generation holds the GPU.</li>
+<li><strong>Model volume.</strong> Models are served from a Docker (ext4) volume because a Windows-drive bind over WSL is ~10x slower to load.</li>
+<li><strong>No third-party Python packages</strong> in the console, builder and versioner: they run on <code>python:3.12-slim</code> / <code>alpine</code> with the standard library only.</li>
+<li><strong>Results are never overwritten.</strong> Different tests (general, German, context, STEM, ...) are kept apart; the SQLite archive keeps history; Git keeps every report version.</li>
+<li><strong>Interface text is Russian in the source</strong> and translated on the fly by <code>i18n.js</code>; user data (prompts, answers, logs) is marked <code>data-no-i18n</code> and never translated. <code>scripts/check_i18n.js</code> lists untranslated fragments.</li>
+<li><strong>Single-file bind mounts</strong> (config files) do not follow a replaced file: recreate the service after editing them.</li>
+</ul>
+<h2 id="related-project">Related project</h2>
+<p><strong>Video Studio</strong> (separate repository): its own console (port 8767) plus the ComfyUI + Wan 2.1 container. It joins this project's Docker network <code>local-ai-server_default</code> to call the gateway (unload models before a video, storyboard with the local LLM). This console only checks whether the ComfyUI container runs, to avoid starting an LLM while the GPU is busy.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/ARCHITECTURE.md" rel="noopener">Source text on GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>JavaScript is required for the menu, the theme switch and the footer.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

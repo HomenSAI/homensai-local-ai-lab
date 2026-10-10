@@ -26,7 +26,7 @@
 | `scripts/build_live_report.py` | Collects result files, merges them into SQLite (`raw_rows`, `results`, `history`, `model_scores`), builds the stage plan, the progress and the time-left estimate. |
 | `scripts/versioner.py`, `scripts/setup_git.py` | Report versioning into Gitea and its one-time setup. |
 | `scripts/install.py` | doctor / init / build / up / verify (`--no-gpu`, `doctor --pull`). |
-| `scripts/build_site.py` | Builds the documentation site (GitHub Pages) in HomenS.AI Style: every Markdown file becomes the `.html` page next to it (root `README.md` → `index.html`), `site/` holds its CSS, script and the contact pages; `--check` for CI. |
+| `scripts/build_site.py` | Builds the documentation site (GitHub Pages): turns the Markdown files into `site/site.json` and `site/content/` and runs the site builder of HomenS.AI Style, which writes `site/<page>.<lang>.html` and copies the core into `site/style/`; old page addresses become redirects; `--check` for CI. |
 | `scripts/make_manifest.py` | Writes / checks `MANIFEST.json` (size and SHA-256 of every tracked file). |
 | `tests/` | Standard-library unit tests: console security, report builder, public results, installer, manifest (`python -m unittest discover -s tests`). |
 | `hermes-telemetry/` | Small metrics exporter (GPU, llama). |

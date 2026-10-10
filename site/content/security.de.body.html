@@ -1,0 +1,34 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="sicherheitsrichtlinie">Sicherheitsrichtlinie</h1>
+    <nav class="card help-toc doc-toc" aria-label="Inhalt"><h2>Inhalt</h2><ol><li><a href="#bedrohungsmodell">Bedrohungsmodell</a></li><li><a href="#was-das-repository-nie-enthalten-darf">Was das Repository nie enthalten darf</a></li><li><a href="#eine-schwachstelle-melden">Eine Schwachstelle melden</a></li><li><a href="#lieferkette">Lieferkette</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<h2 id="bedrohungsmodell">Bedrohungsmodell</h2>
+<p>Die Konsole (Port 8766) und das Gateway (Port 8080) sind für <code>127.0.0.1</code> oder ein <strong>vertrauenswürdiges LAN</strong> gebaut. Sie sind nicht für das Internet gehärtet. <strong>Veröffentlichen Sie die Ports 8766, 8080, 3010 oder 8767 nie im Internet</strong>; beschränken Sie die Firewall-Regel auf Ihr eigenes Subnetz.</p>
+<p>Wie sich die Konsole schützt (<code>console/security.py</code>, <code>console/container_server.py</code>):</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Bedrohung</th><th>Schutz</th></tr></thead>
+<tbody>
+<tr><td>Eine Webseite im Browser des Bedieners startet, stoppt oder entlädt Modelle (seitenübergreifende Anfragefälschung)</td><td>Jeder <code>POST</code> muss <code>Content-Type: application/json</code> haben (eine fremde Seite kann das nicht ohne CORS-Preflight senden, den die Konsole nie erlaubt), darf nicht von einem anderen Ursprung kommen (<code>Origin</code>, <code>Sec-Fetch-Site</code> werden geprüft) und wird sonst mit <code>415</code> / <code>403</code> beantwortet</td></tr>
+<tr><td>DNS-Rebinding (ein fremder Hostname, der auf Ihren PC zeigt)</td><td>Als <code>Host</code> werden nur <code>localhost</code>, IP-Adressen und die Namen in <code>AI_CONSOLE_ALLOWED_HOSTS</code> akzeptiert; alles andere erhält <code>421</code> (<code>/health</code> ist für die Zustandsprüfung des Containers ausgenommen)</td></tr>
+<tr><td>Eine andere Person im LAN benutzt die Konsole</td><td><code>AI_CONSOLE_PASSWORD</code> in <code>.env</code> setzen: Die Konsole verlangt dann HTTP-Basic-Authentifizierung (beliebiger Benutzername) für alles außer <code>/health</code>. Immer verwenden, wenn <code>AI_CONSOLE_BIND_IP</code> nicht <code>127.0.0.1</code> ist. Basic-Authentifizierung sendet das Passwort unverschlüsselt: In einem nicht vertrauenswürdigen Netz einen TLS-Reverse-Proxy oder ein VPN davorschalten</td></tr>
+<tr><td>Einbetten in Frames, Content-Sniffing, eingeschleuste Skripte</td><td>Jede Antwort trägt <code>Content-Security-Policy</code> (nur eigene Skripte, keine Frames), <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Referrer-Policy: no-referrer</code></td></tr>
+<tr><td>Path Traversal in <code>/report/</code> und <code>/legal/</code></td><td>Pfade werden aufgelöst und müssen innerhalb des Ordners bleiben; getestet</td></tr>
+<tr><td>Der Docker-Socket</td><td>Siehe unten</td></tr>
+</tbody>
+</table></div>
+<h3 id="der-docker-socket">Der Docker-Socket</h3>
+<p>Der Konsolen-Container bindet <code>/var/run/docker.sock</code> ein. Das <code>read_only</code>-Flag dieser Einbindung ist <strong>keine</strong> Sicherheitsgrenze, und der Socket ist gleichbedeutend mit Root auf dem Host. Die Konsole nutzt ihn, um Container aufzulisten und einen festen Befehl in einem Modell-Container auszuführen (<code>curl</code> gegen die Adresse <code>/health</code>, <code>/slots</code> oder <code>/metrics</code> von <code>llama-server</code> auf <code>127.0.0.1</code>). Jeden anderen Befehl lehnt der Code ab: Der Containername muss ein einfacher Docker-Name sein und die URL muss dieser festen Form entsprechen (<code>docker_exec_read</code>, durch Tests abgedeckt). Der Container läuft mit <code>cap_drop: ALL</code>, <code>no-new-privileges</code> und einem schreibgeschützten Root-Dateisystem. Trotzdem gilt: <strong>Wer die volle Kontrolle über die Konsole erlangt, erhält Docker auf diesem PC</strong>, halten Sie die Erreichbarkeit im Netz also gering und setzen Sie das Passwort.</p>
+<h3 id="bekannte-grenzen">Bekannte Grenzen</h3>
+<ul>
+<li>Das Gateway (llama-swap, Port 8080) hat überhaupt keine Authentifizierung; es ist nur auf <code>127.0.0.1</code> veröffentlicht. Ändern Sie das nicht ohne einen Reverse-Proxy, der authentifiziert.</li>
+<li><code>scripts/setup_git.py</code> übergibt das erzeugte Gitea-Administratorpasswort einmal auf der Befehlszeile an <code>docker exec</code>; andere Benutzer des Docker-Daemons auf demselben PC können es kurz sehen. Das Passwort wird in <code>secrets/gitea-admin.txt</code> gespeichert (von Git ignoriert).</li>
+<li>Die Basic-Authentifizierung hat keine Ratenbegrenzung und keine Sperre.</li>
+</ul>
+<h2 id="was-das-repository-nie-enthalten-darf">Was das Repository nie enthalten darf</h2>
+<p>Passwörter, Tokens, SSH-Schlüssel (der Ordner <code>secrets/</code> wird von Git ignoriert), <code>.env</code> mit persönlichen Werten (nur <code>.env.example</code> wird committet; <code>.env</code> wird ignoriert, deshalb darf <code>AI_CONSOLE_PASSWORD</code> dort stehen), Modellgewichte, personenbezogene Daten. Wenn Sie so etwas finden, melden Sie es bitte wie unten beschrieben.</p>
+<h2 id="eine-schwachstelle-melden">Eine Schwachstelle melden</h2>
+<p>Bitte öffnen Sie für Sicherheitsprobleme <strong>kein</strong> öffentliches Issue. Schreiben Sie an info [at] homensai [dot] com (Autor: Serhii Khomenko, <a href="https://homensai.com">https://homensai.com</a>) und beschreiben Sie das Problem, die betroffene Datei und wie es sich reproduzieren lässt. Sie erhalten so bald wie möglich eine Antwort; bitte geben Sie vor einer Veröffentlichung angemessen Zeit für die Behebung.</p>
+<h2 id="lieferkette">Lieferkette</h2>
+<p>Basis-Images, die Commits von llama.cpp / whisper.cpp / stable-diffusion.cpp und llama-swap (SHA-256 des Releases) sind fest angeheftet; Modelldateien sollten vor der Verwendung mit den SHA-256-Summen in <code>MODELS.md</code> oder auf der Modellseite abgeglichen werden. <code>MANIFEST.json</code> listet Größe und SHA-256 jeder Datei des Repositorys auf; <code>python scripts/make_manifest.py --check</code> prüft sie (CI tut dasselbe). <code>python scripts/install.py doctor</code> lädt das 5,6 GB große CUDA-Prüfimage nie herunter, es sei denn, Sie übergeben <code>--pull</code>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.de.html">← Dokumentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/SECURITY.de.md" rel="noopener">Quelltext auf GitHub</a></p>

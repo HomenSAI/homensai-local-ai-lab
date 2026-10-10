@@ -40,7 +40,6 @@ main{max-width:1540px}
 .page-head{margin:0 0 18px}
 .page-head h1{margin:4px 0}
 .nav-tools .local-pill{display:inline-flex;align-items:center}
-.nav-tools select.lang-switch{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer}
 .site-footer.console-footer{max-width:1540px}
 .site-footer.console-footer p{margin:.3rem 0}
 @media(max-width:860px){.bottomnav{grid-template-columns:repeat(auto-fit,minmax(0,1fr))}.bottomnav a{text-align:center}}

@@ -1,0 +1,48 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="архитектура">Архитектура</h1>
+    <nav class="card help-toc doc-toc" aria-label="Содержание"><h2>Содержание</h2><ol><li><a href="#компоненты">Компоненты</a></li><li><a href="#проектные-решения">Проектные решения</a></li><li><a href="#связанный-проект">Связанный проект</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<pre><code> browser ──► console :8766 (Python, stdlib only) ──► gateway :8080 (llama-swap) ──► llama-server (one model in VRAM)
+                │  │                                      ▲
+                │  └─ docker.sock (container list; status of llama-server via a fixed `docker exec curl`; refuses an LLM start while Video Studio holds the GPU)
+                │
+                ├─ /report/  ◄── report/live-data.json ◄── report-builder ◄── bench_results/results*.jsonl
+                │                                              └──► results-db/llm-results.sqlite (never loses old results)
+                └─ /legal/   license and third-party notices
+
+ report-versioner ──(every minute, only on change)──► gitea :3010  tags v0001..., stage-&lt;id&gt;-done, final-&lt;date&gt;</code></pre>
+<h2 id="компоненты">Компоненты</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Путь</th><th>Роль</th></tr></thead>
+<tbody>
+<tr><td><code>docker-compose.nogpu.yml</code></td><td>Переопределение для машины без видеокарты NVIDIA: консоль запускается, не запрашивая её (<code>install.py up --no-gpu</code>).</td></tr>
+<tr><td><code>docker-compose.yml</code></td><td>Все сервисы. Профили: <code>gateway</code> (llama-swap), <code>build</code> (сборщики базовых образов), <code>whisper</code>, <code>qwen-image</code>, <code>media-tools</code> (необязательные).</td></tr>
+<tr><td><code>Dockerfile.upstream</code> / <code>.bonsai</code></td><td>llama.cpp (CUDA 12.8, архитектура 86) и форк PrismML, собранные из закреплённых коммитов.</td></tr>
+<tr><td><code>Dockerfile.llama-swap</code></td><td>llama-swap v260 (с проверкой SHA-256) поверх образа upstream, со средой выполнения Bonsai, скопированной в <code>/opt/prism</code>.</td></tr>
+<tr><td><code>config/llama-swap.yaml</code></td><td>По одному профилю на модель: файл, размер контекста, тип KV-кэша, спекулятивное декодирование, TTL. Правьте его, чтобы добавить или убрать модели.</td></tr>
+<tr><td><code>console/</code></td><td><code>container_server.py</code> (HTTP-сервер, доступ к Docker и шлюзу), <code>security.py</code> (проверки Host / Origin / пароля и заголовки безопасности), <code>tests_feed.py</code> (данные для таблицы тестов); статические <code>index.html</code>, <code>app.js</code>, <code>app.css</code>, <code>shell.js</code> (кнопка темы, подвал с автором); <code>i18n.js</code> + <code>i18n-dict.js</code> (RU/EN/DE); <code>style/</code>: HomenS.AI Style 1.6.0 (таблица стилей, шрифты, логотип, скрипты), раздаётся по адресу <code>/style/</code>.</td></tr>
+<tr><td><code>report/</code></td><td>Статическая страница отчёта; <code>live-data.json</code> и <code>live-status.json</code> записывает сборщик. <code>progress.html</code> + <code>progress.js</code>: прогресс тестов (план этапов из <code>live-data.json</code>) в виде процесса A/B/C из HomenS.AI Style; <code>contact.html</code> + <code>contact.js</code>: блок «Контакт» из стиля (обязателен в каждом проекте HomenS.AI).</td></tr>
+<tr><td><code>scripts/build_live_report.py</code></td><td>Собирает файлы результатов, объединяет их в SQLite (<code>raw_rows</code>, <code>results</code>, <code>history</code>, <code>model_scores</code>), строит план этапов, прогресс и оценку оставшегося времени.</td></tr>
+<tr><td><code>scripts/versioner.py</code>, <code>scripts/setup_git.py</code></td><td>Версионирование отчётов в Gitea и его однократная настройка.</td></tr>
+<tr><td><code>scripts/install.py</code></td><td>doctor / init / build / up / verify (<code>--no-gpu</code>, <code>doctor --pull</code>).</td></tr>
+<tr><td><code>scripts/build_site.py</code></td><td>Собирает сайт документации (GitHub Pages): превращает файлы Markdown в <code>site/site.json</code> и <code>site/content/</code> и запускает сборщик сайтов HomenS.AI Style, который пишет <code>site/&lt;страница&gt;.&lt;язык&gt;.html</code> и копирует ядро в <code>site/style/</code>; прежние адреса страниц становятся переадресациями; <code>--check</code> для CI.</td></tr>
+<tr><td><code>scripts/make_manifest.py</code></td><td>Записывает / проверяет <code>MANIFEST.json</code> (размер и SHA-256 каждого отслеживаемого файла).</td></tr>
+<tr><td><code>tests/</code></td><td>Модульные тесты на стандартной библиотеке: безопасность консоли, сборщик отчёта, опубликованные результаты, установщик, манифест (<code>python -m unittest discover -s tests</code>).</td></tr>
+<tr><td><code>hermes-telemetry/</code></td><td>Небольшой экспортёр метрик (GPU, llama).</td></tr>
+<tr><td><code>benchmarks/</code>, <code>docker/bench-runner/</code></td><td>Раннеры тестов, которыми получены опубликованные результаты, и их контейнер (профиль <code>bench</code>); они пишут в <code>bench_results/</code>. См. <code>benchmarks/README.md</code>.</td></tr>
+<tr><td><code>legal/</code></td><td>CC BY-NC 4.0 (результаты), PolyForm Noncommercial 1.0.0 (код), уведомления о стороннем ПО.</td></tr>
+</tbody>
+</table></div>
+<h2 id="проектные-решения">Проектные решения</h2>
+<ul>
+<li><strong>Одна модель за раз.</strong> В 10 ГБ видеопамяти помещается одна большая модель; llama-swap выгружает старую модель, прежде чем загрузить следующую. Консоль не даёт запустить LLM, пока генерация видео держит видеокарту.</li>
+<li><strong>Том для моделей.</strong> Модели раздаются из тома Docker (ext4), потому что через привязку диска Windows по WSL они загружаются примерно в 10 раз медленнее.</li>
+<li><strong>Никаких сторонних пакетов Python</strong> в консоли, сборщике и версионере: они работают на <code>python:3.12-slim</code> / <code>alpine</code> только со стандартной библиотекой.</li>
+<li><strong>Результаты никогда не перезаписываются.</strong> Разные тесты (общий, немецкий, контекст, STEM, ...) хранятся раздельно; архив SQLite хранит историю; Git хранит каждую версию отчёта.</li>
+<li><strong>Текст интерфейса в исходниках — на русском</strong>, его на лету переводит <code>i18n.js</code>; данные пользователя (промпты, ответы, логи) помечены <code>data-no-i18n</code> и никогда не переводятся. <code>scripts/check_i18n.js</code> выводит список непереведённых фрагментов.</li>
+<li><strong>Bind-монтирование одиночных файлов</strong> (файлы конфигурации) не подхватывает заменённый файл: после их правки пересоздайте сервис.</li>
+</ul>
+<h2 id="связанный-проект">Связанный проект</h2>
+<p><strong>Video Studio</strong> (отдельный репозиторий): своя консоль (порт 8767) и контейнер ComfyUI + Wan 2.1. Он подключается к сети Docker этого проекта <code>local-ai-server_default</code>, чтобы обращаться к шлюзу (выгрузить модели перед видео, составить раскадровку с помощью локальной LLM). Эта консоль только проверяет, работает ли контейнер ComfyUI, чтобы не запустить LLM, пока видеокарта занята.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.ru.html">← Документация</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/ARCHITECTURE.ru.md" rel="noopener">Исходный текст на GitHub</a></p>

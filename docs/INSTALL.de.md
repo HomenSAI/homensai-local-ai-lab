@@ -328,17 +328,17 @@ Ist `AI_CONSOLE_PASSWORD` gesetzt, hängen Sie `-u any:PASSWORT` an die `curl`-A
 | Berichtsseite leer | Normal, bis die erste `bench_results/results*.jsonl` existiert. |
 | `doctor` meldet, das CUDA-Prüfimage sei nicht heruntergeladen | Es lädt 5,6 GB nicht von selbst. Eigentümer fragen, dann `python scripts/install.py doctor --pull`, oder auf einem PC ohne GPU `--no-gpu` verwenden. |
 | `docker compose up` bricht mit „could not select device driver“ / „no known GPU vendor“ ab | Docker sieht keine GPU. `python scripts/install.py up --no-gpu` verwenden. |
-| Ein Skript oder `curl` erhält von der Konsole `415`, `421`, `403` oder `401` | Die Konsole prüft jede Anfrage: `POST` braucht `Content-Type: application/json`, der `Host` muss `localhost` oder eine IP sein (oder in `AI_CONSOLE_ALLOWED_HOSTS` stehen), ein Passwort kann nötig sein (`curl -u any:PASSWORT`). Siehe [API.md](API.md). |
+| Ein Skript oder `curl` erhält von der Konsole `415`, `421`, `403` oder `401` | Die Konsole prüft jede Anfrage: `POST` braucht `Content-Type: application/json`, der `Host` muss `localhost` oder eine IP sein (oder in `AI_CONSOLE_ALLOWED_HOSTS` stehen), ein Passwort kann nötig sein (`curl -u any:PASSWORT`). Siehe [API.de.md](API.de.md). |
 | Der Browser zeigt `421`, wenn die Konsole über einen Hostnamen geöffnet wird | Namen in `AI_CONSOLE_ALLOWED_HOSTS` in `.env` eintragen und die Konsole neu erstellen. |
 
 ## 12. Sicherheit
 
 - Das Gateway hat **keine Authentifizierung**; die Konsole hat ein optionales Passwort (`AI_CONSOLE_PASSWORD`). Halten Sie beide auf `127.0.0.1` oder in einem vertrauenswürdigen Subnetz; veröffentlichen Sie die Ports 8766 / 8080 / 3010 nie im Internet.
 - Die Konsole weist fremde `Host`-Namen sowie seitenübergreifende oder Nicht-JSON-`POST`-Anfragen ab und sendet Sicherheits-Header; eine Webseite im selben Browser kann die Modelle daher nicht steuern.
-- Der Konsolencontainer bindet `/var/run/docker.sock` ein; das Flag `read_only` schützt ihn nicht. Die Konsole sendet nur eine feste Art von Befehlen darüber und läuft ohne Privilegien, dennoch entspricht Zugriff auf die Konsole Zugriff auf Docker dieses PCs. Details: [SECURITY.md](../SECURITY.md).
+- Der Konsolencontainer bindet `/var/run/docker.sock` ein; das Flag `read_only` schützt ihn nicht. Die Konsole sendet nur eine feste Art von Befehlen darüber und läuft ohne Privilegien, dennoch entspricht Zugriff auf die Konsole Zugriff auf Docker dieses PCs. Details: [SECURITY.de.md](../SECURITY.de.md).
 - In Gitea ist die Registrierung deaktiviert und eine Anmeldung erforderlich; Passwort und Token liegen nur in `secrets/`.
 - Modelldateien stammen von Dritten: SHA-256 prüfen und deren Lizenzen lesen.
-- Probleme bitte privat melden, siehe [SECURITY.md](../SECURITY.md).
+- Probleme bitte privat melden, siehe [SECURITY.de.md](../SECURITY.de.md).
 
 ## 13. Lizenz und Namensnennung
 

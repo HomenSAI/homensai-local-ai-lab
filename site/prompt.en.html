@@ -1,0 +1,72 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Start here: the prompt for your AI assistant — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="prompt.en.html">
+  <link rel="alternate" hreflang="ru" href="prompt.ru.html">
+  <link rel="alternate" hreflang="de" href="prompt.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Main navigation">
+      <ul class="nav-main"><li><a class="nav-link" href="index.html">Home</a></li><li><a class="nav-link" href="install.en.html">Installation</a></li><li><a class="nav-link" href="docs.en.html" aria-current="page">Documentation</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Results</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.en.html">Contact</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Language"><a href="prompt.en.html" lang="en" hreflang="en" aria-label="EN – English" class="on" aria-current="true">EN</a><a href="prompt.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="prompt.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1>Start here: the prompt for your AI assistant</h1>
+    <article class="card lesson-body doc-body">
+<p><strong>Do you need this?</strong> No: the server installs with six commands that you can run yourself (README, "Quick start"). An assistant is a convenience: it runs the same commands, chooses and downloads models, reads the logs when something fails and later runs and checks your tests.</p>
+<p><strong>How it works.</strong> You open an AI assistant <strong>that can run commands on your PC</strong> (Claude Code with Sonnet or Opus, a ChatGPT/Codex agent, or another coding agent), point it at this repository (clone it, or give it the folder), and paste the prompt below. The assistant builds everything exactly as the author did - Docker, the containers, the AI server, the console, the reports - checks it, and finishes with the message <strong>"All ready - start testing"</strong> plus a status table. From then on it also runs and supervises your tests (<a href="operator.en.html">Running the server with an AI supervisor (Claude or ChatGPT)</a>).</p>
+<p>A plain browser chat (without access to your computer) cannot do this: it can only explain the steps.</p>
+<p><strong>Prompt - copy everything in the box:</strong></p>
+<pre><code>You are the installer and supervisor of the project in this folder (&quot;Local AI Server&quot;: a llama.cpp/llama-swap model server for one NVIDIA GPU, a web console, test reports with Git history). Build it on THIS computer exactly as the author did and then tell me it is ready for testing.
+
+Read first: AGENTS.md (or CLAUDE.md), docs/INSTALL.en.md, docs/AI_OPERATOR.en.md, docs/API.md.
+
+Work in this order and report briefly after each step:
+0. Prerequisites. Check: Windows 10/11 (or Linux with NVIDIA Container Toolkit), an NVIDIA GPU and driver (`nvidia-smi`), WSL2, Docker Desktop running and NOT paused, Docker Compose v2. On Windows nothing else is needed: use the PowerShell installer `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 &lt;step&gt;` (do not install Python, Git or Node on Windows). On Linux use `python scripts/install.py &lt;step&gt;` (Python 3.10+). Below, `install &lt;step&gt;` means the installer of this system. If something is missing, tell me what and how you would install it (for example `wsl --install`, `winget install Docker.Desktop`) and WAIT for my yes: installing system software and reboots are my decision.
+1. `install doctor` - fix everything it reports (ports busy, GPU not visible in Docker, little disk space), ask me if the fix is not obvious. It does not download the 5.6 GB CUDA test image by itself: ask me before `doctor --pull` (`-Pull` in PowerShell). If this PC has no NVIDIA GPU, tell me and use `--no-gpu` (`-NoGpu`) for doctor / build / up / verify.
+2. `install init` - then ask me for: the folder for model files (MODEL_DIR), and whether the console should be reachable from other devices on my network (AI_CONSOLE_BIND_IP; default: this PC only). Write the answers into .env. If the console must be reachable from other devices, ask me for a password and put it into `AI_CONSOLE_PASSWORD` in .env (never anywhere that goes to Git).
+3. Models: ask me which models I want (default for a first run: the small smoke-test model MiniCPM5-2B-Q8_0, about 2.7 GB). Download only from the sources and revisions listed in MODELS.md, verify SHA-256, place the files in the Docker volume as in section 4.5 of docs/INSTALL.en.md. Ask me before any download larger than 1 GB. Do not invent sources.
+4. `install build` (15-40 minutes the first time), `install up`, then `install git` (the local Git server that keeps every version of the reports).
+5. `install verify` - every line must be [ok]. Then prove the chain works: load the smoke-test model through the console API and get one real answer from it through the gateway; show me the answer, the speed (tokens/s) and the GPU memory used.
+6. Optional, only if I ask: Open WebUI, Video Studio (separate repository).
+
+Rules: one model in video memory at a time; never open ports 8766/8080/3010 to the internet; never write secrets or personal data into files that go to Git; ask before deleting anything; if a command fails read the log (`docker logs &lt;container&gt;`), fix the cause and do not retry blindly.
+
+FINISH with exactly this message (fill it in from real checks, do not guess):
+&quot;All ready - start testing.
+ Console: http://localhost:8766/   Report: http://localhost:8766/report/   Gateway API: http://localhost:8080/v1
+ Version: &lt;from /api/version&gt;   GPU: &lt;name, memory&gt;   Models installed: &lt;list&gt;   verify: &lt;n of n ok&gt;
+ Smoke test: &lt;model&gt; answered &#x27;&lt;answer&gt;&#x27; at &lt;tokens/s&gt; tok/s.
+ Warnings: &lt;anything that is not perfect, or &#x27;none&#x27;&gt;.
+ Next: tell me which tests to run on which models (see docs/AI_OPERATOR.en.md) and I will run and check them.&quot;</code></pre>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/PROMPT_FOR_AI.md" rel="noopener">Source text on GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>JavaScript is required for the menu, the theme switch and the footer.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

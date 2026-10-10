@@ -1,0 +1,183 @@
+{
+ "name": "Local AI Lab",
+ "title": {
+  "en": "Local AI Lab",
+  "ru": "Local AI Lab",
+  "de": "Local AI Lab"
+ },
+ "languages": [
+  "en",
+  "ru",
+  "de"
+ ],
+ "version": "1.6.0",
+ "out": ".",
+ "pages": [
+  {
+   "id": "home",
+   "nav": {
+    "en": "Home",
+    "ru": "Главная",
+    "de": "Start"
+   }
+  },
+  {
+   "id": "install",
+   "nav": {
+    "en": "Installation",
+    "ru": "Установка",
+    "de": "Installation"
+   },
+   "title": {
+    "en": "Installation guide (English)",
+    "ru": "Руководство по установке (Русский)",
+    "de": "Installationsanleitung (Deutsch)"
+   }
+  },
+  {
+   "id": "docs",
+   "nav": {
+    "en": "Documentation",
+    "ru": "Документация",
+    "de": "Dokumentation"
+   },
+   "title": {
+    "en": "Documentation",
+    "ru": "Документация",
+    "de": "Dokumentation"
+   }
+  },
+  {
+   "id": "operator",
+   "parent": "docs",
+   "title": {
+    "en": "Running the server with an AI supervisor (Claude or ChatGPT)",
+    "ru": "Работа сервера под управлением ИИ-супервизора (Claude или ChatGPT)",
+    "de": "Betrieb des Servers mit einem KI-Supervisor (Claude oder ChatGPT)"
+   }
+  },
+  {
+   "id": "prompt",
+   "parent": "docs",
+   "title": {
+    "en": "Start here: the prompt for your AI assistant",
+    "ru": "Начните здесь: промпт для вашего ИИ-ассистента",
+    "de": "Hier beginnen: der Prompt für Ihren KI-Assistenten"
+   }
+  },
+  {
+   "id": "virtual-3080",
+   "parent": "docs",
+   "title": {
+    "en": "Virtual RTX 3080: test the whole system without a GPU",
+    "ru": "Виртуальная RTX 3080: проверка всей системы без GPU",
+    "de": "Virtuelle RTX 3080: das ganze System ohne GPU testen"
+   }
+  },
+  {
+   "id": "methodology",
+   "parent": "docs",
+   "title": {
+    "en": "How the results were obtained",
+    "ru": "Как получены результаты",
+    "de": "Wie die Ergebnisse entstanden sind"
+   }
+  },
+  {
+   "id": "runners",
+   "parent": "docs",
+   "title": {
+    "en": "Benchmarks: the test runners",
+    "ru": "Бенчмарки: раннеры тестов",
+    "de": "Benchmarks: die Test-Runner"
+   }
+  },
+  {
+   "id": "results-format",
+   "parent": "docs",
+   "title": {
+    "en": "Result files and stage plan",
+    "ru": "Файлы результатов и план этапов",
+    "de": "Ergebnisdateien und Phasenplan"
+   }
+  },
+  {
+   "id": "models",
+   "parent": "docs",
+   "title": {
+    "en": "Model inventory and profiles",
+    "ru": "Перечень моделей и профили",
+    "de": "Modellbestand und Profile"
+   }
+  },
+  {
+   "id": "design",
+   "parent": "docs",
+   "title": {
+    "en": "Why it was built this way",
+    "ru": "Почему сделано именно так",
+    "de": "Warum es so gebaut wurde"
+   }
+  },
+  {
+   "id": "architecture",
+   "parent": "docs",
+   "title": {
+    "en": "Architecture",
+    "ru": "Архитектура",
+    "de": "Architektur"
+   }
+  },
+  {
+   "id": "api",
+   "parent": "docs",
+   "title": {
+    "en": "HTTP interfaces (for operators and AI supervisors)",
+    "ru": "HTTP-интерфейсы (для операторов и ИИ-супервизоров)",
+    "de": "HTTP-Schnittstellen (für Bediener und KI-Supervisoren)"
+   }
+  },
+  {
+   "id": "security",
+   "parent": "docs",
+   "title": {
+    "en": "Security policy",
+    "ru": "Политика безопасности",
+    "de": "Sicherheitsrichtlinie"
+   }
+  },
+  {
+   "id": "licences",
+   "parent": "docs",
+   "title": {
+    "en": "Licences",
+    "ru": "Лицензии",
+    "de": "Lizenzen"
+   }
+  },
+  {
+   "id": "results",
+   "nav": {
+    "en": "Results",
+    "ru": "Результаты",
+    "de": "Ergebnisse"
+   },
+   "href": "https://github.com/HomenSAI/rtx3080-local-ai-benchmarks"
+  },
+  {
+   "id": "github",
+   "nav": {
+    "en": "GitHub",
+    "ru": "GitHub",
+    "de": "GitHub"
+   },
+   "href": "https://github.com/HomenSAI/homensai-local-ai-lab"
+  }
+ ],
+ "css": [
+  "assets/site.css"
+ ],
+ "js": {
+  "*": []
+ }
+}

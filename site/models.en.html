@@ -1,0 +1,102 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Model inventory and profiles — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="models.en.html">
+  <link rel="alternate" hreflang="ru" href="models.ru.html">
+  <link rel="alternate" hreflang="de" href="models.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Main navigation">
+      <ul class="nav-main"><li><a class="nav-link" href="index.html">Home</a></li><li><a class="nav-link" href="install.en.html">Installation</a></li><li><a class="nav-link" href="docs.en.html" aria-current="page">Documentation</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Results</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.en.html">Contact</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Language"><a href="models.en.html" lang="en" hreflang="en" aria-label="EN – English" class="on" aria-current="true">EN</a><a href="models.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="models.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="model-inventory-and-profiles">Model inventory and profiles</h1>
+    <nav class="card help-toc doc-toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#verification-notes">Verification notes</a></li><li><a href="#measured-production-settings-rtx-3080-10-gib">Measured production settings (RTX 3080 10 GiB)</a></li><li><a href="#dual-resident-gate">Dual-resident gate</a></li><li><a href="#unified-api-catalog-2026-09-28">Unified API catalog (2026-09-28)</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Model assets stay in <code>&lt;MODEL_DIR&gt;</code>; containers receive that host directory as a read-only bind mount at <code>/models</code>. No model weights are copied into Docker images. Checksums are recorded in <code>MODELS.sha256</code>.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Logical name</th><th>Host file</th><th>Source / revision</th><th>Quant / metadata</th><th class="n">Bytes</th><th>SHA256</th><th>Runtime / profile</th><th>Initial context / KV</th><th>Accelerator</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>Bonsai 2 27B</td><td><code>&lt;MODEL_DIR&gt;/Ternary-Bonsai-2-27B-PTQ1_0.gguf</code></td><td><code>prism-ml/Ternary-Bonsai-2-27B-gguf</code></td><td>PTQ1_0, qwen35, 851 tensors, 64 layers</td><td class="n">5,946,648,928</td><td><code>53107f530aa52eb00912263ab1ee29bd199261c87cd7b4ad4ca1318c1fe33ee3</code></td><td>PrismML only / <code>bonsai</code></td><td>32768 stable; F16 KV; 8488 MiB sampled peak</td><td>None</td><td>Experimental, higher-quality compressed 27B-class option; compare output quality manually</td></tr>
+<tr><td>Qwen3.5 9B MTP</td><td><code>&lt;MODEL_DIR&gt;/Qwen3\Qwen3.5-9B-UD-Q4_K_XL.gguf</code></td><td><code>unsloth/Qwen3.5-9B-MTP-GGUF@9716a636ee4bddc3fed678220b7a33dd2a4160ae</code></td><td>UD-Q4_K_XL, qwen35, nextn_predict_layers=1</td><td class="n">6,135,034,208</td><td><code>362f85a2d7dbc0259e926d5ac33ca0d0f17fd3753496d65bfd2106384c929d3f</code></td><td>Upstream llama.cpp / <code>qwen</code></td><td>65536; F16 KV; 8050 MiB base, 8678 MiB MTP n=2 peak</td><td><code>draft-mtp</code> n-max=2; 86.7 vs 71.4 tok/s in fixed-seed content check, 69% acceptance</td><td>HEAVY / REASONING / COMPLEX CODING / LONG CONTEXT</td></tr>
+<tr><td>Qwen3.5 9B existing comparison</td><td><code>&lt;MODEL_DIR&gt;/Qwen3\Qwen3.5-9B-Q5_K_S-4.60bpw.gguf</code></td><td><code>byteshape/Qwen3.5-9B-GGUF</code> (source inferred from metadata)</td><td>Q5_K_S, 4.60 bpw, qwen35, non-MTP</td><td class="n">5,155,948,384</td><td><code>cbb7c4bd88d9a6313a82c5a8441c4cce7d431876f8250404d16a340d74260a04</code></td><td>Upstream llama.cpp / <code>qwen-q5</code></td><td>65536 smoke verified</td><td>No MTP</td><td>Existing non-MTP comparison against MTP Q4 profile</td></tr>
+<tr><td>Qwen3.5 Vision projector</td><td><code>&lt;MODEL_DIR&gt;/Qwen3\mmproj-F16.gguf</code></td><td>Same pinned Unsloth Qwen MTP repo/revision</td><td>F16, clip, Qwen3VL merger</td><td class="n">918,165,984</td><td><code>5a40d1f771686432172a4981018a0d30d03a5aaf5793a5badd5416573362a232</code></td><td>Upstream llama.cpp / <code>qwen-vision</code></td><td>32768 context smoke verified separately</td><td>MTP off</td><td>Image input through the OpenAI-compatible API</td></tr>
+<tr><td>MiniCPM5 2B</td><td><code>&lt;MODEL_DIR&gt;/MiniCPM5\MiniCPM5-2B-Q8_0.gguf</code></td><td><code>openbmb/MiniCPM5-2B-GGUF@2079a22f3beaa4e306449978533478fe0522f4b3</code></td><td>Q8_0, llama, 381 tensors, 42 blocks</td><td class="n">2,679,710,688</td><td><code>c5415f8989bf88a8288f1b55a3cc371af53c07b0faa220a63bd7a990cfaba078</code></td><td>Upstream llama.cpp / <code>minicpm</code>, <code>dual-minicpm</code></td><td>Single 65536; dual 8192; single 5831 MiB peak</td><td>DSpark OFF selected; n=4 was faster in repeated throughput run but failed the same-prompt concise-answer sanity check; n=7 slower</td><td>FAST / ROUTER / SIMPLE TOOLS</td></tr>
+<tr><td>MiniCPM5 DSpark head</td><td><code>&lt;MODEL_DIR&gt;/MiniCPM5\MiniCPM5-2.6B-DSpark.gguf</code></td><td><code>openbmb/MiniCPM5-2B-DSpark-GGUF@a261d2b4abc9c9ebfbad2af8a817a09802fc4ca3</code></td><td>BF16 DFlash head, 5 draft blocks, block size 7</td><td class="n">652,730,240</td><td><code>57df08640f0534a1aac075d1c8bdacdb2b7e5815da6f4e5cfd39ecac3a3f0c26</code></td><td>Upstream llama.cpp, MiniCPM only</td><td>Single A/B only; off initially</td><td>GPU draft offload only if supported and measured faster</td><td>Optional accelerator, not a required dependency</td></tr>
+<tr><td>Spark-X2.5 4B</td><td><code>&lt;MODEL_DIR&gt;/Spark\Spark-X2.5-4B-Q8_0.gguf</code></td><td><code>XHToken/Spark-X2.5-4B-GGUF@9826e0be84e6e6e8b9668abc91421109a1df1e2d</code></td><td>Q8_0, architecture <code>spark2_5</code></td><td class="n">4,375,021,152</td><td><code>5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2</code></td><td>Upstream llama.cpp / <code>spark</code>, <code>dual-spark</code></td><td>Single 65536 F16 KV; dual 16384 Q8_0 KV</td><td>Thinking OFF for browser/default; thinking ON produced no user-facing <code>content</code> in the quality check</td><td>MID / AGENT / CODING / TOOLS</td></tr>
+<tr><td>Whisper large-v3 turbo</td><td><code>&lt;MODEL_DIR&gt;/audio\ggml-large-v3-turbo-q8_0.bin</code></td><td><code>ggerganov/whisper.cpp@5359861c739e955e79d9a303bcbc70fb988958b1</code></td><td>Q8_0 GGML binary</td><td class="n">874,188,075</td><td><code>317eb69c11673c9de1e1f0d459b253999804ec71ac4c23c17ecf5fbe24e259a1</code></td><td>whisper.cpp CUDA / on-demand <code>whisper</code> at 8082</td><td>Load on demand; stop after processing</td><td>None</td><td>STT in Russian, Ukrainian, German and English</td></tr>
+<tr><td>Qwen-Image-2.1 diffusion model</td><td><code>&lt;MODEL_DIR&gt;/Qwen-Image-2.1\qwen-image-2.1-Q5_K_M.gguf</code></td><td><code>unsloth/Qwen-Image-2.1-GGUF@2c31ccd392b367a6637841a143813320a02dff55</code></td><td>Q5_K_M GGUF v3, 265 tensors; header has 0 metadata KVs and diffusion tensor names</td><td class="n">5,390,223,072</td><td><code>4b53321654dd3bf0aa8dd6bb821fdcb1c9053ca735070e359a23cbb9f97268ce</code></td><td>stable-diffusion.cpp CUDA / on-demand <code>qwen-image</code></td><td>1024×1024, 20 steps, seed 42; passed in 231.7 s, 7081 MiB VRAM / 5714 MiB container RAM peak</td><td>Diffusion Flash Attention, disk-backed diffusion weights, VAE tiling, Qwen3-VL text encoder</td><td>Text-to-image tested; image editing remains available with vision projector</td></tr>
+<tr><td>Qwen-Image-2.1 text encoder</td><td><code>&lt;MODEL_DIR&gt;/Qwen-Image-2.1\text_encoder\Qwen3VL-8B-Instruct-Q4_K_M.gguf</code></td><td><code>Qwen/Qwen3-VL-8B-Instruct-GGUF@f982a07559d4a2f6c8744d840bf6fccab30eea96</code></td><td>Q4_K_M GGUF v3, qwen3vl, 399 tensors, 36 blocks, metadata context 262144</td><td class="n">5,027,784,800</td><td><code>67d1659bfe71b89d50b45a4ad1a9e5b997e5bb16ce5da66a6a6167abd569e9e2</code></td><td>stable-diffusion.cpp / Qwen Image only</td><td>CPU-offload; not a resident chat LLM</td><td>Prompt conditioning</td><td>Required for Qwen-Image text-to-image</td></tr>
+<tr><td>Qwen3-VL image-edit projector</td><td><code>&lt;MODEL_DIR&gt;/Qwen-Image-2.1\text_encoder\mmproj-Qwen3VL-8B-Instruct-F16.gguf</code></td><td>Same pinned Qwen3-VL repo/revision</td><td>F16 GGUF v3, clip/mmproj, 352 tensors</td><td class="n">1,159,029,824</td><td><code>ca524100ebf825c9a870db1c580d03879e0da0ab2541697e2458e64891cf9d38</code></td><td>stable-diffusion.cpp / Qwen Image edit only</td><td>Loaded only for image-edit requests</td><td>Vision encoding</td><td>Required to condition Qwen-Image edits on reference images</td></tr>
+<tr><td>Qwen-Image-2.1 VAE</td><td><code>&lt;MODEL_DIR&gt;/Qwen-Image-2.1\vae\qwen_image_2.1_vae_bf16.safetensors</code></td><td><code>Comfy-Org/Qwen-Image-2.1@9a44dbdb47cefd046be9c0a13476192f34c8db8e</code></td><td>BF16 safetensors, 238 tensors; metadata <code>qwen_image_2.1_vae</code></td><td class="n">675,509,688</td><td><code>bb21f7473051e1ac368515dd3f2e15cd44d7a11748ee8823e1ddca3e4876b7c9</code></td><td>stable-diffusion.cpp / Qwen Image only</td><td>Offload as runtime requires</td><td>None</td><td>Decode generated image latents</td></tr>
+</tbody>
+</table></div>
+<h2 id="verification-notes">Verification notes</h2>
+<ul>
+<li>Bonsai is GGUF v3, architecture <code>qwen35</code>, file_type 143. Its bytes match the Hub LFS checksum. PTQ1_0 must use the PrismML runtime and must not be routed through stock llama.cpp.</li>
+<li>The selected Qwen MTP file is GGUF v3, architecture <code>qwen35</code>, 442 tensors and 33 blocks. Metadata contains <code>nextn_predict_layers=1</code> and four <code>.nextn.*</code> tensors. The existing Q5_K_S file is non-MTP and remains untouched; its new <code>qwen-q5</code> profile is an explicit comparison service.</li>
+<li>The Qwen3.5 projector is GGUF v3 <code>clip</code> with Qwen3VL vision/projector metadata.</li>
+<li>MiniCPM GGUF is Q8_0, 381 tensors and 42 blocks. Metadata context is 131072; profile contexts remain benchmark-controlled.</li>
+<li>DSpark is a separate DFlash GGUF head with 5 blocks and block size 7. It loads with the pinned runtime; n=4 acceptance was measured, but the exact short-answer sanity response lost required explanatory content, so standalone MiniCPM remains the default. n=7 was slower.</li>
+<li>Spark GGUF is v3, architecture <code>spark2_5</code>, file_type 7. The pinned upstream runtime is newer than the native-support merge at b10828.</li>
+<li>Whisper bytes and size match the official Hub LFS object at the recorded revision.</li>
+<li>Qwen Image diffusion, Qwen3-VL encoder, edit mmproj and Qwen Image 2.1 VAE have exact sizes and locally computed SHA256 values matching each pinned Hugging Face local <code>etag</code>; repository revisions are also checked. The diffusion GGUF header is v3, has 265 tensor descriptors and zero metadata entries; its descriptors use <code>model.diffusion_model.*</code> names, so no <code>general.architecture</code> value is claimed. The three other assets expose the recorded metadata.</li>
+<li>Qwen-Image-2.1 is a diffusion transformer, not a chat/text model. <code>llama.cpp</code> does not execute its <code>qwen_image</code> architecture. Main language models stay on llama.cpp; the Qwen Image profile uses pinned <code>stable-diffusion.cpp</code> inside this same Docker project. The 1024×1024/20-step test passed with <code>--params-backend diffusion=disk</code>, CPU offload and tiled VAE; output and peak telemetry are under <code>media/images/</code>.</li>
+</ul>
+<h2 id="measured-production-settings-rtx-3080-10-gib">Measured production settings (RTX 3080 10 GiB)</h2>
+<ul>
+<li>Qwen3.5 MTP n-max=2: three-repeat average 93.4 tok/s vs 79.8 tok/s MTP-off (+17%); the same fixed-seed content check also passed, with 69% draft acceptance and 8678 MiB peak. n=4 averaged 88.3 tok/s, n=6 62.2 tok/s. Keep n=2 at 65536 context.</li>
+<li>MiniCPM: DSpark OFF. The three-repeat n=4 run averaged about 155 tok/s vs 143 tok/s standalone, but its same-prompt content check dropped the requested explanation and produced an invalid <code>faulthandler.dump_traceback_limit</code> example. n=7 averaged about 131 tok/s. Preserve the valid single-model profile; dual context is 8192.</li>
+<li>Spark: single profile F16 KV / 65536 context; dual profile Q8_0 KV / 16384. Three-repeat means were about 81.1 tok/s (F16) and 75.2 tok/s (Q8_0); Q8_0 is retained only for the resident pair's memory headroom. Set <code>enable_thinking=false</code> for normal API/UI requests because thinking-on returned no user-facing content within the test cap.</li>
+<li>Bonsai: PrismML only, context 32768 passed with 8488 MiB sampled peak (~1.7 GiB available). It remains experimental pending manual answer-quality comparison.</li>
+<li>Qwen Vision: context 32768 passed separately; peak 8143 MiB. Whisper is on-demand only.</li>
+</ul>
+<h2 id="dual-resident-gate">Dual-resident gate</h2>
+<p>Only MiniCPM5 + Spark may be resident together. The tested 8192 + 16384 setup with Spark Q8_0 KV passed: idle combined VRAM 8289 MiB (1951 MiB free); controlled simultaneous peak 8300 MiB (1940 MiB free), no OOM/CUDA errors; sequential throughput change was within 1% for each. Dual mode is enabled, but requests should run sequentially by default. Single-model profiles keep their own measured KV settings.</p>
+<h2 id="unified-api-catalog-2026-09-28">Unified API catalog (2026-09-28)</h2>
+<p>The active gateway exposes these llama.cpp chat profiles through one API. Exact public model IDs retain family, variant and quantization; model weights stay at the existing host paths.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Public model ID</th><th>Host model file</th><th>Runtime</th><th class="n">Context</th><th>GPU offload / KV</th><th>Mode</th></tr></thead>
+<tbody>
+<tr><td><code>Qwen3.5-9B-MTP-Q4_K_XL</code></td><td><code>Qwen3/Qwen3.5-9B-UD-Q4_K_XL.gguf</code></td><td>Upstream llama.cpp</td><td class="n">65536</td><td>all layers / F16</td><td>MTP <code>draft-mtp</code>, n-max 2</td></tr>
+<tr><td><code>Qwen3.5-9B-MTP-Q4_K_XL-Vision</code></td><td>same Qwen GGUF + <code>Qwen3/mmproj-F16.gguf</code></td><td>Upstream llama.cpp</td><td class="n">49152</td><td>all layers / F16</td><td>Vision, MTP off</td></tr>
+<tr><td><code>Qwen3.5-9B-Q5_K_S</code></td><td><code>Qwen3/Qwen3.5-9B-Q5_K_S-4.60bpw.gguf</code></td><td>Upstream llama.cpp</td><td class="n">65536</td><td>all layers / F16</td><td>Text</td></tr>
+<tr><td><code>MiniCPM5-2B-Q8_0</code></td><td><code>MiniCPM5/MiniCPM5-2B-Q8_0.gguf</code></td><td>Upstream llama.cpp</td><td class="n">131072</td><td>all layers / F16</td><td>DSpark off; long-input recall caveat</td></tr>
+<tr><td><code>Spark-X2.5-4B-Q8_0</code></td><td><code>Spark/Spark-X2.5-4B-Q8_0.gguf</code></td><td>Upstream llama.cpp</td><td class="n">98304</td><td>all layers / F16</td><td>Thinking defaults off in UI; long-input recall caveat</td></tr>
+<tr><td><code>Ternary-Bonsai-2-27B-PTQ1_0</code></td><td><code>Ternary-Bonsai-2-27B-PTQ1_0.gguf</code></td><td>PrismML llama.cpp only</td><td class="n">32768</td><td>all layers / F16</td><td>Experimental</td></tr>
+<tr><td><code>Qwen3-VL-8B-Instruct-Q4_K_M</code></td><td><code>Qwen-Image-2.1/text_encoder/Qwen3VL-8B-Instruct-Q4_K_M.gguf</code> + matching F16 mmproj</td><td>Upstream llama.cpp</td><td class="n">16384</td><td>all layers / F16</td><td>Vision; 16K long input and image smoke tested</td></tr>
+</tbody>
+</table></div>
+<p>All seven profiles belong to llama-swap's single <code>swap: true</code>, <code>exclusive: true</code> group. <code>globalTTL=900</code> unloads an idle backend after 15 minutes. The gateway has no preload list, so its initial/restarted state is <code>ACTIVE MODEL=NONE</code>. Qwen Image diffusion and Whisper STT do not implement chat completions and are not included in <code>/v1/models</code>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/MODELS.md" rel="noopener">Source text on GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>JavaScript is required for the menu, the theme switch and the footer.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

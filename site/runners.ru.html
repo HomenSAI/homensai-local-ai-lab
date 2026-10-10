@@ -1,0 +1,76 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Бенчмарки: раннеры тестов — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="runners.en.html">
+  <link rel="alternate" hreflang="ru" href="runners.ru.html">
+  <link rel="alternate" hreflang="de" href="runners.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти к содержанию</a>
+  <header class="topbar">
+    <a class="brand" href="index.ru.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Основная навигация">
+      <ul class="nav-main"><li><a class="nav-link" href="index.ru.html">Главная</a></li><li><a class="nav-link" href="install.ru.html">Установка</a></li><li><a class="nav-link" href="docs.ru.html" aria-current="page">Документация</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Результаты</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.ru.html">Контакт</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Язык"><a href="runners.en.html" lang="en" hreflang="en" aria-label="EN – English">EN</a><a href="runners.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="runners.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский" class="on" aria-current="true">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="бенчмарки-раннеры-тестов">Бенчмарки: раннеры тестов</h1>
+    <nav class="card help-toc doc-toc" aria-label="Содержание"><h2>Содержание</h2><ol><li><a href="#тесты-скрипты-и-файлы-результатов">Тесты, скрипты и файлы результатов</a></li><li><a href="#запуск-всё-в-docker">Запуск (всё в Docker)</a></li><li><a href="#отличия-от-опубликованного-прогона">Отличия от опубликованного прогона</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Эти скрипты дали опубликованные результаты <a href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">rtx3080-local-ai-benchmarks</a> (23 модели на RTX 3080 / 10 ГБ, 2026-09-29 – 2026-10-06). В том репозитории хранятся только результаты; код, чтобы повторить тесты, — здесь.</p>
+<h2 id="тесты-скрипты-и-файлы-результатов">Тесты, скрипты и файлы результатов</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Тест (папка в репозитории результатов)</th><th>Этап</th><th>Раннер</th><th>Задачи</th><th>Файл результатов в <code>bench_results/</code></th></tr></thead>
+<tbody>
+<tr><td>01-general-quality</td><td><code>general</code></td><td><code>bench_top.py</code> (список моделей <code>TOP</code>) + <code>bench_all.py</code></td><td><code>qtasks.py</code>, 3 задачи по коду из <code>coding_tasks.py</code>, картинки из <code>make_images.py</code></td><td><code>results_all.jsonl</code></td></tr>
+<tr><td>02-german-passive</td><td><code>german</code>, <code>german_fix</code></td><td><code>german_all.py</code>, <code>german_fix.py</code> (повторный прогон пустых ответов), <code>qa_bench.py</code></td><td><code>qa_tasks.py</code></td><td><code>results_german.jsonl</code>, <code>results_german_fix.jsonl</code></td></tr>
+<tr><td>03-max-context</td><td><code>context</code></td><td><code>bench_ctx.py</code> + <code>mneedle.py</code> (3 спрятанных факта при заполнении 80 %)</td><td>текст-заполнитель из стандартной библиотеки Python</td><td><code>results_ctx.jsonl</code>, <code>results_ctx_trials.jsonl</code></td></tr>
+<tr><td>04-soak-reliability</td><td><code>soak</code></td><td><code>soak.py</code> (через шлюз на порту 8080)</td><td>профили из <code>config/llama-swap.yaml</code></td><td><code>results_soak.jsonl</code></td></tr>
+<tr><td>05-math-physics-grade11</td><td><code>stem</code></td><td><code>bench_stem.py</code></td><td><code>stem_tasks.py</code></td><td><code>results_stem.jsonl</code></td></tr>
+<tr><td>06-chemistry-grade11</td><td><code>chem</code></td><td><code>bench_chem.py</code></td><td><code>chem_tasks.py</code></td><td><code>results_chem.jsonl</code></td></tr>
+<tr><td>07-coding-20</td><td><code>code20</code></td><td><code>bench_code20.py</code>, тесты в песочнице без сети (<code>code_eval_harness.py</code>)</td><td><code>coding_tasks.py</code></td><td><code>results_code20.jsonl</code></td></tr>
+<tr><td>08-accelerators-embeddings</td><td><code>accel</code></td><td><code>bench_accel.py</code></td><td>профили спекулятивного декодирования из <code>config/llama-swap.yaml</code>, модели эмбеддингов</td><td><code>results_accel.jsonl</code></td></tr>
+</tbody>
+</table></div>
+<p>В <code>bench_top.py</code> и <code>bench_all.py</code> лежат общие части: список моделей, запуск модели в собственном контейнере (<code>bench-srv</code>, порт 8090, образ <code>local/ai-server-llama-swap:260</code>, модели из тома Docker <code>llm-models-fast</code>), контроль оперативной памяти и чекеры.
+После теста контекста <code>gen_profiles_from_ctx.py</code> и <code>finalize_profiles.py</code> превращают измеренные окна в профили шлюза (<code>config/llama-swap-ctx.yaml</code> → <code>config/llama-swap-final.yaml</code>; это кандидаты, которые не действуют, пока вы их не скопируете); в <code>exclude_not_gpu.md</code> перечислены модели, снятые по правилу 64K.</p>
+<h2 id="запуск-всё-в-docker">Запуск (всё в Docker)</h2>
+<p>Сначала соберите образы шлюза (<code>docs/INSTALL.*</code>, разделы о сборке), положите модели в том <code>llm-models-fast</code> и заполните пути в <code>TOP</code> файла <code>bench_top.py</code>. Затем:</p>
+<pre><code>docker compose --profile bench up -d --build bench-runner</code></pre>
+<p>Раннер копирует эти скрипты в <code>bench_results/</code>, рисует картинки для задач на зрение и запускает этапы в порядке <code>BENCH_PHASES</code> (по умолчанию <code>general german context german_fix accel stem chem code20</code>; добавьте <code>soak</code>, чтобы проверить профили шлюза). Каждый этап пишет свой журнал (<code>bench_full.log</code>, <code>bench_ctx.log</code>, ...) с маркером завершения, которого ждёт консоль, поэтому консоль показывает этап, полосу прогресса и оставшееся время. Каждый этап пропускает уже готовые модели, так что после перезапуска работа продолжается с того места, где остановилась. Чтобы запустить другие этапы: <code>BENCH_PHASES=&quot;stem chem&quot;</code> в <code>.env</code>, удалите <code>bench_results/run_all.log</code> и снова запустите раннер. Остановить его: <code>docker compose --profile bench stop bench-runner</code>.</p>
+<p>Раннер управляет Docker на этом ПК через сокет Docker (запускает и останавливает контейнеры моделей и шлюз): запускайте его только на время прогона тестов.</p>
+<h2 id="отличия-от-опубликованного-прогона">Отличия от опубликованного прогона</h2>
+<ul>
+<li>Картинки для задач на зрение из опубликованного прогона не сохранились; <code>make_images.py</code> рисует заново то же содержание (фигуры, код заказа, 7 точек), поэтому оценки зрения сравнимы, но не идентичны.</li>
+<li>Песочница для кода теперь использует обычный образ <code>python:3.12-slim</code> (<code>SANDBOX_IMAGE</code>) и копирует в него файлы, поэтому работает внутри контейнера раннера.</li>
+<li>Текст-заполнитель теста контекста собирается заново из стандартной библиотеки Python образа раннера; результаты могут немного отличаться между версиями Python.</li>
+<li>Проверено в облаке без GPU: контейнер раннера, этапы, журналы и маркеры, песочница для кода (эталонные решения проходят, сломанное — не проходит) и картинки. Для полного прогона нужны видеокарта NVIDIA и модели.</li>
+</ul>
+    </article>
+    <p class="doc-meta"><a href="docs.ru.html">← Документация</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/benchmarks/README.ru.md" rel="noopener">Исходный текст на GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>Для меню, переключения темы и подвала нужен JavaScript.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

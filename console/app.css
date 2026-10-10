@@ -364,7 +364,6 @@ details.field textarea{margin-top:8px}
 /* ---- shell: style topbar, tools, footer ---- */
 main{max-width:1500px}
 .nav-tools .local-pill{display:inline-flex;align-items:center}
-.nav-tools select.lang-switch{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer}
 .site-footer.console-footer{max-width:1500px}
 .site-footer.console-footer p{margin:.3rem 0}
 .button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-text)}

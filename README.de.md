@@ -54,7 +54,7 @@ python scripts/install.py verify
 | Aufgabe | Selbst | Was ein KI-Assistent hinzufügt |
 |---|---|---|
 | Installieren | die sechs Befehle oben, einer nach dem anderen | führt sie für Sie aus und behebt, was `doctor` / `verify` melden |
-| Modelle | die Dateien aus [MODELS.md](MODELS.md) laden und ins Docker-Volume legen (Anleitung, Abschnitt 4.5) | wählt Modelle für Ihre Karte, prüft SHA-256 |
+| Modelle | die Dateien aus [MODELS.de.md](MODELS.de.md) laden und ins Docker-Volume legen (Anleitung, Abschnitt 4.5) | wählt Modelle für Ihre Karte, prüft SHA-256 |
 | Benutzen | die Konsole im Browser (unten) | — |
 | Tests starten | ein Befehl (unten) | überwacht den Lauf, prüft die Zahlen auf Plausibilität, wiederholt verdächtige Läufe |
 | Etwas geht nicht | Anleitung, Abschnitt 11 „Fehlerbehebung“ | liest die Container-Logs und behebt die Ursache |
@@ -70,20 +70,20 @@ Diese Schritte kann nur ein Assistent ausführen, **der Befehle auf diesem Compu
 | Testfortschritt (Phasen, aktuelles Modell, Restzeit) | http://localhost:8766/report/progress.html |
 | OpenAI-kompatible API für andere Programme (Open WebUI, Skripte, IDEs) | http://localhost:8080/v1 |
 | Jede Version der Berichte (lokales Git) | http://localhost:3010/ (Zugangsdaten in `secrets/gitea-admin.txt`) |
-| Tests starten | `docker compose --profile bench up -d --build bench-runner` ([benchmarks/README.md](benchmarks/README.md)) |
+| Tests starten | `docker compose --profile bench up -d --build bench-runner` ([benchmarks/README.md](benchmarks/README.de.md)) |
 
-**Ohne GPU ausprobieren:** [tests/virtual-3080/](tests/virtual-3080/README.md) installiert das ganze System auf einem Linux-Rechner mit Docker und einer virtuellen RTX 3080 (simulierte Zahlen) – zum Kennenlernen oder um Änderungen zu testen.
+**Ohne GPU ausprobieren:** [tests/virtual-3080/](tests/virtual-3080/README.de.md) installiert das ganze System auf einem Linux-Rechner mit Docker und einer virtuellen RTX 3080 (simulierte Zahlen) – zum Kennenlernen oder um Änderungen zu testen.
 
 ## Dokumentation
 
-Dieselbe Dokumentation als Website in HomenS.AI Style (Menü, Sprachwahl, helles und dunkles Design): <https://homensai.github.io/homensai-local-ai-lab/README.de.html>. Die Seiten werden mit `python scripts/build_site.py` aus diesen Markdown-Dateien gebaut.
+Dieselbe Dokumentation als Website auf dem Kern HomenS.AI Style (Menü, Schaltflächen EN | DE | RU, helles und dunkles Design, jede Seite in drei Sprachen): <https://homensai.github.io/homensai-local-ai-lab/site/index.de.html>. Die Seiten werden mit `python scripts/build_site.py` aus diesen Markdown-Dateien gebaut (dafür wird eine Kopie des Stilkerns gebraucht, siehe CONTRIBUTING).
 
 | | English | Русский | Deutsch |
 |---|---|---|---|
 | Vollständige Installationsanleitung | [INSTALL.en.md](docs/INSTALL.en.md) | [INSTALL.ru.md](docs/INSTALL.ru.md) | [INSTALL.de.md](docs/INSTALL.de.md) |
-| Überblick | [README.md](README.md) | [README.ru.md](README.ru.md) | diese Datei |
+| Überblick | [README.de.md](README.de.md) | [README.ru.md](README.ru.md) | diese Datei |
 
-Weiteres: [warum es so gebaut wurde](docs/DESIGN.de.md) · [HTTP-Schnittstellen](docs/API.md) · [Ergebnisdateiformat](docs/RESULTS_FORMAT.md) · [Herkunft des Codes](PROVENANCE.md) · [Texte der Repository-Seite](docs/GITHUB_REPO.md) · [Architektur](docs/ARCHITECTURE.md) · [Sicherheitsrichtlinie](SECURITY.md) · [Mitwirken](CONTRIBUTING.md) · [Änderungsprotokoll](CHANGELOG.md) · [Modellübersicht](MODELS.md) · [Lizenzdateien](legal/)
+Weiteres: [warum es so gebaut wurde](docs/DESIGN.de.md) · [HTTP-Schnittstellen](docs/API.de.md) · [Ergebnisdateiformat](docs/RESULTS_FORMAT.de.md) · [Herkunft des Codes](PROVENANCE.md) · [Texte der Repository-Seite](docs/GITHUB_REPO.md) · [Architektur](docs/ARCHITECTURE.de.md) · [Sicherheitsrichtlinie](SECURITY.de.md) · [Mitwirken](CONTRIBUTING.md) · [Änderungsprotokoll](CHANGELOG.md) · [Modellübersicht](MODELS.de.md) · [Lizenzdateien](legal/)
 
 ## Voraussetzungen in einer Zeile
 
@@ -91,7 +91,7 @@ NVIDIA-GPU mit mindestens 8 GB, 16–32 GB RAM, etwa 25 GB Speicher für Images 
 
 ## Nicht enthalten
 
-Modellgewichte (selbst herunterladen und deren Lizenzen beachten), eigene Testergebnisse (`bench_results/`, entstehen beim Testlauf), Videos, Geheimnisse. Die Test-Runner liegen in [benchmarks/](benchmarks/README.md); die veröffentlichten Ergebnisse in [rtx3080-local-ai-benchmarks](https://github.com/HomenSAI/rtx3080-local-ai-benchmarks). Das Gateway hat **kein Passwort**, das Passwort der Konsole (`AI_CONSOLE_PASSWORD`) ist optional: beide nur auf `127.0.0.1` oder in einem vertrauenswürdigen Netzwerk verwenden, nie im Internet. Die Konsole weist außerdem seitenübergreifende Anfragen und fremde `Host`-Namen ab ([SECURITY.md](SECURITY.md)).
+Modellgewichte (selbst herunterladen und deren Lizenzen beachten), eigene Testergebnisse (`bench_results/`, entstehen beim Testlauf), Videos, Geheimnisse. Die Test-Runner liegen in [benchmarks/](benchmarks/README.de.md); die veröffentlichten Ergebnisse in [rtx3080-local-ai-benchmarks](https://github.com/HomenSAI/rtx3080-local-ai-benchmarks). Das Gateway hat **kein Passwort**, das Passwort der Konsole (`AI_CONSOLE_PASSWORD`) ist optional: beide nur auf `127.0.0.1` oder in einem vertrauenswürdigen Netzwerk verwenden, nie im Internet. Die Konsole weist außerdem seitenübergreifende Anfragen und fremde `Host`-Namen ab ([SECURITY.de.md](SECURITY.de.md)).
 
 ## Lizenz und Namensnennung
 

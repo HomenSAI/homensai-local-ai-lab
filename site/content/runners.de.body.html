@@ -1,0 +1,35 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="benchmarks-die-test-runner">Benchmarks: die Test-Runner</h1>
+    <nav class="card help-toc doc-toc" aria-label="Inhalt"><h2>Inhalt</h2><ol><li><a href="#tests-skripte-und-ergebnisdateien">Tests, Skripte und Ergebnisdateien</a></li><li><a href="#ausführen-alles-in-docker">Ausführen (alles in Docker)</a></li><li><a href="#unterschiede-zum-veröffentlichten-lauf">Unterschiede zum veröffentlichten Lauf</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Diese Skripte haben die veröffentlichten Ergebnisse von <a href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">rtx3080-local-ai-benchmarks</a> erzeugt (23 Modelle auf einer RTX 3080 / 10 GB, 2026-09-29 – 2026-10-06). Jenes Repository enthält nur die Ergebnisse; der Code zum Wiederholen der Tests liegt hier.</p>
+<h2 id="tests-skripte-und-ergebnisdateien">Tests, Skripte und Ergebnisdateien</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Test (Ordner im Ergebnis-Repository)</th><th>Phase</th><th>Runner</th><th>Aufgaben</th><th>Ergebnisdatei in <code>bench_results/</code></th></tr></thead>
+<tbody>
+<tr><td>01-general-quality</td><td><code>general</code></td><td><code>bench_top.py</code> (Modellliste <code>TOP</code>) + <code>bench_all.py</code></td><td><code>qtasks.py</code>, 3 Code-Aufgaben aus <code>coding_tasks.py</code>, Bilder aus <code>make_images.py</code></td><td><code>results_all.jsonl</code></td></tr>
+<tr><td>02-german-passive</td><td><code>german</code>, <code>german_fix</code></td><td><code>german_all.py</code>, <code>german_fix.py</code> (Wiederholung leerer Antworten), <code>qa_bench.py</code></td><td><code>qa_tasks.py</code></td><td><code>results_german.jsonl</code>, <code>results_german_fix.jsonl</code></td></tr>
+<tr><td>03-max-context</td><td><code>context</code></td><td><code>bench_ctx.py</code> + <code>mneedle.py</code> (3 versteckte Fakten bei 80 % Füllung)</td><td>Fülltext aus der Python-Standardbibliothek</td><td><code>results_ctx.jsonl</code>, <code>results_ctx_trials.jsonl</code></td></tr>
+<tr><td>04-soak-reliability</td><td><code>soak</code></td><td><code>soak.py</code> (über das Gateway auf Port 8080)</td><td>Profile aus <code>config/llama-swap.yaml</code></td><td><code>results_soak.jsonl</code></td></tr>
+<tr><td>05-math-physics-grade11</td><td><code>stem</code></td><td><code>bench_stem.py</code></td><td><code>stem_tasks.py</code></td><td><code>results_stem.jsonl</code></td></tr>
+<tr><td>06-chemistry-grade11</td><td><code>chem</code></td><td><code>bench_chem.py</code></td><td><code>chem_tasks.py</code></td><td><code>results_chem.jsonl</code></td></tr>
+<tr><td>07-coding-20</td><td><code>code20</code></td><td><code>bench_code20.py</code>, Tests in einer Sandbox ohne Netzwerk (<code>code_eval_harness.py</code>)</td><td><code>coding_tasks.py</code></td><td><code>results_code20.jsonl</code></td></tr>
+<tr><td>08-accelerators-embeddings</td><td><code>accel</code></td><td><code>bench_accel.py</code></td><td>Profile für spekulatives Dekodieren aus <code>config/llama-swap.yaml</code>, Embedding-Modelle</td><td><code>results_accel.jsonl</code></td></tr>
+</tbody>
+</table></div>
+<p><code>bench_top.py</code> und <code>bench_all.py</code> enthalten die gemeinsamen Teile: die Modellliste, den Start eines Modells in einem eigenen Container (<code>bench-srv</code>, Port 8090, Image <code>local/ai-server-llama-swap:260</code>, Modelle aus dem Docker-Volume <code>llm-models-fast</code>), den RAM-Wächter und die Prüfer.
+Nach dem Kontexttest machen <code>gen_profiles_from_ctx.py</code> und <code>finalize_profiles.py</code> aus den gemessenen Fenstern Gateway-Profile (<code>config/llama-swap-ctx.yaml</code> → <code>config/llama-swap-final.yaml</code>; Kandidaten, die erst wirksam werden, wenn Sie sie kopieren); <code>exclude_not_gpu.md</code> listet die Modelle auf, die nach der 64K-Regel entfernt wurden.</p>
+<h2 id="ausführen-alles-in-docker">Ausführen (alles in Docker)</h2>
+<p>Bauen Sie zuerst die Gateway-Images (<code>docs/INSTALL.*</code>, Abschnitte zum Bauen), legen Sie die Modelle in das Volume <code>llm-models-fast</code> und tragen Sie die Pfade in <code>TOP</code> von <code>bench_top.py</code> ein. Dann:</p>
+<pre><code>docker compose --profile bench up -d --build bench-runner</code></pre>
+<p>Der Runner kopiert diese Skripte nach <code>bench_results/</code>, zeichnet die Bilder für die Sehaufgaben und führt die Phasen in der Reihenfolge von <code>BENCH_PHASES</code> aus (Standard <code>general german context german_fix accel stem chem code20</code>; fügen Sie <code>soak</code> hinzu, um die Gateway-Profile zu testen). Jede Phase schreibt ihr Protokoll (<code>bench_full.log</code>, <code>bench_ctx.log</code>, ...) mit der Abschlussmarkierung, die die Konsole erwartet, sodass die Konsole die Phase, den Fortschrittsbalken und die Restzeit anzeigt. Jede Phase überspringt fertige Modelle, sodass ein Neustart dort weitermacht, wo er aufgehört hat. Um andere Phasen auszuführen: <code>BENCH_PHASES=&quot;stem chem&quot;</code> in <code>.env</code>, <code>bench_results/run_all.log</code> löschen und den Runner erneut starten. Anhalten mit <code>docker compose --profile bench stop bench-runner</code>.</p>
+<p>Der Runner steuert Docker auf diesem PC über den Docker-Socket (er startet und stoppt die Modell-Container und das Gateway): Starten Sie ihn nur für einen Testlauf.</p>
+<h2 id="unterschiede-zum-veröffentlichten-lauf">Unterschiede zum veröffentlichten Lauf</h2>
+<ul>
+<li>Die Bilder für die Sehaufgaben aus dem veröffentlichten Lauf wurden nicht aufbewahrt; <code>make_images.py</code> zeichnet denselben Inhalt neu (Formen, Bestellcode, 7 Punkte), daher sind die Bewertungen für das Sehen vergleichbar, aber nicht identisch.</li>
+<li>Die Code-Sandbox verwendet jetzt das einfache Image <code>python:3.12-slim</code> (<code>SANDBOX_IMAGE</code>) und kopiert die Dateien hinein, sodass sie im Runner-Container funktioniert.</li>
+<li>Der Fülltext des Kontexttests wird aus der Python-Standardbibliothek des Runner-Images neu aufgebaut; die Ergebnisse können sich zwischen Python-Versionen leicht unterscheiden.</li>
+<li>In der Cloud ohne GPU getestet: der Runner-Container, die Phasen, die Protokolle und Markierungen, die Code-Sandbox (Referenzlösungen bestehen, eine fehlerhafte scheitert) und die Bilder. Ein vollständiger Lauf braucht die NVIDIA-GPU und die Modelle.</li>
+</ul>
+    </article>
+    <p class="doc-meta"><a href="docs.de.html">← Dokumentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/benchmarks/README.de.md" rel="noopener">Quelltext auf GitHub</a></p>

@@ -1,0 +1,85 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="local-ai-server">Local AI Server</h1>
+    <nav class="card help-toc doc-toc" aria-label="Inhalt"><h2>Inhalt</h2><ol><li><a href="#was-es-ist">Was es ist</a></li><li><a href="#schnellstart">Schnellstart</a></li><li><a href="#selbst-oder-mit-einem-ki-assistenten">Selbst oder mit einem KI-Assistenten?</a></li><li><a href="#nach-der-installation-was-sie-benutzen">Nach der Installation: was Sie benutzen</a></li><li><a href="#dokumentation">Dokumentation</a></li><li><a href="#voraussetzungen-in-einer-zeile">Voraussetzungen in einer Zeile</a></li><li><a href="#nicht-enthalten">Nicht enthalten</a></li><li><a href="#lizenz-und-namensnennung">Lizenz und Namensnennung</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p><strong>Lokale Sprachmodelle auf einer einzelnen NVIDIA-Grafikkarte betreiben: Web-Konsole, automatische Testberichte, Videogenerierung und versionierte Ergebnisse.</strong></p>
+<p>Autor: <strong>Serhii Khomenko</strong> · <a href="https://homensai.com" rel="noopener">homensai.com</a> · info [at] homensai [dot] com · Ergebnisse und Berichte: CC BY-NC 4.0 · Code: PolyForm Noncommercial 1.0.0 · nur nichtkommerzielle Nutzung, Namensnennung erforderlich</p>
+<h2 id="was-es-ist">Was es ist</h2>
+<p>Ein selbst gehosteter Stack für einen Arbeitsplatzrechner mit einer GPU (entwickelt auf einer RTX 3080 mit 10 GB, Windows 10 + Docker Desktop):</p>
+<ul>
+<li><strong>Gateway</strong> (<a href="https://github.com/mostlygeek/llama-swap" rel="noopener">llama-swap</a> + <a href="https://github.com/ggml-org/llama.cpp" rel="noopener">llama.cpp</a>): OpenAI-kompatible API auf Port 8080; lädt jeweils ein Modell und wechselt bei Bedarf.</li>
+<li><strong>Konsole</strong> (Port 8766, <strong>Deutsch / English / Русский</strong>): Modellkatalog mit Start/Stopp, Chat, GPU-Live-Telemetrie, Diagnose, Entlade-Timer, Testergebnisse mit Fortschritt und Restzeitschätzung und die <strong>Berichtsseite</strong>.</li>
+<li><strong>Berichte</strong>: Benchmark-Ergebnisse werden zu einem Live-Bericht und einem SQLite-Archiv, das ältere Ergebnisse nie verliert.</li>
+<li><strong>Versionsverlauf</strong>: Ein lokales Gitea bewahrt jede Version der Berichte auf (Tags <code>v0001</code> …, <code>stage-&lt;Phase&gt;-done</code>, <code>final-&lt;Datum&gt;</code>).</li>
+<li><strong>Optional von einem KI-Assistenten betrieben:</strong> Sie können den Server selbst installieren und nutzen; Sie können ihn auch Claude, ChatGPT/Codex oder einem anderen Agenten mit Shell-Zugriff übergeben, der <code>AGENTS.md</code> / <code>CLAUDE.md</code> liest, installiert, die Tests ausführt und die Ergebnisse prüft. Siehe <a href="operator.de.html">Betrieb des Servers mit einem KI-Supervisor (Claude oder ChatGPT)</a> und „Selbst oder mit einem KI-Assistenten?“ unten.</li>
+<li><strong>Veröffentlichte Ergebnisse:</strong> <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/results-public/RESULTS.md">veröffentlichte Testergebnisse (GitHub)</a> – 23 Modelle, 15 für die späteren Phasen zugelassen; wie sie entstanden (Serverkern → Claude als Supervisor → Ergebnisse): <a href="methodology.de.html">Wie die Ergebnisse entstanden sind</a>.</li>
+<li><strong>Verwandtes Projekt:</strong> Die Videogenerierung (Wan 2.1 + ComfyUI, Storyboard aus einer Idee von Ihrem lokalen LLM) ist ein eigenes Projekt, <strong>Video Studio</strong> (eigenes Repository, Port 8767); diese Konsole verlinkt darauf.</li>
+</ul>
+<h2 id="schnellstart">Schnellstart</h2>
+<p><strong>Windows (auf dem PC nur Docker Desktop – ohne Python, Git und Node):</strong> ZIP von der GitHub-Seite laden (Code → Download ZIP), entpacken, PowerShell im Ordner öffnen und einen Befehl nach dem anderen ausführen:</p>
+<pre><code>powershell -ExecutionPolicy Bypass -File scripts\install.ps1 doctor   # Docker, GPU in Docker, Ports, Speicherplatz
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init     # .env, Ordner, Platzhalter, Netzwerk, Volume
+#  .env im Editor öffnen, MODEL_DIR setzen und die .gguf-Modelle ablegen – siehe Anleitung, Abschnitt 4.5
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build    # erster Build 15–40 Minuten
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git      # lokales Git, das jede Version der Berichte aufbewahrt
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify   # jede Zeile muss [ok] sein</code></pre>
+<p><strong>Linux oder ein KI-Assistent mit Shell:</strong> dieselben Schritte mit Python 3.10+ (nur Standardbibliothek):</p>
+<pre><code>git clone https://github.com/HomenSAI/homensai-local-ai-lab.git local-ai-server
+cd local-ai-server
+python scripts/install.py doctor     # Docker, GPU in Docker, Ports, Speicherplatz
+python scripts/install.py init       # .env, Ordner, Platzhalter, Netzwerk, Volume
+#  .env bearbeiten (MODEL_DIR) und .gguf-Modelle bereitstellen – siehe Anleitung, Abschnitt 4.5
+python scripts/install.py build      # erster Build 15–40 Minuten
+python scripts/install.py up
+python scripts/install.py git
+python scripts/install.py verify</code></pre>
+<p>Öffnen Sie **<a href="http://localhost:8766/**" rel="noopener">http://localhost:8766/**</a>.</p>
+<h2 id="selbst-oder-mit-einem-ki-assistenten">Selbst oder mit einem KI-Assistenten?</h2>
+<p><strong>Ein KI-Assistent ist nicht nötig.</strong> Installation, Start, Tests und Berichte erledigen Sie mit den Befehlen dieser Seite; Sie müssen einen Befehl in PowerShell einfügen und eine Zeile der <code>.env</code> im Editor ändern können.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Aufgabe</th><th>Selbst</th><th>Was ein KI-Assistent hinzufügt</th></tr></thead>
+<tbody>
+<tr><td>Installieren</td><td>die sechs Befehle oben, einer nach dem anderen</td><td>führt sie für Sie aus und behebt, was <code>doctor</code> / <code>verify</code> melden</td></tr>
+<tr><td>Modelle</td><td>die Dateien aus <a href="models.de.html">Modellbestand und Profile</a> laden und ins Docker-Volume legen (Anleitung, Abschnitt 4.5)</td><td>wählt Modelle für Ihre Karte, prüft SHA-256</td></tr>
+<tr><td>Benutzen</td><td>die Konsole im Browser (unten)</td><td>—</td></tr>
+<tr><td>Tests starten</td><td>ein Befehl (unten)</td><td>überwacht den Lauf, prüft die Zahlen auf Plausibilität, wiederholt verdächtige Läufe</td></tr>
+<tr><td>Etwas geht nicht</td><td>Anleitung, Abschnitt 11 „Fehlerbehebung“</td><td>liest die Container-Logs und behebt die Ursache</td></tr>
+</tbody>
+</table></div>
+<p>Diese Schritte kann nur ein Assistent ausführen, <strong>der Befehle auf diesem Computer starten kann</strong> (zum Beispiel Claude Code oder ein Codex-Agent); geben Sie ihm <a href="prompt.de.html">Hier beginnen: der Prompt für Ihren KI-Assistenten</a>. Unter Windows nutzt er denselben PowerShell-Installer, der Server braucht also weiterhin nur Docker Desktop; der Assistent selbst kann eigene Voraussetzungen haben, siehe seine Dokumentation. Ein gewöhnlicher Browser-Chat installiert nichts, erklärt aber eine Fehlermeldung, die Sie einfügen.</p>
+<h2 id="nach-der-installation-was-sie-benutzen">Nach der Installation: was Sie benutzen</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Was</th><th>Wo</th></tr></thead>
+<tbody>
+<tr><td>Konsole: Modelle starten und stoppen, Chat, GPU-Last, Diagnose</td><td><a href="http://localhost:8766/" rel="noopener">http://localhost:8766/</a></td></tr>
+<tr><td>Bericht mit allen Testergebnissen, Download als CSV und SQLite</td><td><a href="http://localhost:8766/report/" rel="noopener">http://localhost:8766/report/</a></td></tr>
+<tr><td>Testfortschritt (Phasen, aktuelles Modell, Restzeit)</td><td><a href="http://localhost:8766/report/progress.html" rel="noopener">http://localhost:8766/report/progress.html</a></td></tr>
+<tr><td>OpenAI-kompatible API für andere Programme (Open WebUI, Skripte, IDEs)</td><td><a href="http://localhost:8080/v1" rel="noopener">http://localhost:8080/v1</a></td></tr>
+<tr><td>Jede Version der Berichte (lokales Git)</td><td><a href="http://localhost:3010/" rel="noopener">http://localhost:3010/</a> (Zugangsdaten in <code>secrets/gitea-admin.txt</code>)</td></tr>
+<tr><td>Tests starten</td><td><code>docker compose --profile bench up -d --build bench-runner</code> (<a href="runners.de.html">Benchmarks: die Test-Runner</a>)</td></tr>
+</tbody>
+</table></div>
+<p><strong>Ohne GPU ausprobieren:</strong> <a href="virtual-3080.de.html">tests/virtual-3080/</a> installiert das ganze System auf einem Linux-Rechner mit Docker und einer virtuellen RTX 3080 (simulierte Zahlen) – zum Kennenlernen oder um Änderungen zu testen.</p>
+<h2 id="dokumentation">Dokumentation</h2>
+<p>Dieselbe Dokumentation als Website auf dem Kern HomenS.AI Style (Menü, Schaltflächen EN | DE | RU, helles und dunkles Design, jede Seite in drei Sprachen): <a href="https://homensai.github.io/homensai-local-ai-lab/site/index.de.html">https://homensai.github.io/homensai-local-ai-lab/site/index.de.html</a>. Die Seiten werden mit <code>python scripts/build_site.py</code> aus diesen Markdown-Dateien gebaut (dafür wird eine Kopie des Stilkerns gebraucht, siehe CONTRIBUTING).</p>
+<div class="table-wrap"><table>
+<thead><tr><th></th><th>English</th><th>Русский</th><th>Deutsch</th></tr></thead>
+<tbody>
+<tr><td>Vollständige Installationsanleitung</td><td><a href="install.de.html">Installationsanleitung (Deutsch)</a></td><td><a href="install.de.html">Installationsanleitung (Deutsch)</a></td><td><a href="install.de.html">Installationsanleitung (Deutsch)</a></td></tr>
+<tr><td>Überblick</td><td><a href="index.de.html">Local AI Server</a></td><td><a href="index.de.html">Local AI Server</a></td><td>diese Datei</td></tr>
+</tbody>
+</table></div>
+<p>Weiteres: <a href="design.de.html">warum es so gebaut wurde</a> · <a href="api.de.html">HTTP-Schnittstellen</a> · <a href="results-format.de.html">Ergebnisdateiformat</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/PROVENANCE.md">Herkunft des Codes</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/GITHUB_REPO.md">Texte der Repository-Seite</a> · <a href="architecture.de.html">Architektur</a> · <a href="security.de.html">Sicherheitsrichtlinie</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/CONTRIBUTING.md">Mitwirken</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/CHANGELOG.md">Änderungsprotokoll</a> · <a href="models.de.html">Modellübersicht</a> · <a href="licences.de.html">Lizenzdateien</a></p>
+<h2 id="voraussetzungen-in-einer-zeile">Voraussetzungen in einer Zeile</h2>
+<p>NVIDIA-GPU mit mindestens 8 GB, 16–32 GB RAM, etwa 25 GB Speicher für Images plus 50–200 GB für Modelle, Docker Desktop (WSL2) mit GPU-Unterstützung; unter Windows sonst nichts (PowerShell-Installer), unter Linux Python 3.10+ und Git. Linux mit NVIDIA Container Toolkit sollte funktionieren (vom Autor nicht getestet); macOS wird nicht unterstützt (kein CUDA).</p>
+<h2 id="nicht-enthalten">Nicht enthalten</h2>
+<p>Modellgewichte (selbst herunterladen und deren Lizenzen beachten), eigene Testergebnisse (<code>bench_results/</code>, entstehen beim Testlauf), Videos, Geheimnisse. Die Test-Runner liegen in <a href="runners.de.html">benchmarks/</a>; die veröffentlichten Ergebnisse in <a href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">rtx3080-local-ai-benchmarks</a>. Das Gateway hat <strong>kein Passwort</strong>, das Passwort der Konsole (<code>AI_CONSOLE_PASSWORD</code>) ist optional: beide nur auf <code>127.0.0.1</code> oder in einem vertrauenswürdigen Netzwerk verwenden, nie im Internet. Die Konsole weist außerdem seitenübergreifende Anfragen und fremde <code>Host</code>-Namen ab (<a href="security.de.html">Sicherheitsrichtlinie</a>).</p>
+<h2 id="lizenz-und-namensnennung">Lizenz und Namensnennung</h2>
+<ul>
+<li>Ergebnisse, Berichte und Texte: <strong><a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/legal/LICENSE-RESULTS-CC-BY-NC-4.0.md">CC BY-NC 4.0</a></strong> – Nutzung und Weitergabe <strong>nur für nichtkommerzielle Zwecke</strong>, <strong>Verweis auf den Autor ist Pflicht</strong>: <code>Daten: homensai.com (https://homensai.com), CC BY-NC 4.0</code>.</li>
+<li>Code: <strong><a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/LICENSE">PolyForm Noncommercial 1.0.0</a></strong> – nur nichtkommerzielle Nutzung; der Required Notice und die Autorenzeile bleiben in jeder Kopie. Kommerzielle Nutzung von Code oder Ergebnissen nur nach schriftlicher Vereinbarung mit dem Autor.</li>
+<li>Software und Modelle Dritter behalten ihre Lizenzen: <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/legal/NOTICE-THIRD-PARTY.md">Rechte Dritter (GitHub)</a>. Produktnamen sind Marken ihrer Inhaber; das Projekt steht in keiner Verbindung zu ihnen und wird von ihnen nicht unterstützt.</li>
+</ul>
+    </article>
+    <p class="doc-meta"><a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/README.de.md" rel="noopener">Quelltext auf GitHub</a></p>

@@ -10,6 +10,13 @@
   const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   let lang = "ru";
   try { lang = localStorage.getItem("uiLang") || (navigator.language || "ru").slice(0, 2); } catch (e) { /* storage blocked */ }
+  const asked = new URLSearchParams(location.search).get("lang");   // a language button: remember it, clean the address
+  if (["ru", "en", "de"].includes(asked)) {
+    lang = asked;
+    try { localStorage.setItem("uiLang", asked); } catch (e) { /* storage blocked */ }
+    const url = new URL(location.href); url.searchParams.delete("lang");
+    history.replaceState(null, "", url.pathname + url.search + url.hash);
+  }
   if (!(lang in LANGS)) lang = "ru";
   const maps = {}, regs = {};
   function build(code) {
@@ -72,17 +79,21 @@
       observer.observe(document.body, {subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["placeholder", "title", "aria-label"]});
     }
     const bar = document.getElementById("tools") || document.querySelector(".topbar");
-    if (bar && !document.getElementById("langSwitch")) {
-      const sel = document.createElement("select");
-      sel.id = "langSwitch"; sel.className = "lang-switch"; sel.setAttribute("aria-label", "Language"); sel.setAttribute("data-no-i18n", "");
-      sel.innerHTML = '<option value="ru">RU</option><option value="en">EN</option><option value="de">DE</option>';
-      sel.value = lang;
-      sel.addEventListener("change", () => { try { localStorage.setItem("uiLang", sel.value); } catch (e) { /* storage blocked */ } location.reload(); });
+    if (bar && !document.getElementById("langSwitch")) {   // EN | DE | RU buttons of HomenS.AI Style (no drop-down list)
+      const box = document.createElement("span");
+      box.id = "langSwitch"; box.className = "langs"; box.setAttribute("role", "group");
+      box.setAttribute("aria-label", {ru: "Язык", en: "Language", de: "Sprache"}[lang] || "Language"); box.setAttribute("data-no-i18n", "");
+      for (const code of ["en", "de", "ru"]) {
+        const a = document.createElement("a");
+        a.href = "?lang=" + code; a.lang = code; a.hreflang = code; a.textContent = code.toUpperCase();
+        if (code === lang) { a.className = "on"; a.setAttribute("aria-current", "true"); }
+        box.appendChild(a);
+      }
       if (bar.id === "tools") {                          // HomenS.AI Style topbar: one more item of the tool list
         const li = document.createElement("li");
-        li.appendChild(sel);
+        li.appendChild(box);
         bar.prepend(li);
-      } else bar.appendChild(sel);
+      } else bar.appendChild(box);
     }
   }
   fetch("/api/version").then(r => r.json()).then(v => document.querySelectorAll("[data-version]").forEach(e => { e.textContent = "v" + v.version; if (v.repo) { const a = e.closest(".site-footer"); const link = a && a.querySelector("[data-repo]"); if (link) { link.href = v.repo; link.parentElement.hidden = false; } } })).catch(() => {});

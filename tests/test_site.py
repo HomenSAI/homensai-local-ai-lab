@@ -47,26 +47,37 @@ class MarkdownTest(unittest.TestCase):
         self.assertIn("<em>this</em>", out)
         self.assertIn("<strong>that</strong>", out)
 
-    def test_links_go_to_pages_and_files_to_github(self):
+    def test_links_go_to_pages_of_the_same_language_and_files_to_github(self):
         site = build_site.Site()
-        self.assertEqual(site.link("INSTALL.en.md#2-requirements", "docs/INSTALL.ru.md"), "INSTALL.en.html#2-requirements")
-        self.assertEqual(site.link("../README.md", "docs/INSTALL.en.md"), "../index.html")
-        self.assertEqual(site.link("legal/", "README.md"), "legal/README.html")
-        self.assertEqual(site.link("LICENSE", "README.md"), build_site.REPO_URL + "/blob/main/LICENSE")
-        self.assertEqual(site.link("https://homensai.com", "README.md"), "https://homensai.com")
+        self.assertEqual(site.link("INSTALL.ru.md#2-требования", "docs/AI_OPERATOR.ru.md", "ru"), "install.ru.html#2-требования")
+        self.assertEqual(site.link("../README.md", "docs/INSTALL.en.md", "en"), "index.html")
+        self.assertEqual(site.link("../README.de.md", "docs/INSTALL.de.md", "de"), "index.de.html")
+        self.assertEqual(site.link("legal/", "README.ru.md", "ru"), "licences.ru.html")
+        self.assertEqual(site.link("LICENSE", "README.md", "en"), build_site.REPO_URL + "/blob/main/LICENSE")
+        self.assertEqual(site.link("https://homensai.com", "README.md", "en"), "https://homensai.com")
 
 
 class SiteTest(unittest.TestCase):
-    def test_pages_are_up_to_date(self):
+    def test_site_is_up_to_date(self):
         done = subprocess.run([sys.executable, str(ROOT / "scripts" / "build_site.py"), "--check"], capture_output=True, text=True)
         self.assertEqual(done.returncode, 0, done.stdout + done.stderr)
 
-    def test_pages_have_no_inline_code_or_external_resources(self):
-        for name, page in build_site.Site().pages().items():
-            if not name.endswith(".html"):
+    def test_every_page_in_every_language_and_no_inline_code(self):
+        site = build_site.Site()
+        files = site.sources()
+        for page in build_site.PAGES:
+            if "href" in page:
                 continue
-            self.assertNotRegex(page, r' style="|<script>|\son[a-z]+="', name)
-            self.assertNotRegex(page, r'<(?:script|link)[^>]+(?:src|href)="https?:', name)
+            for lang in build_site.LANGS:
+                body = files[f"site/content/{page['id']}.{lang}.body.html"]
+                self.assertRegex(body, r"^<!--[^>]*Serhii Khomenko[^>]*-->\s*<h1", page["id"])
+                self.assertNotRegex(body, r' style="|<script|\son[a-z]+="|@homensai\.com', page["id"])
+
+    def test_old_addresses_redirect(self):
+        files = build_site.Site().redirects()
+        self.assertIn("site/index.html", files["index.html"])
+        self.assertIn("../site/design.ru.html", files["docs/DESIGN.ru.html"])
+        self.assertIn(build_site.REPO_URL + "/blob/main/CHANGELOG.md", files["CHANGELOG.html"])
 
 
 if __name__ == "__main__":

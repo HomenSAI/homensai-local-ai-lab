@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 # Local AI Lab - (c) 2026 Serhii Khomenko - https://homensai.com/
-"""Builds the documentation site (GitHub Pages) in HomenS.AI Style.
+"""Builds the documentation site (GitHub Pages) with the site builder of HomenS.AI Style (SITE_RULES.md of the core).
 
-Every Markdown file of the repository becomes an HTML page next to it (docs/INSTALL.ru.md -> docs/INSTALL.ru.html,
-the root README.md -> index.html) with the header of the style (logo, menu, language switch, theme button), a table of
-contents, the licence line and the author footer; site/contact.<lang>.html are the "Contact" pages with the robot.
-The style files are the copy in console/style/ (no second copy, no external addresses, no inline styles or scripts);
-.nojekyll makes GitHub Pages serve the pages as they are. The pages also open from the disk (file://).
+The Markdown files stay the source. This script turns them into the page content of the core site builder:
+site/site.json and site/content/<page>.<lang>.body.html (only what goes inside <main>), then runs
+`tools/site.py build site` of the style core, which writes the pages site/<page>.<lang>.html with the fixed frame
+of every HomenS.AI site (logo, menu, EN | DE | RU buttons, theme, footer, "Top", Contact page with the robot) and copies
+the core into site/style/. The old page addresses (index.html, README.ru.html, docs/INSTALL.ru.html, ...) become
+redirects to the new pages; .nojekyll makes GitHub Pages serve everything as it is.
 
-  python scripts/build_site.py           # write the pages
-  python scripts/build_site.py --check   # exit 1 if a page is missing or out of date (CI)
+  python scripts/build_site.py [--style ../homensai-style]   # build (needs a copy of the style core, version >= 1.8.0)
+  python scripts/build_site.py --check                       # CI: content, redirects and pages are up to date
 
-Standard library only.
+The style core is found with --style, the HOMENSAI_STYLE variable or ../homensai-style. Standard library only.
 """
 import html
+import json
 import os
 import posixpath
 import re
@@ -21,68 +23,132 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SITE = "site"
 REPO_URL = "https://github.com/HomenSAI/homensai-local-ai-lab"
-STYLE = "console/style"
-STYLE_VERSION = "1.6.0"
-SKIP_DIRS = {".git", "bench_results", "secrets", "node_modules", "media", "console", "report"}
-LANGS = ("ru", "en", "de")
-LANG_NAMES = {"ru": "Русский", "en": "English", "de": "Deutsch"}
+BENCH_URL = "https://github.com/HomenSAI/rtx3080-local-ai-benchmarks"
+LANGS = ["en", "ru", "de"]               # the first language gets index.html (the address people already link)
+MIN_CORE = (1, 8, 0)                     # subpages ("parent") came with HomenS.AI Style 1.8.0
+AUTHOR = ("<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · "
+          "https://www.linkedin.com/in/serhii-khomenko-homensai/ -->")
 
-T = {
-    "ru": {"skip": "Перейти к содержанию", "nav": "Основная навигация", "home": "Главная", "install": "Установка",
-           "docs": "Документация", "results": "Результаты", "contact": "Контакт", "toc": "Содержание",
-           "lang": "Язык", "more": "Документы", "close": "Закрыть", "edit": "Исходный текст на GitHub",
-           "noscript": "Тема, кнопка «Наверх» и ссылки автора работают с JavaScript; текст страницы виден и без него.",
-           "license": "Результаты и код можно использовать только в некоммерческих целях со ссылкой на автора",
-           "author": "Автор", "lic_results": "Лицензия результатов", "lic_code": "Лицензия кода",
-           "third": "Права третьих лиц", "contact_title": "Контакт", "brand_sub": "Local AI Lab"},
-    "en": {"skip": "Skip to content", "nav": "Main navigation", "home": "Home", "install": "Installation",
-           "docs": "Documentation", "results": "Results", "contact": "Contact", "toc": "Contents",
-           "lang": "Language", "more": "Documents", "close": "Close", "edit": "Source text on GitHub",
-           "noscript": "The theme, the \"Top\" button and the author links need JavaScript; the page text is shown without it.",
-           "license": "Results and code may be used only for noncommercial purposes with credit to the author",
-           "author": "Author", "lic_results": "Licence of the results", "lic_code": "Licence of the code",
-           "third": "Third-party rights", "contact_title": "Contact", "brand_sub": "Local AI Lab"},
-    "de": {"skip": "Zum Inhalt springen", "nav": "Hauptnavigation", "home": "Start", "install": "Installation",
-           "docs": "Dokumentation", "results": "Ergebnisse", "contact": "Kontakt", "toc": "Inhalt",
-           "lang": "Sprache", "more": "Dokumente", "close": "Schließen", "edit": "Quelltext auf GitHub",
-           "noscript": "Design, die Schaltfläche „Nach oben“ und die Autorenlinks brauchen JavaScript; der Text ist auch ohne sichtbar.",
-           "license": "Ergebnisse und Code dürfen nur nichtkommerziell und mit Nennung des Autors verwendet werden",
-           "author": "Autor", "lic_results": "Lizenz der Ergebnisse", "lic_code": "Lizenz des Codes",
-           "third": "Rechte Dritter", "contact_title": "Kontakt", "brand_sub": "Local AI Lab"},
-}
 
-# Menu: (key, label per language, base name of the page; the page in the reader's language is chosen when it exists)
-DOCS_MENU = [
-    ({"ru": "ИИ-оператор", "en": "AI operator", "de": "KI-Operator"}, "docs/AI_OPERATOR"),
-    ({"ru": "Методика тестов", "en": "Test methodology", "de": "Testmethodik"}, "docs/METHODOLOGY"),
-    ({"ru": "Почему сделано так", "en": "Design decisions", "de": "Designentscheidungen"}, "docs/DESIGN"),
-    ({"ru": "Архитектура", "en": "Architecture", "de": "Architektur"}, "docs/ARCHITECTURE"),
-    ({"ru": "HTTP API", "en": "HTTP API", "de": "HTTP-API"}, "docs/API"),
-    ({"ru": "Формат результатов", "en": "Result format", "de": "Ergebnisformat"}, "docs/RESULTS_FORMAT"),
-    ({"ru": "Модели и профили", "en": "Models and profiles", "de": "Modelle und Profile"}, "MODELS"),
-    ({"ru": "Задание для ИИ-ассистента", "en": "Prompt for an AI assistant", "de": "Auftrag für einen KI-Assistenten"}, "PROMPT_FOR_AI"),
-    ({"ru": "Виртуальная RTX 3080", "en": "Virtual RTX 3080", "de": "Virtuelle RTX 3080"}, "tests/virtual-3080/README"),
-    ({"ru": "Тесты (раннеры)", "en": "Test runners", "de": "Testprogramme"}, "benchmarks/README"),
-    ({"ru": "Безопасность", "en": "Security", "de": "Sicherheit"}, "SECURITY"),
-    ({"ru": "Изменения", "en": "Changelog", "de": "Änderungen"}, "CHANGELOG"),
-    ({"ru": "Лицензии", "en": "Licences", "de": "Lizenzen"}, "legal/README"),
+def L(en, ru, de):
+    return {"en": en, "ru": ru, "de": de}
+
+
+def by_lang(pattern):
+    return {lang: pattern.format(lang=lang) for lang in LANGS}
+
+
+def plain_and(path, ru, de):
+    return {"en": path, "ru": ru, "de": de}
+
+
+# The site: menu pages, the documentation section with its subpages, external menu items. "src" is the Markdown file
+# per language; a (file, heading) pair takes one language section of a file written in three languages.
+PAGES = [
+    dict(id="home", nav=L("Home", "Главная", "Start"), src=plain_and("README.md", "README.ru.md", "README.de.md")),
+    dict(id="install", nav=L("Installation", "Установка", "Installation"), src=by_lang("docs/INSTALL.{lang}.md")),
+    dict(id="docs", nav=L("Documentation", "Документация", "Dokumentation"), hub=True,
+         title=L("Documentation", "Документация", "Dokumentation")),
+    dict(id="operator", parent="docs", group=0, src=by_lang("docs/AI_OPERATOR.{lang}.md"),
+         desc=L("How an AI assistant installs the server, runs the tests and checks every result.",
+                "Как ИИ-ассистент ставит сервер, запускает тесты и проверяет каждый результат.",
+                "Wie ein KI-Assistent den Server installiert, die Tests startet und jedes Ergebnis prüft.")),
+    dict(id="prompt", parent="docs", group=0,
+         src={"en": ("PROMPT_FOR_AI.md", "English"), "ru": ("PROMPT_FOR_AI.md", "Русский"), "de": ("PROMPT_FOR_AI.md", "Deutsch")},
+         title=L("Start here: the prompt for your AI assistant", "Начните здесь: промпт для вашего ИИ-ассистента",
+                 "Hier beginnen: der Prompt für Ihren KI-Assistenten"),
+         desc=L("The text to paste into an assistant that can run commands on your PC; optional.",
+                "Текст, который вставляют ассистенту, умеющему выполнять команды на вашем ПК; необязательно.",
+                "Der Text für einen Assistenten, der Befehle auf Ihrem PC ausführen kann; optional.")),
+    dict(id="virtual-3080", parent="docs", group=0, src=plain_and("tests/virtual-3080/README.md",
+                                                                  "tests/virtual-3080/README.ru.md", "tests/virtual-3080/README.de.md"),
+         desc=L("Install and try the whole system on a Linux machine without a GPU, with a virtual RTX 3080.",
+                "Поставить и опробовать всю систему на Linux-машине без видеокарты, с виртуальной RTX 3080.",
+                "Das ganze System auf einem Linux-Rechner ohne Grafikkarte mit einer virtuellen RTX 3080 ausprobieren.")),
+    dict(id="methodology", parent="docs", group=1, src=by_lang("docs/METHODOLOGY.{lang}.md"),
+         desc=L("How the published results were produced and which rules the tests follow.",
+                "Как получены опубликованные результаты и по каким правилам идут тесты.",
+                "Wie die veröffentlichten Ergebnisse entstanden und nach welchen Regeln getestet wird.")),
+    dict(id="runners", parent="docs", group=1, src=plain_and("benchmarks/README.md", "benchmarks/README.ru.md", "benchmarks/README.de.md"),
+         desc=L("Every test, its runner, its task set and its result file.",
+                "Каждый тест: его раннер, набор задач и файл результатов.",
+                "Jeder Test mit Runner, Aufgabensatz und Ergebnisdatei.")),
+    dict(id="results-format", parent="docs", group=1, src=plain_and("docs/RESULTS_FORMAT.md", "docs/RESULTS_FORMAT.ru.md", "docs/RESULTS_FORMAT.de.md"),
+         desc=L("The result files and the stage plan that a test tool writes for the report.",
+                "Файлы результатов и план этапов, которые инструмент тестирования пишет для отчёта.",
+                "Ergebnisdateien und Phasenplan, die ein Testwerkzeug für den Bericht schreibt.")),
+    dict(id="models", parent="docs", group=1, src=plain_and("MODELS.md", "MODELS.ru.md", "MODELS.de.md"),
+         desc=L("The models and gateway profiles, with sources, sizes and checksums.",
+                "Модели и профили шлюза: источники, размеры и контрольные суммы.",
+                "Modelle und Gateway-Profile mit Quellen, Größen und Prüfsummen.")),
+    dict(id="design", parent="docs", group=2, src=by_lang("docs/DESIGN.{lang}.md"),
+         desc=L("Why the server is built this way: every decision with its reason.",
+                "Почему сервер устроен именно так: каждое решение и его причина.",
+                "Warum der Server so gebaut ist: jede Entscheidung mit Begründung.")),
+    dict(id="architecture", parent="docs", group=2, src=plain_and("docs/ARCHITECTURE.md", "docs/ARCHITECTURE.ru.md", "docs/ARCHITECTURE.de.md"),
+         desc=L("The containers, the files of the repository and how data flows between them.",
+                "Контейнеры, файлы репозитория и как между ними идут данные.",
+                "Container, Dateien des Repositorys und wie Daten zwischen ihnen fließen.")),
+    dict(id="api", parent="docs", group=2, src=plain_and("docs/API.md", "docs/API.ru.md", "docs/API.de.md"),
+         desc=L("The HTTP interfaces of the console and the gateway for operators and scripts.",
+                "HTTP-интерфейсы консоли и шлюза для операторов и скриптов.",
+                "Die HTTP-Schnittstellen von Konsole und Gateway für Betreiber und Skripte.")),
+    dict(id="security", parent="docs", group=2, src=plain_and("SECURITY.md", "SECURITY.ru.md", "SECURITY.de.md"),
+         desc=L("Threat model, protections of the console and how to report a vulnerability.",
+                "Модель угроз, защита консоли и как сообщить об уязвимости.",
+                "Bedrohungsmodell, Schutz der Konsole und wie man eine Schwachstelle meldet.")),
+    dict(id="licences", parent="docs", group=2, src=by_lang("legal/README.md"),
+         title=L("Licences", "Лицензии", "Lizenzen"),
+         desc=L("Noncommercial licences of the results and of the code, third-party rights.",
+                "Некоммерческие лицензии результатов и кода, права третьих лиц.",
+                "Nichtkommerzielle Lizenzen der Ergebnisse und des Codes, Rechte Dritter.")),
+    dict(id="results", nav=L("Results", "Результаты", "Ergebnisse"), href=BENCH_URL),
+    dict(id="github", nav=L("GitHub", "GitHub", "GitHub"), href=REPO_URL),
 ]
+GROUPS = [L("Install and run", "Установка и работа", "Installieren und betreiben"),
+          L("Tests and results", "Тесты и результаты", "Tests und Ergebnisse"),
+          L("How it is built", "Как это устроено", "Wie es gebaut ist")]
+UI = {
+    "en": dict(toc="Contents", back="Documentation", source="Source text on GitHub", hub_lead=(
+        "Everything about the server: installation, the tests, how it is built. The Markdown files in the repository are the "
+        "source of these pages."), changelog="What changed in each version", changelog_where="changelog on GitHub",
+        about="Local AI Lab", about_text=(
+        "A self-hosted server for local language models on one NVIDIA graphics card: gateway, web console, automatic test "
+        "reports and versions of the results."),
+        licence="Results and code may be used only for noncommercial purposes with credit to the author (homensai.com).",
+        repo="Source code on GitHub", moved="This page has moved"),
+    "ru": dict(toc="Содержание", back="Документация", source="Исходный текст на GitHub", hub_lead=(
+        "Всё о сервере: установка, тесты, устройство. Источник этих страниц — файлы Markdown в репозитории."),
+        changelog="Что изменилось в каждой версии", changelog_where="журнал изменений на GitHub",
+        about="Local AI Lab", about_text=(
+        "Самостоятельно разворачиваемый сервер для локальных языковых моделей на одной видеокарте NVIDIA: шлюз, "
+        "веб-консоль, автоматические отчёты по тестам и версии результатов."),
+        licence="Результаты и код можно использовать только в некоммерческих целях со ссылкой на автора (homensai.com).",
+        repo="Исходный код на GitHub", moved="Страница переехала"),
+    "de": dict(toc="Inhalt", back="Dokumentation", source="Quelltext auf GitHub", hub_lead=(
+        "Alles über den Server: Installation, Tests, Aufbau. Die Quelle dieser Seiten sind die Markdown-Dateien im "
+        "Repository."), changelog="Was sich in jeder Version geändert hat", changelog_where="Änderungsprotokoll auf GitHub",
+        about="Local AI Lab", about_text=(
+        "Ein selbst betriebener Server für lokale Sprachmodelle auf einer NVIDIA-Grafikkarte: Gateway, Webkonsole, "
+        "automatische Testberichte und Versionen der Ergebnisse."),
+        licence="Ergebnisse und Code dürfen nur nichtkommerziell und mit Nennung des Autors (homensai.com) verwendet werden.",
+        repo="Quellcode auf GitHub", moved="Diese Seite ist umgezogen"),
+}
+# Files that stay on GitHub: a link that only shows their file name gets a readable text (SITE_RULES.md, section 5).
+GITHUB_LABELS = {
+    "results-public/RESULTS.md": L("published test results (GitHub)", "опубликованные результаты тестов (GitHub)",
+                                   "veröffentlichte Testergebnisse (GitHub)"),
+    "results-public": L("folder of the published results (GitHub)", "папка опубликованных результатов (GitHub)",
+                        "Ordner der veröffentlichten Ergebnisse (GitHub)"),
+    "legal/NOTICE-THIRD-PARTY.md": L("third-party rights (GitHub)", "права третьих лиц (GitHub)", "Rechte Dritter (GitHub)"),
+    "tests/virtual-3080/REPORT.ru.md": L("test report of 10.10.2026, in Russian (GitHub)", "отчёт о проверке 10.10.2026 (GitHub)",
+                                         "Prüfbericht vom 10.10.2026, auf Russisch (GitHub)"),
+}
 CONTENTS_HEADINGS = {"содержание", "contents", "table of contents", "inhalt", "inhaltsverzeichnis"}
-
-BRAND_SVG = (
-    '<svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 '
-    'L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 '
-    '20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 '
-    'L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 '
-    '55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 '
-    'L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 '
-    '85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 '
-    '1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" '
-    'stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 '
-    'H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" '
-    'cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" '
-    'fill="#c9a24a"/></svg>')
+LANG_LINE = re.compile(r"^(?:\*\*English\*\*\s*·.*|(?:Other languages|Другие языки|Andere Sprachen|Languages|Языки|Sprachen)\s*:.*)$")
+MAIL = re.compile(r"\b([A-Za-z0-9._%+-]+)@homensai\.com\b")
 
 
 # ------------------------------------------------------------------------------------------------ Markdown -> HTML
@@ -313,259 +379,302 @@ class Markdown:
 
 
 # ------------------------------------------------------------------------------------------------ site
-def sources():
+def read(rel_path):
+    with open(os.path.join(ROOT, rel_path), encoding="utf-8") as f:
+        return f.read()
+
+
+def page_file(pid, lang):
+    """File names of the core site builder: home -> index.html (first language) / index.<lang>.html, else <id>.<lang>.html."""
+    if pid == "home":
+        return "index.html" if lang == LANGS[0] else f"index.{lang}.html"
+    return f"{pid}.{lang}.html"
+
+
+def tracked_markdown():
     try:
         done = subprocess.run(["git", "ls-files", "-z", "*.md"], cwd=ROOT, capture_output=True, check=True)
         files = [f for f in done.stdout.decode("utf-8").split("\0") if f]
     except (OSError, subprocess.CalledProcessError):
         files = []
         for top, dirs, names in os.walk(ROOT):
-            dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS and not d.startswith("."))
+            dirs[:] = sorted(d for d in dirs if not d.startswith(".") and d not in {"bench_results", "secrets", "node_modules", "site"})
             files += [os.path.relpath(os.path.join(top, n), ROOT).replace(os.sep, "/") for n in names if n.endswith(".md")]
-    return sorted(f for f in files if f.split("/")[0] not in SKIP_DIRS)
+    return sorted(f for f in files if not f.startswith(SITE + "/") and os.path.exists(os.path.join(ROOT, f)))
 
 
-def out_path(md):
+def old_page(md):
+    """Where the previous sites (GitHub's own theme, then version 1.5.0) served a Markdown file."""
     return "index.html" if md == "README.md" else md[:-3] + ".html"
 
 
-def lang_of(md, text):
-    m = re.search(r"\.(ru|en|de)\.md$", md)
-    if m:
-        return m.group(1)
-    letters = re.findall(r"[A-Za-zА-Яа-яЁёÄÖÜäöüß]", text)
-    cyr = sum(1 for ch in letters if re.match(r"[А-Яа-яЁё]", ch))
-    if letters and cyr / len(letters) > 0.3:
-        return "ru"
-    de = len(re.findall(r"\b(?:und|der|die|das|nicht|mit|für|wird)\b", text))
-    en = len(re.findall(r"\b(?:and|the|with|not|for|is|are)\b", text))
-    return "de" if de > en else "en"
+def source_text(src):
+    """Markdown of one page language: a whole file, or one '## <heading>' section of a file in three languages."""
+    if isinstance(src, str):
+        return read(src)
+    path, heading = src
+    text = read(path)
+    m = re.search(r"^## " + re.escape(heading) + r"\s*\n(.*?)(?=^## |\Z)", text, re.S | re.M)
+    if not m:
+        raise SystemExit(f"{path}: no section '## {heading}'")
+    return m.group(1)
 
 
-def base_of(md):
-    return re.sub(r"(\.(ru|en|de))?\.md$", "", md)
-
-
-def rel(target, page):
-    return posixpath.relpath(target, posixpath.dirname(page) or ".")
+def src_path(src):
+    return src if isinstance(src, str) else src[0]
 
 
 class Site:
     def __init__(self):
-        self.files = sources()
-        self.texts = {md: open(os.path.join(ROOT, md), encoding="utf-8").read() for md in self.files}
-        self.langs = {md: lang_of(md, t) for md, t in self.texts.items()}
-        self.alt = {}                                     # base -> {lang: md}
-        for md in self.files:
-            explicit = re.search(r"\.(ru|en|de)\.md$", md)
-            group = self.alt.setdefault(base_of(md), {})
-            if explicit or self.langs[md] not in group:
-                group[self.langs[md]] = md
-        self.version = open(os.path.join(ROOT, "VERSION"), encoding="utf-8").read().strip()
+        self.version = read("VERSION").strip()
+        self.md_page = {}                                     # Markdown file -> (page id, language of the file or None)
+        for p in PAGES:
+            for lang, src in (p.get("src") or {}).items():
+                path = src_path(src)
+                single = len({src_path(s) for s in p["src"].values()}) == 1
+                self.md_page.setdefault(path, (p["id"], None if single else lang))
 
-    def page_for(self, base, lang):
-        group = self.alt.get(base) or {}
-        md = group.get(lang) or group.get("en") or next(iter(group.values()), None)
-        return out_path(md) if md else None
-
-    def link(self, href, md):
+    # ---------------------------------------------------------------- links inside the content
+    def link(self, href, md, lang):
         if re.match(r"^[a-z][a-z0-9+.-]*:", href, re.I) or href.startswith("#"):
             return href
         path, _, frag = href.partition("#")
         frag = "#" + frag if frag else ""
-        page = out_path(md)
         target = posixpath.normpath(posixpath.join(posixpath.dirname(md), path)) if path else md
         if target.startswith(".."):
             return href
-        if target in self.texts:
-            return rel(out_path(target), page) + frag
-        if path.endswith("/") or os.path.isdir(os.path.join(ROOT, target)):
-            if target + "/README.md" in self.texts:
-                return rel(out_path(target + "/README.md"), page) + frag
-            return f"{REPO_URL}/tree/main/{target}"
-        if re.search(r"\.(png|jpe?g|svg|gif|webp)$", target, re.I):
-            return rel(target, page)
+        if target in self.md_page:
+            return page_file(self.md_page[target][0], lang) + frag
+        if os.path.isdir(os.path.join(ROOT, target)) or path.endswith("/"):
+            readme = target.rstrip("/") + "/README.md"
+            if readme in self.md_page:
+                return page_file(self.md_page[readme][0], lang) + frag
+            return f"{REPO_URL}/tree/main/{target.rstrip('/')}"
         return f"{REPO_URL}/blob/main/{target}{frag}"
 
-    # ---------------------------------------------------------------- page parts
-    def head(self, page, lang, title, description, extra_css=()):
-        r = rel(".", page)
-        r = "" if r == "." else r + "/"
-        s = r + STYLE
-        css = "".join(f'\n  <link rel="stylesheet" href="{r}{c}">' for c in extra_css)
-        return f"""<!doctype html>
-<!-- Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · generated by scripts/build_site.py, do not edit -->
-<html lang="{lang}">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'">
-  <meta name="referrer" content="no-referrer">
-  <meta name="homensai-style" content="{STYLE_VERSION}">
-  <title>{html.escape(title)} — Local AI Lab</title>
-  <meta name="description" content="{html.escape(description)}">
-  <link rel="icon" href="{s}/brand/logo-mark.svg" type="image/svg+xml">
-  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
-  <link rel="preload" href="{s}/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="{s}/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
-  <script src="{s}/js/theme-init.js"></script>
-  <link rel="stylesheet" href="{s}/dist/homensai-full.css">
-  <link rel="stylesheet" href="{r}site/site.css">{css}
-</head>"""
-
-    def header(self, page, lang, current_base, alternates):
-        t = T[lang]
-        home = self.page_for("README", lang)
-
-        def a(target, label, base, cls="nav-link"):
-            cur = ' aria-current="page"' if base == current_base else ""
-            return f'<a class="{cls}" href="{html.escape(rel(target, page))}"{cur}>{html.escape(label)}</a>'
-
-        docs_bases = {b for _, b in DOCS_MENU}
-        docs_links = "".join(a(self.page_for(b, lang), labels[lang], b, cls="") .replace(' class=""', "")
-                             for labels, b in DOCS_MENU if self.page_for(b, lang))
-        active = " data-active" if current_base in docs_bases else ""
-        contact = f"site/contact.{lang}.html"
-        langs = ""
-        for code in LANGS:
-            target = alternates.get(code)
-            if not target:
-                continue
-            cur = ' aria-current="page"' if code == lang else ""
-            langs += f'<a href="{html.escape(rel(target, page))}" hreflang="{code}" lang="{code}"{cur}>{LANG_NAMES[code]}</a>'
-        lang_menu = (f'<li><details class="nav-group lang-switch"><summary aria-label="{t["lang"]}: {LANG_NAMES[lang]}">'
-                     f'{lang.upper()}</summary><div class="nav-menu right">{langs}</div></details></li>') if langs.count("<a") > 1 else ""
-        return f"""<body>
-  <a class="skip-link" href="#main">{t["skip"]}</a>
-  <header class="topbar">
-    <a class="brand" href="{html.escape(rel(home, page))}" aria-label="HomenS.AI Local AI Lab">{BRAND_SVG}<span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">{t["brand_sub"]}</span></span></a>
-    <nav id="nav" aria-label="{t["nav"]}">
-      <ul class="nav-main">
-        <li>{a(home, t["home"], "README")}</li>
-        <li>{a(self.page_for("docs/INSTALL", lang), t["install"], "docs/INSTALL")}</li>
-        <li><details class="nav-group"{active}><summary>{t["docs"]}</summary><div class="nav-menu">{docs_links}</div></details></li>
-        <li>{a(self.page_for("results-public/RESULTS", lang), t["results"], "results-public/RESULTS")}</li>
-        <li><a class="nav-link" href="{REPO_URL}" rel="noopener">GitHub ↗</a></li>
-        <li>{a(contact, t["contact"], "site/contact", cls="nav-link nav-contact")}</li>
-      </ul>
-      <ul class="nav-tools" id="tools">{lang_menu}</ul>
-    </nav>
-  </header>"""
-
-    def bottom(self, page, lang, current_base, source_md=None):
-        t = T[lang]
-
-        def a(target, label, base):
-            cur = ' aria-current="page"' if base == current_base else ""
-            return f'<a href="{html.escape(rel(target, page))}"{cur}>{html.escape(label)}</a>'
-
-        docs = "".join(f'<a href="{html.escape(rel(self.page_for(b, lang), page))}">{html.escape(labels[lang])}</a>'
-                       for labels, b in DOCS_MENU if self.page_for(b, lang))
-        source = (f'<p class="page-source"><a href="{REPO_URL}/blob/main/{source_md}" rel="noopener">{t["edit"]}</a></p>'
-                  if source_md else "")
-        lic_res = rel(self.page_for("legal/LICENSE-RESULTS-CC-BY-NC-4.0", lang), page)
-        third = rel(self.page_for("legal/NOTICE-THIRD-PARTY", lang), page)
-        return f"""  <nav class="bottomnav" aria-label="{t["nav"]}">
-    {a(self.page_for("README", lang), t["home"], "README")}
-    {a(self.page_for("docs/INSTALL", lang), t["install"], "docs/INSTALL")}
-    <button type="button" class="more-toggle" aria-expanded="false" aria-controls="more-sheet">{t["more"]}</button>
-    {a(f"site/contact.{lang}.html", t["contact"], "site/contact")}
-  </nav>
-  <div class="more-sheet" id="more-sheet" hidden>
-    <h2>{t["docs"]}</h2>
-    <a href="{html.escape(rel(self.page_for("results-public/RESULTS", lang), page))}">{t["results"]}</a>{docs}
-    <a href="{REPO_URL}" rel="noopener">GitHub ↗</a>
-  </div>
-  <footer class="site-footer">
-    {source}
-    <p class="license-line">{t["license"]} · {t["author"]}: <a href="https://homensai.com/" rel="noopener author">homensai.com</a> · Local AI Lab <b>v{self.version}</b> · <a href="{REPO_URL}" rel="noopener">GitHub</a> ·
-    {t["lic_results"]}: <a href="{html.escape(lic_res)}" rel="license">CC BY-NC 4.0</a> · {t["lic_code"]}: <a href="{REPO_URL}/blob/main/legal/LICENSE-CODE-POLYFORM-NC.txt" rel="license noopener">PolyForm Noncommercial 1.0.0</a> ·
-    <a href="{html.escape(third)}">{t["third"]}</a></p>
-    <div id="footer"></div>
-  </footer>
-  <noscript><p class="noscript">{t["noscript"]}</p></noscript>"""
-
-    def scripts(self, page, extra=()):
-        r = rel(".", page)
-        r = "" if r == "." else r + "/"
-        names = [f"{STYLE}/js/brand.js", f"{STYLE}/js/ui.js", f"{STYLE}/js/brand-ui.js", *extra, "site/site.js"]
-        return "\n".join(f'  <script src="{r}{n}"></script>' for n in names) + "\n</body>\n</html>\n"
-
-    # ---------------------------------------------------------------- pages
-    def doc_page(self, md):
-        text, lang = self.texts[md], self.langs[md]
-        page, base = out_path(md), base_of(md)
-        conv = Markdown(lambda href: self.link(href, md))
+    # ---------------------------------------------------------------- page content (inside <main>)
+    def doc_body(self, page, lang):
+        src = page["src"][lang]
+        md = src_path(src)
+        text = "\n".join(line for line in source_text(src).split("\n") if not LANG_LINE.match(line.strip()))
+        text = MAIL.sub(r"\1 [at] homensai [dot] com", text)
+        conv = Markdown(lambda href: self.link(href, md, lang))
         body = conv.render(text)
         h1 = next((h for h in conv.headings if h[0] == 1), None)
-        title = h1[2] if h1 else posixpath.basename(base).replace("_", " ")
-        first_p = re.search(r"<p>(.*?)</p>", body, re.S)
-        description = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", first_p.group(1)))).strip()[:200] if first_p else title
+        title = (page.get("title") or {}).get(lang) or (h1[2] if h1 else page["id"])
+        if h1:
+            body = re.sub(r'<h1 id="[^"]*">.*?</h1>\n?', "", body, count=1, flags=re.S)
+            heading = f'<h1 id="{h1[1]}">{h1[3]}</h1>' if not page.get("title") else f"<h1>{html.escape(title)}</h1>"
+        else:
+            heading = f"<h1>{html.escape(title)}</h1>"
+        ui = UI[lang]
         h2 = [h for h in conv.headings if h[0] == 2]
         toc = ""
         if len(h2) >= 3 and not any(h[2].strip().lower() in CONTENTS_HEADINGS for h in conv.headings):
             items = "".join(f'<li><a href="#{h[1]}">{html.escape(h[2])}</a></li>' for h in h2)
-            toc = f'\n    <nav class="card help-toc doc-toc" aria-label="{T[lang]["toc"]}"><h2>{T[lang]["toc"]}</h2><ol>{items}</ol></nav>'
-        if h1:                                          # the title stands above the table of contents and the text card
-            body = re.sub(r"<h1 id=\"[^\"]*\">.*?</h1>\n?", "", body, count=1, flags=re.S)
-            heading = f'<h1 id="{h1[1]}">{h1[3]}</h1>'
-        else:
-            heading = f"<h1>{html.escape(title)}</h1>"
-        alternates = {code: out_path(m) for code, m in (self.alt.get(base) or {}).items()}
-        return (self.head(page, lang, title, description) + "\n" + self.header(page, lang, base, alternates) + f"""
-  <main id="main" tabindex="-1">
-    <p class="eyebrow">Local AI Lab · v{self.version}</p>
-    {heading}{toc}
-    <article class="card lesson-body doc-body">
-{body}
-    </article>
-  </main>
-""" + self.bottom(page, lang, base, md) + "\n" + self.scripts(page))
+            toc = f'\n    <nav class="card help-toc doc-toc" aria-label="{ui["toc"]}"><h2>{ui["toc"]}</h2><ol>{items}</ol></nav>'
+        back = f'<a href="{page_file(page["parent"], lang)}">← {ui["back"]}</a> · ' if page.get("parent") else ""
+        meta = f'\n    <p class="doc-meta">{back}<a href="{REPO_URL}/blob/main/{md}" rel="noopener">{ui["source"]}</a></p>'
+        names = getattr(self, "titles", {})              # a link that shows a file name gets the title of the page
+        files = {page_file(pid, lng): t for (pid, lng), t in names.items()}
+        body = re.sub(r'<a href="([^"#:]+\.html)(#[^"]*)?">([\w./-]+\.md)</a>',
+                      lambda m: f'<a href="{m.group(1)}{m.group(2) or ""}">{html.escape(files[m.group(1)])}</a>'
+                      if m.group(1) in files else m.group(0), body)
+        def readable(m):
+            kind, path, attrs, text = m.groups()
+            if path not in GITHUB_LABELS or not re.fullmatch(r"[\w./-]+", text):
+                return m.group(0)
+            return f'<a href="{REPO_URL}/{kind}/main/{path}"{attrs}>{html.escape(GITHUB_LABELS[path][lang])}</a>'
+        body = re.sub(r'<a href="' + re.escape(REPO_URL) + r'/(blob|tree)/main/([^"#]+)"([^>]*)>([^<]*)</a>', readable, body)
+        return title, f"{AUTHOR}\n    {heading}{toc}\n    <article class=\"card lesson-body doc-body\">\n{body}\n    </article>{meta}\n"
 
-    def contact_page(self, lang):
-        page = f"site/contact.{lang}.html"
-        alternates = {code: f"site/contact.{code}.html" for code in LANGS}
-        return (self.head(page, lang, T[lang]["contact_title"], T[lang]["contact_title"] + " · HomenS.AI") + "\n"
-                + self.header(page, lang, "site/contact", alternates) + """
-  <main id="main" tabindex="-1">
-    <section id="contact" data-heading="h1"></section>
-  </main>
-""" + self.bottom(page, lang, "site/contact") + "\n"
-                + self.scripts(page, (f"{STYLE}/js/robot.js", f"{STYLE}/js/motion.js", f"{STYLE}/js/logo-word.js", "site/contact.js")))
+    def hub_body(self, page, lang):
+        ui = UI[lang]
+        parts = [f"{AUTHOR}\n    <h1>{html.escape(page['title'][lang])}</h1>\n    <p class=\"lead\">{html.escape(ui['hub_lead'])}</p>"]
+        for g, group in enumerate(GROUPS):
+            cards = []
+            for p in PAGES:
+                if p.get("parent") != page["id"] or p.get("group") != g:
+                    continue
+                title = self.titles[(p["id"], lang)]
+                cards.append(f'      <section class="card doc-card"><h3><a href="{page_file(p["id"], lang)}">{html.escape(title)}</a></h3>'
+                             f'<p>{html.escape(p["desc"][lang])}</p></section>')
+            parts.append(f"    <h2>{html.escape(group[lang])}</h2>\n    <div class=\"grid2 doc-cards\">\n" + "\n".join(cards) + "\n    </div>")
+        parts.append(f'    <p class="doc-meta">{html.escape(ui["changelog"])}: <a href="{REPO_URL}/blob/main/CHANGELOG.md" rel="noopener">'
+                     f'{html.escape(ui["changelog_where"])}</a></p>\n')
+        return "\n".join(parts)
 
-    def pages(self):
-        result = {out_path(md): self.doc_page(md) for md in self.files}
+    def contact_body(self, lang):
+        ui = UI[lang]
+        return (f"{AUTHOR}\n      <section class=\"card\"><h2>{ui['about']}</h2><p>{html.escape(ui['about_text'])}</p>"
+                f"<p>{html.escape(ui['licence'])}</p><p><a href=\"{REPO_URL}\" rel=\"noopener\">{ui['repo']}</a> · "
+                f"<a href=\"{page_file('licences', lang)}\">{html.escape(self.titles[('licences', lang)])}</a></p></section>\n")
+
+    # ---------------------------------------------------------------- everything the core builder reads
+    def sources(self):
+        files, self.titles = {}, {}
+        bodies = {}
+        for p in PAGES:                                     # first the titles, then the bodies that name them
+            if "src" in p:
+                for lang in LANGS:
+                    self.titles[(p["id"], lang)] = self.doc_body(p, lang)[0]
+            elif p.get("hub"):
+                for lang in LANGS:
+                    self.titles[(p["id"], lang)] = p["title"][lang]
+        for p in PAGES:
+            if "src" in p:
+                for lang in LANGS:
+                    title, body = self.doc_body(p, lang)
+                    self.titles[(p["id"], lang)] = title
+                    bodies[(p["id"], lang)] = body
+        for p in PAGES:
+            if p.get("hub"):
+                for lang in LANGS:
+                    self.titles[(p["id"], lang)] = p["title"][lang]
+                    bodies[(p["id"], lang)] = self.hub_body(p, lang)
+        for (pid, lang), body in bodies.items():
+            files[f"{SITE}/content/{pid}.{lang}.body.html"] = body
         for lang in LANGS:
-            result[f"site/contact.{lang}.html"] = self.contact_page(lang)
-        result[".nojekyll"] = ""
-        return result
+            files[f"{SITE}/content/contact.{lang}.body.html"] = self.contact_body(lang)
+        pages = []
+        for p in PAGES:
+            item = {"id": p["id"]}
+            if p.get("parent"):
+                item["parent"] = p["parent"]
+            else:
+                item["nav"] = p["nav"]
+            if "href" in p:
+                item["href"] = p["href"]
+            elif p["id"] != "home":
+                item["title"] = {lang: self.titles[(p["id"], lang)] for lang in LANGS}
+            pages.append(item)
+        config = {"name": "Local AI Lab", "title": L("Local AI Lab", "Local AI Lab", "Local AI Lab"), "languages": LANGS,
+                  "version": self.version, "out": ".", "pages": pages, "css": ["assets/site.css"], "js": {"*": []}}
+        files[f"{SITE}/site.json"] = json.dumps(config, ensure_ascii=False, indent=1) + "\n"
+        return files
+
+    def redirects(self):
+        """Old addresses -> new pages, so links people saved keep working (meta refresh, no script)."""
+        files = {".nojekyll": ""}
+        for md in tracked_markdown():
+            old = old_page(md)
+            if md in self.md_page:
+                pid, lang = self.md_page[md]
+                lang = lang or (re.search(r"\.(ru|de|en)\.md$", md) or [None, "en"])[1]
+                target = posixpath.relpath(f"{SITE}/{page_file(pid, lang)}", posixpath.dirname(old) or ".")
+            elif md == "README.md":
+                continue
+            else:
+                lang, target = "en", f"{REPO_URL}/blob/main/{md}"
+            if md == "README.md":
+                target, lang = f"{SITE}/index.html", "en"
+            files[old] = (f"<!doctype html>\n{AUTHOR}\n<html lang=\"{lang}\">\n<head>\n  <meta charset=\"utf-8\">\n"
+                          f"  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+                          f"  <meta http-equiv=\"refresh\" content=\"0; url={html.escape(target)}\">\n"
+                          f"  <link rel=\"icon\" href=\"{posixpath.relpath(SITE + '/style/brand/logo-mark.svg', posixpath.dirname(old) or '.')}\" type=\"image/svg+xml\">\n"
+                          f"  <link rel=\"canonical\" href=\"{html.escape(target)}\">\n  <meta name=\"robots\" content=\"noindex\">\n"
+                          f"  <title>Local AI Lab</title>\n</head>\n<body>\n  <p><a href=\"{html.escape(target)}\">{UI[lang]['moved']}: "
+                          f"{html.escape(target)}</a></p>\n</body>\n</html>\n")
+        return files
+
+    def built_pages(self):
+        names = [page_file(p["id"], lang) for p in PAGES if "href" not in p for lang in LANGS]
+        return names + [f"contact.{lang}.html" for lang in LANGS]
+
+
+def core_dir(argv):
+    if "--style" in argv:
+        return os.path.abspath(argv[argv.index("--style") + 1])
+    return os.path.abspath(os.environ.get("HOMENSAI_STYLE") or os.path.join(ROOT, "..", "homensai-style"))
+
+
+def write_all(files):
+    changed = []
+    for name, content in sorted(files.items()):
+        path = os.path.join(ROOT, name)
+        try:
+            with open(path, encoding="utf-8") as f:
+                if f.read() == content:
+                    continue
+        except OSError:
+            pass
+        os.makedirs(os.path.dirname(path) or ROOT, exist_ok=True)
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            f.write(content)
+        changed.append(name)
+    return changed
+
+
+def check(site, files):
+    problems = []
+    for name, content in sorted(files.items()):
+        try:
+            with open(os.path.join(ROOT, name), encoding="utf-8") as f:
+                if f.read() != content:
+                    problems.append(f"out of date: {name}")
+        except OSError:
+            problems.append(f"missing: {name}")
+    known = set(files)
+    for name in os.listdir(os.path.join(ROOT, SITE, "content")):
+        if f"{SITE}/content/{name}" not in known:
+            problems.append(f"left over: {SITE}/content/{name}")
+    try:
+        core = read(f"{SITE}/style/VERSION").strip()
+    except OSError:
+        core = None
+        problems.append(f"missing: {SITE}/style/VERSION (run the build with the style core)")
+    if core and tuple(int(x) for x in core.split(".")) < MIN_CORE:
+        problems.append(f"{SITE}/style is HomenS.AI Style {core}, needs {'.'.join(map(str, MIN_CORE))} or newer")
+    for name in site.built_pages():
+        try:
+            page = read(f"{SITE}/{name}")
+        except OSError:
+            problems.append(f"missing page: {SITE}/{name} (run the build)")
+            continue
+        if f'<meta name="homensai-style" content="{core}">' not in page:
+            problems.append(f"{SITE}/{name}: not built with the style core in {SITE}/style")
+        pid, _, rest = name.partition(".")
+        lang = rest.split(".")[0] if rest != "html" else LANGS[0]
+        body = files.get(f"{SITE}/content/{'home' if pid == 'index' else pid}.{lang}.body.html")
+        if body:
+            inner = re.sub(r"^\s*<!--[^>]*Serhii Khomenko[^>]*-->\s*", "", body).strip()
+            if inner not in page:
+                problems.append(f"{SITE}/{name}: older than its content (run the build)")
+    return problems
 
 
 def main(argv):
-    check = "--check" in argv
-    pages = Site().pages()
-    stale = []
-    for name, content in sorted(pages.items()):
-        path = os.path.join(ROOT, name)
-        try:
-            old = open(path, encoding="utf-8").read()
-        except OSError:
-            old = None
-        if old == content:
-            continue
-        stale.append(name)
-        if not check:
-            os.makedirs(os.path.dirname(path) or ROOT, exist_ok=True)
-            with open(path, "w", encoding="utf-8", newline="\n") as f:
-                f.write(content)
-    if check:
-        for name in stale:
-            print("out of date:", name)
-        print(f"{len(pages)} pages, {len(stale)} out of date" + (": run python scripts/build_site.py" if stale else ""))
-        return 1 if stale else 0
-    print(f"{len(pages)} pages, {len(stale)} written")
-    return 0
+    site = Site()
+    files = site.sources()
+    files.update(site.redirects())
+    if "--check" in argv:
+        problems = check(site, files)
+        for p in problems:
+            print(p)
+        print(f"{len(files)} files, {len(site.built_pages())} pages: " + ("up to date" if not problems else
+              f"{len(problems)} problem(s), run python scripts/build_site.py"))
+        return 1 if problems else 0
+    core = core_dir(argv)
+    builder = os.path.join(core, "tools", "site.py")
+    try:
+        version = tuple(int(x) for x in read_abs(os.path.join(core, "VERSION")).strip().split("."))
+    except (OSError, ValueError):
+        version = None
+    if not os.path.exists(builder) or not version or version < MIN_CORE:
+        raise SystemExit(f"HomenS.AI Style {'.'.join(map(str, MIN_CORE))} or newer is needed in {core} "
+                         "(--style <folder> or HOMENSAI_STYLE); download the ZIP of the style repository")
+    changed = write_all(files)
+    for name in os.listdir(os.path.join(ROOT, SITE, "content")):
+        if f"{SITE}/content/{name}" not in files:
+            os.remove(os.path.join(ROOT, SITE, "content", name))
+            changed.append(f"{SITE}/content/{name} (removed)")
+    print(f"{len(files)} files, {len(changed)} changed; building the pages with HomenS.AI Style {'.'.join(map(str, version))}")
+    return subprocess.run([sys.executable, builder, "build", os.path.join(ROOT, SITE)]).returncode
+
+
+def read_abs(path):
+    with open(path, encoding="utf-8") as f:
+        return f.read()
 
 
 if __name__ == "__main__":

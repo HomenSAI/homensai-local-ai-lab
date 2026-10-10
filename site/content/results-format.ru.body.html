@@ -1,0 +1,60 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="файлы-результатов-и-план-этапов">Файлы результатов и план этапов</h1>
+    <nav class="card help-toc doc-toc" aria-label="Содержание"><h2>Содержание</h2><ol><li><a href="#1-строки-результатов-вид-определяется-именем-файла">1. Строки результатов (вид определяется именем файла)</a></li><li><a href="#2-журнал-этапа-и-маркеры">2. Журнал этапа и маркеры</a></li><li><a href="#3-план-этапов">3. План этапов</a></li><li><a href="#4-публичный-снимок">4. Публичный снимок</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Инструмент тестирования (скрипт или ИИ-супервизор, работающий вручную) общается со сборщиком отчёта только через файлы в <code>bench_results/</code>. Сборщик читает <code>results*.jsonl</code> каждые 15 секунд; больше ничего вызывать не нужно. Один JSON-объект на строку, UTF-8, <strong>только дописывать</strong>.</p>
+<h2 id="1-строки-результатов-вид-определяется-именем-файла">1. Строки результатов (вид определяется именем файла)</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Файл</th><th>Вид</th><th>Обязательные поля</th><th>Необязательные поля</th></tr></thead>
+<tbody>
+<tr><td><code>results_all.jsonl</code></td><td>общий тест</td><td><code>model</code>, <code>load_ok</code> (bool), <code>quality</code>: список <code>{task, cat, score, max}</code> (<code>cat</code> — одно из <code>Русский</code>, <code>Логика</code>, <code>Код</code>, <code>Инструкции</code>, <code>Зрение</code>); <code>quality</code> можно не указывать, если <code>load_ok</code> равно <code>false</code></td><td><code>file</code>, <code>quant</code>, <code>size_gb</code>, <code>mode</code>, <code>ngl</code>, <code>placement</code>, <code>pp</code>, <code>tg</code>, <code>vram_peak_8k</code>, <code>vram_bench</code>, <code>load_s</code>, <code>max_ctx</code>, <code>ctx</code>, <code>host_free_min_gb</code>, <code>guard_killed</code>, <code>error</code></td></tr>
+<tr><td><code>results_german.jsonl</code></td><td>немецкий язык</td><td><code>model</code>, <code>score</code>, <code>n</code>, <code>items</code>: список <code>{cat, ok}</code></td><td><code>tokens</code>, <code>minutes</code>, <code>mode</code></td></tr>
+<tr><td><code>results_ctx.jsonl</code></td><td>максимальный контекст</td><td><code>model</code>, <code>best_ctx</code>, <code>cfgs</code>: <code>{config: {best_ctx, tg, vram}}</code></td><td><code>native_ctx</code>, <code>cap</code>, <code>ref_tg_8k</code>, <code>best_cfg</code>, <code>recommended_cfg</code>, <code>minutes</code></td></tr>
+<tr><td><code>results_ctx_trials.jsonl</code></td><td>отдельные пробы контекста</td><td><code>model</code>, <code>ctx</code>, <code>stable</code> (bool)</td><td><code>cfg</code>, <code>hits</code>, <code>pp</code>, <code>tg</code>, <code>vram_peak</code></td></tr>
+<tr><td><code>results_stem.jsonl</code></td><td>математика + физика</td><td><code>model</code>, <code>math</code>, <code>phys</code>, <code>total</code>, <code>n</code></td><td><code>think</code>, <code>tokens</code>, <code>truncated</code>, <code>minutes</code>, <code>items</code></td></tr>
+<tr><td><code>results_chem.jsonl</code></td><td>химия</td><td><code>model</code>, <code>score</code> (из 10)</td><td><code>think</code>, <code>truncated</code>, <code>minutes</code>, <code>items</code></td></tr>
+<tr><td><code>results_code20.jsonl</code></td><td>код, 20 задач</td><td><code>model</code>, <code>passed</code>, <code>n</code></td><td><code>by_level</code> (<code>{&quot;1&quot;: [passed, total], ...}</code>), <code>failed</code> (имена задач), <code>tokens</code>, <code>minutes</code>, <code>request_errors</code></td></tr>
+<tr><td><code>results_accel.jsonl</code></td><td>ускорители / эмбеддинги</td><td><code>kind</code> (<code>spec</code> или <code>embed</code>), <code>profile</code></td><td><code>baseline</code>, <code>spec_flags</code>, <code>dim</code>, <code>top1</code>, <code>verdict</code></td></tr>
+<tr><td><code>results_soak.jsonl</code></td><td>надёжность</td><td><code>model</code>, <code>ctx</code>, <code>steps</code></td><td><code>problems</code>, <code>vram_peak</code>, <code>gpu_util_peak</code>, <code>host_free_min_gb</code>, <code>load_s</code></td></tr>
+</tbody>
+</table></div>
+<p>Более новая строка для той же пары <code>(suite, model)</code> заменяет значение, показанное в отчёте, <strong>прежнее значение остаётся в архиве SQLite и в Git</strong>. Никогда не редактируйте уже записанную строку; дописывайте новую.</p>
+<h3 id="модели-которые-не-загрузились-и-недопустимые-баллы">Модели, которые не загрузились, и недопустимые баллы</h3>
+<ul>
+<li>Модель, которая не загрузилась, записывается как <code>{&quot;model&quot;: &quot;...&quot;, &quot;load_ok&quot;: false, &quot;error&quot;: &quot;short reason&quot;}</code>. Строка сохраняется: модель появляется в отчёте и в публичном снимке как <strong>не загрузилась</strong> (никогда как «допущена»). Не помещайте в <code>error</code> пути и личные данные.</li>
+<li>В <code>quality</code> значение <code>score</code> должно быть числом от 0 до <code>max</code>, а <code>max</code> — числом больше 0 (отсутствующий <code>max</code> считается равным 1). Сборщик <strong>игнорирует</strong> элемент, который нарушает это правило (иначе ошибочная проверка показала бы 500 %), и ограничивает <code>score</code> больше <code>max</code> значением <code>max</code>. Число проигнорированных элементов сохраняется как <code>invalid_items</code> в строке модели: если оно появилось, исправьте проверку и допишите новую строку.</li>
+<li>Строки, которые не являются корректным JSON (строка, которая ещё записывается), пропускаются.</li>
+</ul>
+<p>Имена моделей должны быть одинаковыми во всех файлах: одна и та же строка <code>model</code> объединяет строки разных тестов в одну строку таблицы. Имена, которые есть в файле списка моделей <code>bench_top.py</code> (<code>TOP</code>), определяют, какие модели входят в текущий план; остальные имена сохраняются, но не учитываются.</p>
+<h2 id="2-журнал-этапа-и-маркеры">2. Журнал этапа и маркеры</h2>
+<p>У каждого этапа может быть журнал <code>bench_results/&lt;name&gt;.log</code> (его пишет инструмент):</p>
+<pre><code>=== &lt;model name&gt; (anything)     # starts a model: the console shows &quot;now testing &lt;model&gt;&quot;
+PROGRESS 7/20                   # tasks done of all, before every task: gives an exact progress bar
+DONE ... / STEM ... / CTX ...   # one result line per model (free text, shown as &quot;last result&quot;)
+&lt;NAME&gt;-FINISHED                 # last line: marks the whole stage as done</code></pre>
+<p>Без строк <code>PROGRESS</code> консоль оценивает прогресс по среднему времени на модель.</p>
+<h2 id="3-план-этапов">3. План этапов</h2>
+<p><code>scripts/build_live_report.py</code> задаёт <code>DEFAULT_PLAN</code>; чтобы изменить его, не правя код, создайте <code>bench_results/benchmark_plan.json</code>:</p>
+<pre><code class="language-json">{&quot;stages&quot;: [
+  {&quot;id&quot;: &quot;stem&quot;, &quot;title&quot;: &quot;Math and physics&quot;, &quot;per_model&quot;: false, &quot;scope&quot;: &quot;eligible&quot;,
+   &quot;results&quot;: [&quot;results_stem.jsonl&quot;], &quot;log&quot;: &quot;bench_stem.log&quot;, &quot;finish_marker&quot;: &quot;STEM-FINISHED&quot;,
+   &quot;after&quot;: &quot;accel&quot;, &quot;est_minutes_per_model&quot;: 6, &quot;what&quot;: &quot;short description shown in the console&quot;}
+]}</code></pre>
+<div class="table-wrap"><table>
+<thead><tr><th>Поле</th><th>Значение</th></tr></thead>
+<tbody>
+<tr><td><code>id</code>, <code>title</code>, <code>what</code>, <code>note</code></td><td>идентификатор, название, описание и подсказка, показываемые в списке этапов</td></tr>
+<tr><td><code>results</code></td><td>файлы результатов, которые учитываются для этого этапа (строки других файлов здесь игнорируются)</td></tr>
+<tr><td><code>log</code>, <code>finish_marker</code></td><td>файл журнала и строка, отмечающая завершение</td></tr>
+<tr><td><code>per_model</code></td><td>true: прогресс — «готово моделей из всех моделей плана»</td></tr>
+<tr><td><code>scope: &quot;eligible&quot;</code></td><td>этап учитывает только модели, которые не были сняты по правилу 64K</td></tr>
+<tr><td><code>fixed_total</code></td><td>этап с фиксированным числом элементов (например, 16 профилей шлюза)</td></tr>
+<tr><td><code>est_minutes_per_model</code>, <code>est_total_minutes</code></td><td>оценки, используемые для полосы «до окончания всех тестов», пока нет реальных замеров времени</td></tr>
+<tr><td><code>after</code></td><td>этап, который должен завершиться раньше (только показывается читателю)</td></tr>
+</tbody>
+</table></div>
+<p>Снятые модели: модель считается снятой, если в <code>results_ctx.jsonl</code> значение <code>best_ctx</code> меньше 65536 и модели нет в <code>bench_results/ctx_recheck.txt</code> (одно имя на строку, для моделей, оставленных для повторной проверки).</p>
+<h2 id="4-публичный-снимок">4. Публичный снимок</h2>
+<p><code>python scripts/make_public_results.py [OUT_DIR] [--live FILE]</code> записывает <code>results-public/RESULTS.md</code>, <code>results-summary.csv</code> и <code>results-summary.json</code> из <code>report/live-data.json</code>: только агрегированные числа, без промптов и ответов.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.ru.html">← Документация</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/RESULTS_FORMAT.ru.md" rel="noopener">Исходный текст на GitHub</a></p>

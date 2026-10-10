@@ -1,0 +1,72 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Начните здесь: промпт для вашего ИИ-ассистента — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="prompt.en.html">
+  <link rel="alternate" hreflang="ru" href="prompt.ru.html">
+  <link rel="alternate" hreflang="de" href="prompt.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти к содержанию</a>
+  <header class="topbar">
+    <a class="brand" href="index.ru.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Основная навигация">
+      <ul class="nav-main"><li><a class="nav-link" href="index.ru.html">Главная</a></li><li><a class="nav-link" href="install.ru.html">Установка</a></li><li><a class="nav-link" href="docs.ru.html" aria-current="page">Документация</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Результаты</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.ru.html">Контакт</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Язык"><a href="prompt.en.html" lang="en" hreflang="en" aria-label="EN – English">EN</a><a href="prompt.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="prompt.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский" class="on" aria-current="true">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1>Начните здесь: промпт для вашего ИИ-ассистента</h1>
+    <article class="card lesson-body doc-body">
+<p><strong>Нужно ли это?</strong> Нет: сервер ставится шестью командами, которые можно выполнить самому (README, «Быстрый старт»). Ассистент — удобство: он выполнит те же команды, подберёт и скачает модели, разберёт журналы, если что-то не так, а потом запустит и проверит ваши тесты.</p>
+<p><strong>Как это работает.</strong> Вы открываете ИИ-ассистента, <strong>который умеет выполнять команды на вашем ПК</strong> (Claude Code с Sonnet или Opus, агент ChatGPT/Codex или другой кодовый агент), указываете ему этот репозиторий (клонируете или даёте папку) и вставляете промпт ниже. Ассистент собирает всё так же, как у автора, — Docker, контейнеры, ИИ-сервер, консоль, отчёты, — проверяет и заканчивает сообщением <strong>«Всё готово — тестируй»</strong> с таблицей состояния. Дальше он же запускает и контролирует ваши тесты (<a href="operator.ru.html">Работа сервера под управлением ИИ-супервизора (Claude или ChatGPT)</a>).</p>
+<p>Обычный чат в браузере (без доступа к вашему компьютеру) этого сделать не может: он только объяснит шаги.</p>
+<p><strong>Промпт — скопируйте всё из рамки:</strong></p>
+<pre><code>Ты — установщик и супервизор проекта в этой папке («Local AI Server»: сервер моделей llama.cpp/llama-swap для одной видеокарты NVIDIA, веб-консоль, отчёты по тестам с историей в Git). Собери его на ЭТОМ компьютере в точности так, как у автора, и затем сообщи мне, что всё готово к тестированию.
+
+Сначала прочитай: AGENTS.md (или CLAUDE.md), docs/INSTALL.ru.md, docs/AI_OPERATOR.ru.md, docs/API.md.
+
+Работай по порядку и коротко отчитывайся после каждого шага:
+0. Предпосылки. Проверь: Windows 10/11 (или Linux с NVIDIA Container Toolkit), видеокарту и драйвер NVIDIA (`nvidia-smi`), WSL2, запущенный и НЕ приостановленный Docker Desktop, Docker Compose v2. На Windows больше ничего не нужно: используй установщик на PowerShell `powershell -ExecutionPolicy Bypass -File scripts\install.ps1 &lt;шаг&gt;` (не ставь на Windows Python, Git и Node). На Linux — `python scripts/install.py &lt;шаг&gt;` (Python 3.10+). Ниже `install &lt;шаг&gt;` — установщик этой системы. Если чего-то нет, скажи, чего и как ты это поставишь (например `wsl --install`, `winget install Docker.Desktop`) и ЖДИ моего «да»: установка системных программ и перезагрузки — моё решение.
+1. `install doctor` — исправь всё, что он покажет (занятые порты, видеокарта не видна в Docker, мало места), если исправление неочевидно — спроси меня. Образ CUDA на 5,6 ГБ он сам не скачивает: спроси меня перед `doctor --pull` (`-Pull` в PowerShell). Если на ПК нет видеокарты NVIDIA, скажи мне и используй `--no-gpu` (`-NoGpu`) для doctor / build / up / verify.
+2. `install init` — затем спроси меня: папку для файлов моделей (MODEL_DIR) и нужен ли доступ к консоли с других устройств сети (AI_CONSOLE_BIND_IP; по умолчанию — только этот ПК). Запиши ответы в .env. Если консоль нужна с других устройств, спроси у меня пароль и запиши его в `AI_CONSOLE_PASSWORD` в .env (никуда, что попадает в Git).
+3. Модели: спроси, какие модели я хочу (для первого запуска по умолчанию — маленькая проверочная модель MiniCPM5-2B-Q8_0, около 2,7 ГБ). Скачивай только из источников и ревизий, указанных в MODELS.md, проверь SHA-256, положи файлы в том Docker по разделу 4.5 docs/INSTALL.ru.md. Перед любой загрузкой больше 1 ГБ спрашивай меня. Не выдумывай источники.
+4. `install build` (в первый раз 15–40 минут), `install up`, затем `install git` (локальный Git, который хранит каждую версию отчётов).
+5. `install verify` — каждая строка должна быть [ok]. Затем докажи, что цепочка работает: загрузи проверочную модель через API консоли и получи от неё один настоящий ответ через шлюз; покажи ответ, скорость (токенов/с) и занятую видеопамять.
+6. По желанию и только если я попрошу: Open WebUI, Video Studio (отдельный репозиторий).
+
+Правила: одна модель в видеопамяти за раз; никогда не открывай порты 8766/8080/3010 в интернет; не записывай секреты и персональные данные в файлы, попадающие в Git; перед удалением чего-либо спрашивай; если команда падает, читай лог (`docker logs &lt;контейнер&gt;`), устраняй причину и не повторяй вслепую.
+
+ЗАВЕРШИ ровно таким сообщением (заполни по реальным проверкам, не угадывай):
+«Всё готово — тестируй.
+ Консоль: http://localhost:8766/   Отчёт: http://localhost:8766/report/   API шлюза: http://localhost:8080/v1
+ Версия: &lt;из /api/version&gt;   GPU: &lt;название, память&gt;   Модели: &lt;список&gt;   verify: &lt;n из n ok&gt;
+ Проверка: модель &lt;имя&gt; ответила «&lt;ответ&gt;» со скоростью &lt;ток/с&gt; ток/с.
+ Предупреждения: &lt;всё, что не идеально, или «нет»&gt;.
+ Дальше: скажи, какие тесты на каких моделях запускать (см. docs/AI_OPERATOR.ru.md), я запущу и проверю».</code></pre>
+    </article>
+    <p class="doc-meta"><a href="docs.ru.html">← Документация</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/PROMPT_FOR_AI.md" rel="noopener">Исходный текст на GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>Для меню, переключения темы и подвала нужен JavaScript.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="installationsanleitung-deutsch">Installationsanleitung (Deutsch)</h1>
+    <article class="card lesson-body doc-body">
+<p>Diese Anleitung führt Sie von einem leeren Rechner zu einem funktionierenden <strong>Local AI Server</strong>: ein Gateway, das ein lokales Sprachmodell nach dem anderen in den Videospeicher einer einzelnen NVIDIA-Grafikkarte lädt; eine Web-Konsole (Modelle, Chat, Tests, Videogenerierung, Berichte) in drei Sprachen; automatische Testberichte und ein lokaler Git-Server, der jede Version der Berichte aufbewahrt.</p>
+<blockquote>
+<p>Urheberschaft und Rechte: Ergebnisse und Berichte stehen unter <strong>CC BY-NC 4.0</strong> (nutzen und weitergeben nur für nichtkommerzielle Zwecke und <strong>mit Verweis auf den Autor</strong>, <a href="https://homensai.com">https://homensai.com</a>); der Code steht unter <strong>PolyForm Noncommercial 1.0.0</strong>. Modellgewichte sind <strong>nicht</strong> Teil dieses Pakets und behalten ihre eigenen Lizenzen. Siehe Ordner <code>legal/</code>.</p>
+</blockquote>
+<h2 id="inhalt">Inhalt</h2>
+<ol>
+<li><a href="#1-was-sie-bekommen">Was Sie bekommen</a></li>
+<li><a href="#2-voraussetzungen">Voraussetzungen</a></li>
+<li><a href="#3-schneller-weg-das-installationsskript">Schneller Weg: das Installationsskript</a></li>
+<li><a href="#4-installation-schritt-für-schritt">Installation Schritt für Schritt</a></li>
+<li><a href="#5-optionale-komponenten">Optionale Komponenten</a></li>
+<li><a href="#6-überprüfung">Überprüfung</a></li>
+<li><a href="#7-die-konsole-benutzen">Die Konsole benutzen</a></li>
+<li><a href="#8-testergebnisse-berichte-und-git-versionen">Testergebnisse, Berichte und Git-Versionen</a></li>
+<li><a href="#9-wartung-aktualisieren-sichern-entfernen">Wartung: Aktualisieren, Sichern, Entfernen</a></li>
+<li><a href="#10-hinweise-zu-linux--macos">Hinweise zu Linux / macOS</a></li>
+<li><a href="#11-fehlersuche">Fehlersuche</a></li>
+<li><a href="#12-sicherheit">Sicherheit</a></li>
+<li><a href="#13-lizenz-und-namensnennung">Lizenz und Namensnennung</a></li>
+</ol>
+<h2 id="1-was-sie-bekommen">1. Was Sie bekommen</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Teil</th><th>Container</th><th>Port (auf diesem PC)</th><th>Aufgabe</th></tr></thead>
+<tbody>
+<tr><td>Gateway (llama-swap)</td><td><code>ai-llama-swap-gateway</code></td><td>8080</td><td>OpenAI-kompatible API. Startet <code>llama-server</code> für das angefragte Modell und entlädt das vorherige.</td></tr>
+<tr><td>Konsole</td><td><code>ai-model-console</code></td><td>8766</td><td>Weboberfläche: Modellkatalog mit Start/Stopp, Chat, GPU-Telemetrie, Diagnose, Entlade-Timer, Testergebnisse und der <strong>Bericht</strong> unter <code>/report/</code>. Sprachen: RU / EN / DE (Umschalter in der Kopfzeile).</td></tr>
+<tr><td>Berichtsgenerator</td><td><code>ai-report-builder</code></td><td>–</td><td>Wandelt alle 15 s die Ergebnisdateien der Benchmarks in <code>report/live-data.json</code> und das SQLite-Archiv <code>results-db/llm-results.sqlite</code> um.</td></tr>
+<tr><td>Berichts-Weiterleitung</td><td><code>ai-stats-report</code></td><td>8765</td><td>Alte Adresse: leitet auf <code>http://HOST:8766/report/</code> weiter.</td></tr>
+<tr><td>Git-Server</td><td><code>ai-gitea</code></td><td>3010 (Web), 2222 (ssh)</td><td>Lokales Gitea mit dem privaten Repository <code>reports-admin/model-test-reports</code>.</td></tr>
+<tr><td>Versionierer</td><td><code>ai-report-versioner</code></td><td>–</td><td>Speichert jede Minute geänderte Ergebnisse und Berichte in Gitea (Tags <code>v0001</code>, <code>v0002</code>, …, <code>stage-&lt;Phase&gt;-done</code>, <code>final-&lt;Datum&gt;</code>).</td></tr>
+<tr><td>Telemetrie (optional)</td><td><code>hermes-telemetry</code></td><td>9835</td><td>GPU- und llama-Metriken im Prometheus-Format für einen externen Collector.</td></tr>
+<tr><td>Video Studio (eigenes Projekt, optional)</td><td><code>video-studio-console</code>, <code>video-generation-comfyui-video-1</code></td><td>8767, 8188</td><td>Videogenerierung (ComfyUI + Wan 2.1). Eigenes Repository und eigene Anleitung.</td></tr>
+<tr><td>Open WebUI (optional)</td><td><code>open-webui</code></td><td>3000</td><td>Chat-Oberfläche, die mit dem Gateway verbunden ist.</td></tr>
+</tbody>
+</table></div>
+<p>In 10 GB Videospeicher passt ein großes Modell, deshalb hält das Gateway <strong>immer nur ein Modell geladen</strong>; die Konsole startet kein LLM, solange Video Studio ein Video generiert (und Video Studio entlädt die Modelle vor dem Start).</p>
+<h2 id="2-voraussetzungen">2. Voraussetzungen</h2>
+<p><strong>Hardware</strong></p>
+<ul>
+<li>NVIDIA-Grafikkarte mit mindestens 8 GB Videospeicher (Autor: RTX 3080, 10 GB). Modelle und Kontextgrößen in <code>config/llama-swap.yaml</code> sind auf 10 GB abgestimmt; bei weniger Speicher kleinere Modelle/Kontexte wählen.</li>
+<li>Mindestens 16 GB RAM, empfohlen 32 GB (das Bauen der CUDA-Images und das Laden von 9–27B-Modellen braucht viel RAM).</li>
+<li>Freier Speicherplatz: etwa 25 GB für Docker-Images, 50–200 GB für Modelle.</li>
+</ul>
+<p><strong>Software</strong></p>
+<ul>
+<li>Windows 10/11 mit <strong>Docker Desktop (WSL2-Backend)</strong> und aktuellem NVIDIA-Treiber (CUDA-12.8-fähig). Das ist die getestete Konfiguration. Für Linux siehe Abschnitt 10.</li>
+<li>Docker Compose v2 (in Docker Desktop enthalten). Unter Windows sonst nichts: der Installer <code>scripts\install.ps1</code> läuft in der eingebauten PowerShell. Unter Linux Python 3.10+ (für die Hilfsskripte, keine zusätzlichen Pakete) und Git.</li>
+<li>Internetzugang zum Bauen der Images und zum Herunterladen der Modelle.</li>
+</ul>
+<p><strong>Prüfen Sie zuerst die GPU in Docker</strong> (muss Ihre Grafikkarte ausgeben):</p>
+<pre><code>docker run --rm --gpus all nvidia/cuda:12.8.1-runtime-ubuntu24.04 nvidia-smi</code></pre>
+<p>Empfohlene <code>%USERPROFILE%\.wslconfig</code> für einen PC mit 32 GB (nach dem Bearbeiten <code>wsl --shutdown</code> ausführen):</p>
+<pre><code>[wsl2]
+memory=24GB
+processors=8
+swap=8GB</code></pre>
+<h2 id="3-schneller-weg-das-installationsskript">3. Schneller Weg: das Installationsskript</h2>
+<p><strong>Windows nur mit Docker Desktop (ohne Python, Git und Node auf dem PC).</strong> ZIP von der GitHub-Seite laden (Code → Download ZIP), entpacken, PowerShell im entpackten Ordner öffnen (Umschalt + Rechtsklick → „PowerShell-Fenster hier öffnen“) und einen Befehl nach dem anderen ausführen. Jede Ausgabezeile beginnt mit <code>[ok]</code>, <code>[warn]</code> oder <code>[FAIL]</code>:</p>
+<pre><code>powershell -ExecutionPolicy Bypass -File scripts\install.ps1 doctor
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init
+notepad .env
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify</code></pre>
+<p><code>scripts\install.ps1</code> macht genau dasselbe wie <code>scripts/install.py</code> unten (gleiche Schritte und Prüfungen, <code>-Pull</code> und <code>-NoGpu</code> statt <code>--pull</code> und <code>--no-gpu</code>, <code>all</code> für alles) und läuft in der mit Windows gelieferten PowerShell. Die Befehle unten sind für Linux oder einen KI-Assistenten mit Shell.</p>
+<pre><code>git clone https://github.com/HomenSAI/homensai-local-ai-lab.git local-ai-server
+cd local-ai-server
+python scripts/install.py doctor      # prüft Docker, GPU in Docker, freie Ports und Speicherplatz (lädt selbst nichts herunter; siehe unten)
+python scripts/install.py init        # erstellt .env, Ordner, Platzhalter, Docker-Netzwerk und -Volume
+# jetzt .env bearbeiten: MODEL_DIR (und AI_CONSOLE_BIND_IP für Netzwerkzugriff), dann die Modelle bereitstellen (Abschnitt 4.5)
+python scripts/install.py build       # baut die Images (beim ersten Mal 15–40 Minuten)
+python scripts/install.py up          # startet alles
+python scripts/install.py git         # lokales Git, das jede Version der Berichte aufbewahrt
+python scripts/install.py verify      # HTTP-Prüfung jedes Teils</code></pre>
+<p><code>python scripts/install.py all</code> führt doctor, init, build, up, git und verify in einem Zug aus (nach dem Bearbeiten von <code>.env</code> verwenden). Jeder Schritt lässt sich gefahrlos wiederholen. Danach **<a href="http://localhost:8766/**" rel="noopener">http://localhost:8766/**</a> öffnen.</p>
+<ul>
+<li><strong>GPU-Prüfung und das 5,6-GB-Image.</strong> <code>doctor</code> prüft die GPU mit dem Image <code>nvidia/cuda:12.8.1-runtime-ubuntu24.04</code>. Ist es noch nicht auf dem PC, warnt <code>doctor</code> nur und überspringt die Prüfung; fragen Sie den Eigentümer und starten Sie <code>python scripts/install.py doctor --pull</code>, um es herunterzuladen (5,6 GB).</li>
+<li><strong>PC ohne NVIDIA-GPU</strong> (um Konsole, Bericht und Git auszuprobieren): <code>--no-gpu</code> an <code>doctor</code>, <code>build</code>, <code>up</code> und <code>verify</code> anhängen (oder an <code>all</code>). Das Gateway wird nicht gestartet, Modelle lassen sich nicht laden; die Konsole startet ohne GPU-Anforderung (<code>docker-compose.nogpu.yml</code>). Beim manuellen Start der Konsole: <code>docker compose -f docker-compose.yml -f docker-compose.nogpu.yml up -d ai-console</code>.</li>
+<li><strong>Selbsttest des Repositorys:</strong> <code>python -m unittest discover -s tests</code> (nur Standardbibliothek, ohne GPU und Docker) und <code>python scripts/make_manifest.py --check</code>.</li>
+</ul>
+<h2 id="4-installation-schritt-für-schritt">4. Installation Schritt für Schritt</h2>
+<h3 id="41-docker-vorbereiten">4.1 Docker vorbereiten</h3>
+<ol>
+<li>Docker Desktop installieren, „Use the WSL 2 based engine“ aktivieren, bei Aufforderung neu starten.</li>
+<li>Sicherstellen, dass die Docker-Engine <strong>läuft und nicht pausiert ist</strong> (im Wal-Menü darf kein „Resume“ stehen).</li>
+<li>Die GPU-Prüfung aus Abschnitt 2 ausführen.</li>
+</ol>
+<h3 id="42-code-beschaffen">4.2 Code beschaffen</h3>
+<pre><code>git clone https://github.com/HomenSAI/homensai-local-ai-lab.git local-ai-server
+cd local-ai-server</code></pre>
+<p>(oder das ZIP von GitHub herunterladen und entpacken). Alle folgenden Befehle werden in diesem Ordner ausgeführt.</p>
+<h3 id="43-env-konfigurieren">4.3 <code>.env</code> konfigurieren</h3>
+<pre><code>python scripts/install.py init        # erstellt .env aus .env.example, falls es fehlt</code></pre>
+<p><code>.env</code> öffnen und mindestens diese Variablen setzen:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Variable</th><th>Bedeutung</th><th>Standard / Beispiel</th></tr></thead>
+<tbody>
+<tr><td><code>MODEL_DIR</code></td><td>Ordner auf dem Host mit Ihren <code>.gguf</code>-Dateien (für Container schreibgeschützt)</td><td><code>C:/AI/models</code> oder <code>/data/models</code></td></tr>
+<tr><td><code>MEDIA_DIR</code></td><td>Arbeitsordner für die optionalen Whisper-/Bild-Profile</td><td><code>./media</code></td></tr>
+<tr><td><code>AI_CONSOLE_BIND_IP</code></td><td>Adresse, unter der die Konsole zusätzlich zu <code>127.0.0.1</code> veröffentlicht wird. LAN-Adresse des PCs eintragen, um sie von anderen Geräten zu öffnen</td><td><code>127.0.0.1</code></td></tr>
+<tr><td><code>AI_CONSOLE_PASSWORD</code></td><td>Optional. Wenn gesetzt, verlangt die Konsole HTTP-Basic-Anmeldung (beliebiger Benutzername, dieses Passwort) für alles außer <code>/health</code>. <strong>Vor dem Öffnen der Konsole im LAN setzen.</strong> <code>.env</code> wird von Git ignoriert</td><td>leer (kein Passwort)</td></tr>
+<tr><td><code>AI_CONSOLE_ALLOWED_HOSTS</code></td><td>Optional, durch Komma getrennt. Zusätzliche Hostnamen, die Sie im Browser eingeben (z. B. ein Name aus Ihrem LAN-DNS). <code>localhost</code> und IP-Adressen gehen immer; jeder andere <code>Host</code> erhält <code>421</code></td><td>leer</td></tr>
+<tr><td><code>GITEA_WEB_PORT</code>, <code>GITEA_SSH_PORT</code></td><td>Ports des lokalen Git-Servers</td><td><code>3010</code>, <code>2222</code></td></tr>
+<tr><td><code>GITEA_REPORT_OWNER</code>, <code>GITEA_REPORT_REPO</code></td><td>Git-Benutzer und Repository für Berichtsversionen</td><td><code>reports-admin</code>, <code>model-test-reports</code></td></tr>
+<tr><td><code>UPSTREAM_LLAMA_COMMIT</code>, <code>PRISM_LLAMA_COMMIT</code>, <code>WHISPER_CPP_COMMIT</code>, <code>STABLE_DIFFUSION_CPP_COMMIT</code></td><td>Festgelegte Quell-Commits der CUDA-Builds. Nur mit gutem Grund ändern.</td><td>festgelegt</td></tr>
+<tr><td><code>GATEWAY_PORT</code>, <code>HOST_BIND_IP</code>, <code>WHISPER_PORT</code>, <code>REPORT_PORT</code>, <code>AI_CONSOLE_PORT</code></td><td>Optionale Port-Anpassungen</td><td>8080, 127.0.0.1, 8082, 8765, 8766</td></tr>
+</tbody>
+</table></div>
+<p>Das Projekt braucht keine API-Schlüssel. Das einzige Geheimnis, das in <code>.env</code> stehen darf, ist das optionale <code>AI_CONSOLE_PASSWORD</code>; <code>.env</code> wird von Git ignoriert, committen Sie sie nie und fügen Sie sie nicht in Chats oder Issues ein.</p>
+<h3 id="44-ordner-netzwerk-und-volume-anlegen">4.4 Ordner, Netzwerk und Volume anlegen</h3>
+<p><code>python scripts/install.py init</code> erledigt all das und ist wiederholbar:</p>
+<ul>
+<li>Ordner <code>bench_results</code>, <code>report</code>, <code>results-db</code>, <code>media/images</code>, <code>benchmark/q4kv-20260929</code>, <code>secrets</code>;</li>
+<li>Platzhalterdateien, die Docker-Bind-Mounts verlangen (<code>report/report-data.json</code>, <code>BENCHMARK_RESULTS.csv</code>, <code>BENCHMARK_RESULTS.db</code>, <code>media/images/qwen-image-2.1-smoke.png</code>, <code>benchmark/q4kv-20260929/recommended-settings-q4kv-20260929.json</code>);</li>
+<li>Docker-Netzwerk <code>ai-net</code> und Volume <code>llm-models-fast</code>;</li>
+<li>Prüfung, dass <code>docker compose config</code> gültig ist.</li>
+</ul>
+<p>Von Hand: <code>docker network create ai-net</code> und <code>docker volume create llm-models-fast</code>.</p>
+<h3 id="45-modelle-bereitstellen">4.5 Modelle bereitstellen</h3>
+<p>Das Gateway liest Modelle aus dem Docker-Volume <code>llm-models-fast</code> (ein ext4-Volume lädt ein Modell in 11–29 s, ein Windows-Laufwerk über WSL braucht Minuten). <code>MODEL_DIR</code> dient den optionalen Whisper-/Bild-Profilen und als Quelle, aus der Sie das Volume füllen.</p>
+<ol>
+<li><p><strong>Benötigte Dateien ermitteln.</strong> Jedes Profil in <code>config/llama-swap.yaml</code> nennt seine Datei nach <code>--model</code>:</p>
+<pre><code>grep -o &#x27;/models/[^ ]*\.gguf&#x27; config/llama-swap.yaml | sort -u</code></pre>
+<p>Mitgelieferte Profile (Kontextgrößen auf einer RTX 3080 / 10 GB gemessen):</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Profil</th><th>Dateien (relativ zum Bibliothekswurzel)</th><th>Kontext</th></tr></thead>
+<tbody>
+<tr><td>Qwen3.5-9B-MTP-Q4_K_XL</td><td><code>Qwen3/Qwen3.5-9B-UD-Q4_K_XL.gguf</code></td><td>192K</td></tr>
+<tr><td>Qwen3.5-9B-MTP-Q4_K_XL-Vision</td><td>dieselbe Datei + <code>Qwen3/mmproj-F16.gguf</code></td><td>128K</td></tr>
+<tr><td>Qwen3.5-9B-Q5_K_S</td><td><code>Qwen3/Qwen3.5-9B-Q5_K_S-4.60bpw.gguf</code></td><td>256K</td></tr>
+<tr><td>MiniCPM5-2B-Q8_0</td><td><code>MiniCPM5/MiniCPM5-2B-Q8_0.gguf</code></td><td>128K</td></tr>
+<tr><td>Spark-X2.5-4B-Q8_0</td><td><code>Spark/Spark-X2.5-4B-Q8_0.gguf</code></td><td>256K</td></tr>
+<tr><td>Ternary-Bonsai-2-27B-PTQ1_0</td><td><code>Ternary-Bonsai-2-27B-PTQ1_0.gguf</code></td><td>128K</td></tr>
+<tr><td>Qwen3-VL-8B-Instruct-Q4_K_M</td><td><code>Qwen-Image-2.1/text_encoder/Qwen3VL-8B-Instruct-Q4_K_M.gguf</code> + <code>mmproj-Qwen3VL-8B-Instruct-F16.gguf</code></td><td>64K</td></tr>
+<tr><td>Ornith-1.5-9B-MTP</td><td><code>top/Ornith-1.5-9B/Ornith-1.5-9B-Q4_K_M.gguf</code></td><td>128K</td></tr>
+<tr><td>Qwen3-Embedding-0.6B / 4B</td><td><code>top/Qwen3-Embedding-0.6B/...-Q8_0.gguf</code>, <code>top/Qwen3-Embedding-4B/...-Q4_K_M.gguf</code></td><td>8K</td></tr>
+<tr><td>Qwen2.5-Coder-7B, Llama-3.1-8B, Gemma-3-12B</td><td><code>cand/&lt;Name&gt;/...Q4_K_M.gguf</code></td><td>64K</td></tr>
+<tr><td>MiMo-V2.6-Distill-Qwen-9B</td><td><code>top/MiMo-V2.6-Distill-Qwen-9B/...Q4_K_M.gguf</code></td><td>256K</td></tr>
+</tbody>
+</table></div></li>
+<li><p><strong>Nur laden, was Sie wollen.</strong> <code>MODELS.md</code> nennt die Hugging-Face-Repositories, Revisionen und SHA-256-Summen der vom Autor festgelegten Modelle. Für ein Profil ohne angegebene Quelle suchen Sie den genauen Dateinamen auf Hugging Face, lesen die Modellkarte und prüfen die Lizenz (manche Lizenzen schränken die kommerzielle Nutzung ein oder verlangen Namensnennung). <strong>Sie brauchen nicht alle Modelle</strong>: Entfernen Sie unerwünschte Profile aus <code>config/llama-swap.yaml</code> (ein Profil ohne Datei zeigt die Konsole als „Datei nicht gefunden“).</p></li>
+<li><p><strong>Integrität prüfen</strong>: <code>sha256sum &lt;Datei&gt;</code> mit <code>MODELS.md</code> / der Modellseite vergleichen.</p></li>
+<li><p><strong>Dateien ins Volume kopieren</strong> und dabei die Unterordner der Tabelle beibehalten (Beispiel für eine Datei; pro Datei oder Ordner wiederholen):</p>
+<pre><code>docker run --rm -v llm-models-fast:/models -v &quot;C:/AI/models:/src:ro&quot; alpine sh -c &quot;mkdir -p /models/Qwen3 &amp;&amp; cp /src/Qwen3/Qwen3.5-9B-UD-Q4_K_XL.gguf /models/Qwen3/&quot;</code></pre>
+<p>In Git Bash für Windows dem Befehl <code>MSYS_NO_PATHCONV=1</code> voranstellen oder PowerShell verwenden.</p></li>
+<li><p><strong>Beginnen Sie mit einem kleinen Modell</strong>, um die ganze Kette zu testen (zum Beispiel <code>MiniCPM5-2B-Q8_0</code>, 2,7 GB), und ergänzen Sie danach die übrigen.</p></li>
+</ol>
+<h3 id="46-images-bauen">4.6 Images bauen</h3>
+<p><code>python scripts/install.py build</code> führt die folgenden Befehle aus (ein Build nach dem anderen, um RAM zu sparen; die CUDA-Kompilierung dauert beim ersten Mal 15–40 Minuten, danach hilft der Cache):</p>
+<pre><code>docker compose --profile build build build-upstream      # local/ai-server-upstream:local  (llama.cpp mit CUDA, festgelegter Commit)
+docker compose --profile build build build-bonsai        # local/ai-server-bonsai:local    (PrismML-Fork, nur für das Bonsai-Modell)
+docker compose --profile gateway build llama-swap-gateway  # local/ai-server-llama-swap:260 (llama-swap v260, SHA-256 geprüft)
+docker compose build ai-console report-versioner         # Images von Konsole und Versionierer</code></pre>
+<p>Wenn Sie das Bonsai-Modell nicht brauchen, bauen Sie nur <code>build-upstream</code>, setzen <code>PRISM_IMAGE=local/ai-server-upstream:local</code> als Build-Argument von <code>llama-swap-gateway</code> (oder <code>--build-arg</code>) und entfernen das Bonsai-Profil aus <code>config/llama-swap.yaml</code>.</p>
+<h3 id="47-starten">4.7 Starten</h3>
+<pre><code>python scripts/install.py up</code></pre>
+<p>Das entspricht:</p>
+<pre><code>docker compose up -d ai-console report-builder stats-report gitea report-versioner
+docker compose --profile gateway up -d llama-swap-gateway</code></pre>
+<p>Das Gateway braucht etwa 30 s, bis es <code>healthy</code> ist, und startet <strong>ohne geladenes Modell</strong> (die erste Anfrage an ein Modell lädt es, bis zu einer Minute). Öffnen Sie **<a href="http://localhost:8766/**" rel="noopener">http://localhost:8766/**</a>.</p>
+<h3 id="48-git-server-für-berichtsversionen-einrichten">4.8 Git-Server für Berichtsversionen einrichten</h3>
+<pre><code>powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git     # Windows
+python scripts/install.py git                                   # Linux</code></pre>
+<p>Das Skript startet Gitea, legt den Administrator, ein Zugriffstoken für den Versionierer, einen SSH-Schlüssel und das private Repository an und startet <code>report-versioner</code>. Passwörter und Schlüssel landen nur in <code>secrets/</code> (von Git ignoriert, nie veröffentlicht). Weboberfläche: <code>http://localhost:3010/</code> (Zugangsdaten in <code>secrets/gitea-admin.txt</code>). Versionen klonen:</p>
+<pre><code>git clone -c core.sshCommand=&quot;ssh -i secrets/id_ed25519 -o StrictHostKeyChecking=accept-new -p 2222&quot; ssh://git@127.0.0.1:2222/reports-admin/model-test-reports.git</code></pre>
+<h3 id="49-zugriff-von-anderen-geräten-im-netzwerk-optional">4.9 Zugriff von anderen Geräten im Netzwerk (optional)</h3>
+<ol>
+<li>In <code>.env</code> <code>AI_CONSOLE_PASSWORD=&lt;langes Passwort&gt;</code> und <code>AI_CONSOLE_BIND_IP=&lt;LAN-Adresse dieses PCs&gt;</code> setzen (bei Zugriff über einen Hostnamen zusätzlich <code>AI_CONSOLE_ALLOWED_HOSTS</code>), dann die Konsole neu erstellen: <code>docker compose up -d --force-recreate --no-deps ai-console</code>.</li>
+<li>Den Port in der Firewall nur für das eigene Subnetz öffnen (PowerShell als Administrator):
+<pre><code>New-NetFirewallRule -DisplayName &quot;AI console 8766 (LAN)&quot; -Direction Inbound -Protocol TCP -LocalPort 8766 -RemoteAddress 192.168.0.0/24 -Profile Any -Action Allow</code></pre>
+<p>(Subnetz anpassen). Die Konsole nie ins Internet stellen, mit oder ohne Passwort: Basic-Authentifizierung sendet das Passwort unverschlüsselt, daher nur in einem vertrauenswürdigen Netz oder hinter VPN / TLS-Proxy verwenden.</p></li>
+</ol>
+<h2 id="5-optionale-komponenten">5. Optionale Komponenten</h2>
+<h3 id="open-webui-chat-oberfläche">Open WebUI (Chat-Oberfläche)</h3>
+<pre><code>docker run -d --name open-webui --restart unless-stopped -p 3000:8080 -v open-webui:/app/backend/data ghcr.io/open-webui/open-webui:main
+docker network connect local-ai-server_default open-webui
+powershell -File scripts/configure-openwebui-gateway.ps1</code></pre>
+<p>Das Skript trägt das Gateway <code>http://llama-swap-gateway:8080/v1</code> als OpenAI-Verbindung ein. Open WebUI hat eigene Lizenzbedingungen; siehe <code>legal/NOTICE-THIRD-PARTY.md</code>.</p>
+<h3 id="telemetrie-exporter">Telemetrie-Exporter</h3>
+<pre><code>cd hermes-telemetry
+docker compose -f compose.yaml up -d --build</code></pre>
+<p>Veröffentlicht <code>/metrics</code> und <code>/health</code> auf <code>127.0.0.1:9835</code> (für das LAN <code>TELEMETRY_BIND_IP</code> setzen). Benötigt die Netzwerke <code>ai-net</code> und <code>local-ai-server_default</code> (von <code>init</code> und dem ersten <code>up</code> erstellt).</p>
+<h3 id="videogenerierung-das-eigene-projekt-video-studio">Videogenerierung: das eigene Projekt „Video Studio“</h3>
+<p>Die Videogenerierung (Wan 2.1 1.3B + ComfyUI, Storyboard aus einer Idee, Videoberichte) ist <strong>nicht mehr Teil dieses Projekts</strong>: Sie ist ein eigenes Projekt, <strong>Video Studio</strong> (eigenes Repository, eigene Konsole auf Port 8767, eigene Installationsanleitung). Beide Projekte arbeiten nebeneinander:</p>
+<ul>
+<li>die Kopfzeile dieser Konsole hat einen Link „Videogenerierung“, der Video Studio öffnet (<code>http://HOST:8767/</code>);</li>
+<li>Video Studio tritt dem Docker-Netzwerk <code>local-ai-server_default</code> dieses Projekts bei, um das Gateway zu erreichen (es entlädt vor einem Video die Gateway-Modelle und entwirft Storyboards mit Ihrem lokalen LLM);</li>
+<li>diese Konsole startet kein LLM, solange der ComfyUI-Container von Video Studio die GPU belegt (Containername <code>video-generation-comfyui-video-1</code>).
+Installieren Sie zuerst dieses Projekt, danach Video Studio.</li>
+</ul>
+<h3 id="profile-für-spracherkennung-und-bildgenerierung">Profile für Spracherkennung und Bildgenerierung</h3>
+<p><code>docker compose --profile whisper build whisper</code> und <code>--profile qwen-image build qwen-image</code> bauen die optionalen Profile Whisper (Sprache zu Text) und Qwen-Image; sie brauchen ihre Modelldateien unter <code>MODEL_DIR</code> (siehe <code>.env</code>, <code>WHISPER_MODEL</code>, <code>QWEN_IMAGE_*</code>) und werden standardmäßig nicht gestartet.</p>
+<h2 id="6-überprüfung">6. Überprüfung</h2>
+<p><code>python scripts/install.py verify</code> führt diese Prüfungen aus; Sie können sie auch von Hand ausführen:</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Was</th><th>Befehl</th><th>Erwartet</th></tr></thead>
+<tbody>
+<tr><td>GPU in Docker</td><td><code>docker run --rm --gpus all nvidia/cuda:12.8.1-runtime-ubuntu24.04 nvidia-smi</code></td><td>Tabelle mit Ihrer GPU</td></tr>
+<tr><td>Gateway</td><td><code>curl http://localhost:8080/v1/models</code></td><td>JSON-Liste der Profile</td></tr>
+<tr><td>Konsole</td><td><code>curl http://localhost:8766/health</code></td><td><code>{&quot;ok&quot;: true}</code></td></tr>
+<tr><td>Modellkatalog</td><td><code>curl http://localhost:8766/api/models</code></td><td>bei kopierten Dateien <code>&quot;exists&quot;: true</code></td></tr>
+<tr><td>Status</td><td><code>curl http://localhost:8766/api/status</code></td><td><code>docker_available: true</code></td></tr>
+<tr><td>Bericht</td><td><code>http://localhost:8766/report/</code> öffnen</td><td>Seite lädt, Fußzeile zeigt die Lizenz</td></tr>
+<tr><td>Alte Adresse</td><td><code>curl -I http://localhost:8765/</code></td><td><code>301</code> auf Port 8766</td></tr>
+<tr><td>Git</td><td><code>curl http://localhost:3010/api/healthz</code></td><td>200</td></tr>
+<tr><td>Container</td><td><code>docker ps --format &quot;{{.Names}} {{.Status}}&quot;</code></td><td><code>healthy</code> bei Konsole, Gateway, report-builder, gitea, versioner</td></tr>
+<tr><td>Erstes Modell</td><td>in der Konsole <strong>Start</strong> bei einem Modell drücken, dann Chat</td><td>Antwort erscheint; <code>curl localhost:8080/running</code> listet das Modell</td></tr>
+</tbody>
+</table></div>
+<p>Ist <code>AI_CONSOLE_PASSWORD</code> gesetzt, hängen Sie <code>-u any:PASSWORT</code> an die <code>curl</code>-Aufrufe der Konsole an (nicht an <code>/health</code>). Auf einem PC ohne GPU <code>python scripts/install.py verify --no-gpu</code> verwenden: die Gateway-Prüfungen entfallen.</p>
+<h2 id="7-die-konsole-benutzen">7. Die Konsole benutzen</h2>
+<ul>
+<li><strong>Sprache</strong>: Umschalter RU / EN / DE in der Kopfzeile (wird im Browser gemerkt).</li>
+<li><strong>1 Status</strong> zeigt, was gerade im Speicher ist; <strong>2 Start</strong> listet Modelle mit Start / Stopp (Start lädt das Modell in den Videospeicher, Stopp entlädt es); die Modellkarten zeigen Quantisierung, Kontext, Datei und ermittelte Parameter.</li>
+<li><strong>3 Chat</strong> spricht über das Gateway mit dem gewählten Modell (Bildmodelle nehmen Bilder an). Der <strong>Entlade-Timer</strong> entlädt nach N Sekunden alle Modelle.</li>
+<li><strong>Testergebnisse</strong> zeigen jedes Modell mit allen Tests, sortierbar nach jedem Test, mit Fortschrittsbalken des laufenden Tests, Schätzung der Restzeit bis zum Ende aller Tests und der Phasenliste.</li>
+<li><strong>Videogenerierung ↗</strong> in der Kopfzeile öffnet das eigene Projekt Video Studio.</li>
+<li><strong>Bericht und Ergebnisse</strong> (<code>/report/</code>): vollständige Tabellen, Diagramme, Empfehlungen, Downloads.</li>
+</ul>
+<h2 id="8-testergebnisse-berichte-und-git-versionen">8. Testergebnisse, Berichte und Git-Versionen</h2>
+<ul>
+<li>Benchmarks schreiben <code>bench_results/results*.jsonl</code> (ein JSON-Objekt pro Zeile: <code>model</code>, Bewertungen, Geschwindigkeiten, …). Der Berichtsgenerator führt sie, ohne ältere Ergebnisse zu löschen, in SQLite (<code>results-db/llm-results.sqlite</code>) zusammen und erzeugt <code>report/live-data.json</code>. Die Test-Runner, mit denen die veröffentlichten Ergebnisse entstanden, liegen in <code>benchmarks/</code> und laufen in Docker: <code>docker compose --profile bench up -d --build bench-runner</code> (siehe <code>benchmarks/README.md</code>); jedes andere Werkzeug, das dieselben Dateien schreibt, funktioniert ebenfalls.</li>
+<li><code>report-versioner</code> speichert bei jeder Änderung <code>results/</code>, <code>tables/</code>, <code>report/</code> und einen JSON-Dump der Datenbank in Gitea: Commits heißen <code>vNNNN</code>, abgeschlossene Phasen erhalten <code>stage-&lt;Phase&gt;-done</code>, das Ende aller Tests <code>final-&lt;Datum&gt;</code>. Die Historie wird nie umgeschrieben. Einen alten Bericht stellen Sie mit <code>git checkout v0042</code> wieder her.</li>
+<li>Phasenplan und Gesamtschätzung stammen aus <code>scripts/build_live_report.py</code> (<code>DEFAULT_PLAN</code>) und lassen sich durch <code>bench_results/benchmark_plan.json</code> ersetzen.</li>
+</ul>
+<h2 id="9-wartung-aktualisieren-sichern-entfernen">9. Wartung: Aktualisieren, Sichern, Entfernen</h2>
+<ul>
+<li><strong>Code aktualisieren</strong>: <code>git pull</code>, dann <code>docker compose up -d --build ai-console report-versioner</code>. Nach dem Bearbeiten von <code>config/llama-swap.yaml</code> <code>docker compose --profile gateway up -d --force-recreate --no-deps llama-swap-gateway</code> ausführen (ein einzelner Datei-Bind-Mount übernimmt sonst eine ersetzte Datei nicht).</li>
+<li><strong>Sichern</strong>: <code>.env</code>, <code>config/</code>, <code>bench_results/</code>, <code>results-db/</code>, die Docker-Volumes <code>gitea-data</code>, <code>gitea-config</code>, <code>ai-console-state</code> und <code>secrets/</code>. Modelle lassen sich neu herunterladen.</li>
+<li><strong>Alles stoppen</strong>: <code>docker compose --profile gateway down</code>.</li>
+<li><strong>Mit Daten entfernen</strong> (unwiderruflich): <code>docker compose --profile gateway down -v</code> (löscht die Volumes außer dem externen <code>llm-models-fast</code>); das Modell-Volume entfernen Sie selbst mit <code>docker volume rm llm-models-fast</code>.</li>
+</ul>
+<h2 id="10-hinweise-zu-linux--macos">10. Hinweise zu Linux / macOS</h2>
+<ul>
+<li><strong>Linux</strong>: Docker Engine, NVIDIA-Treiber und NVIDIA Container Toolkit installieren, <code>docker run --rm --gpus all ... nvidia-smi</code> prüfen. Die Compose-Dateien sind plattformunabhängig; verwenden Sie <code>python scripts/install.py ...</code> und Schrägstriche in den Pfaden von <code>.env</code>. Die <code>.ps1</code>-Skripte sind optionale PowerShell-Helfer. Das Projekt wurde unter Windows 10 + Docker Desktop entwickelt und getestet; unter Linux sollte es funktionieren, wurde vom Autor aber nicht getestet.</li>
+<li><strong>macOS</strong>: Es gibt kein CUDA, daher laufen die GPU-Images nicht. Nicht unterstützt.</li>
+<li>Wenn die Konsole unter Linux den Docker-Socket nicht sieht, prüfen Sie, ob <code>/var/run/docker.sock</code> existiert (die Konsole nutzt ihn, um Container aufzulisten und den Zustand von <code>llama-server</code> zu lesen).</li>
+</ul>
+<h2 id="11-fehlersuche">11. Fehlersuche</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Symptom</th><th>Ursache / Lösung</th></tr></thead>
+<tbody>
+<tr><td><code>Docker Desktop is manually paused</code></td><td>Im Wal-Menü fortsetzen; die CLI <code>docker desktop</code> kann die Pause nicht aufheben.</td></tr>
+<tr><td><code>port is already allocated</code></td><td>Ein anderes Programm nutzt den Port; <code>GITEA_WEB_PORT</code>, <code>AI_CONSOLE_PORT</code> usw. in <code>.env</code> ändern (der Doctor listet belegte Ports).</td></tr>
+<tr><td><code>could not select device driver &quot;nvidia&quot;</code></td><td>GPU für Docker nicht verfügbar: NVIDIA-Treiber aktualisieren, WSL2-Integration aktivieren, Docker Desktop neu starten.</td></tr>
+<tr><td><code>docker compose</code> meldet fehlende Bind-Quelle</td><td><code>python scripts/install.py init</code> ausführen (erstellt Platzhalter und Ordner).</td></tr>
+<tr><td>Modellkarte zeigt „Datei nicht gefunden“</td><td>Die Datei liegt nicht im Volume <code>llm-models-fast</code> unter dem genauen Pfad des Profils (Abschnitt 4.5).</td></tr>
+<tr><td>Erste Antwort dauert eine Minute</td><td>Das Gateway lädt das Modell in den Videospeicher; spätere Antworten sind schnell.</td></tr>
+<tr><td>Videospeicher reicht nicht</td><td>Ein anderes Programm oder der Videocontainer belegt VRAM; die Diagnose der Konsole nennt die Verursacher. Kleineren Kontext oder kleinere Quantisierung wählen.</td></tr>
+<tr><td>Git Bash verfälscht <code>/models</code>-Pfade</td><td><code>MSYS_NO_PATHCONV=1</code> voranstellen oder PowerShell verwenden.</td></tr>
+<tr><td>Konsole zeigt in EN/DE russischen Text</td><td>Texte aus Ihren eigenen Daten (Prompts, Modellantworten, Protokolle) werden nie übersetzt. Neue Oberflächentexte gehören in <code>console/i18n-dict.js</code> (<code>node scripts/check_i18n.js de</code> listet fehlende auf).</td></tr>
+<tr><td>Berichtsseite leer</td><td>Normal, bis die erste <code>bench_results/results*.jsonl</code> existiert.</td></tr>
+<tr><td><code>doctor</code> meldet, das CUDA-Prüfimage sei nicht heruntergeladen</td><td>Es lädt 5,6 GB nicht von selbst. Eigentümer fragen, dann <code>python scripts/install.py doctor --pull</code>, oder auf einem PC ohne GPU <code>--no-gpu</code> verwenden.</td></tr>
+<tr><td><code>docker compose up</code> bricht mit „could not select device driver“ / „no known GPU vendor“ ab</td><td>Docker sieht keine GPU. <code>python scripts/install.py up --no-gpu</code> verwenden.</td></tr>
+<tr><td>Ein Skript oder <code>curl</code> erhält von der Konsole <code>415</code>, <code>421</code>, <code>403</code> oder <code>401</code></td><td>Die Konsole prüft jede Anfrage: <code>POST</code> braucht <code>Content-Type: application/json</code>, der <code>Host</code> muss <code>localhost</code> oder eine IP sein (oder in <code>AI_CONSOLE_ALLOWED_HOSTS</code> stehen), ein Passwort kann nötig sein (<code>curl -u any:PASSWORT</code>). Siehe <a href="api.de.html">HTTP-Schnittstellen (für Bediener und KI-Supervisoren)</a>.</td></tr>
+<tr><td>Der Browser zeigt <code>421</code>, wenn die Konsole über einen Hostnamen geöffnet wird</td><td>Namen in <code>AI_CONSOLE_ALLOWED_HOSTS</code> in <code>.env</code> eintragen und die Konsole neu erstellen.</td></tr>
+</tbody>
+</table></div>
+<h2 id="12-sicherheit">12. Sicherheit</h2>
+<ul>
+<li>Das Gateway hat <strong>keine Authentifizierung</strong>; die Konsole hat ein optionales Passwort (<code>AI_CONSOLE_PASSWORD</code>). Halten Sie beide auf <code>127.0.0.1</code> oder in einem vertrauenswürdigen Subnetz; veröffentlichen Sie die Ports 8766 / 8080 / 3010 nie im Internet.</li>
+<li>Die Konsole weist fremde <code>Host</code>-Namen sowie seitenübergreifende oder Nicht-JSON-<code>POST</code>-Anfragen ab und sendet Sicherheits-Header; eine Webseite im selben Browser kann die Modelle daher nicht steuern.</li>
+<li>Der Konsolencontainer bindet <code>/var/run/docker.sock</code> ein; das Flag <code>read_only</code> schützt ihn nicht. Die Konsole sendet nur eine feste Art von Befehlen darüber und läuft ohne Privilegien, dennoch entspricht Zugriff auf die Konsole Zugriff auf Docker dieses PCs. Details: <a href="security.de.html">Sicherheitsrichtlinie</a>.</li>
+<li>In Gitea ist die Registrierung deaktiviert und eine Anmeldung erforderlich; Passwort und Token liegen nur in <code>secrets/</code>.</li>
+<li>Modelldateien stammen von Dritten: SHA-256 prüfen und deren Lizenzen lesen.</li>
+<li>Probleme bitte privat melden, siehe <a href="security.de.html">Sicherheitsrichtlinie</a>.</li>
+</ul>
+<h2 id="13-lizenz-und-namensnennung">13. Lizenz und Namensnennung</h2>
+<p>Ergebnisse, Berichte und Texte: <strong>CC BY 4.0</strong>, Nennung „homensai.com (<a href="https://homensai.com)“" rel="noopener">https://homensai.com)“</a>. Code: <strong>MIT</strong>. Software und Modelle Dritter behalten ihre Lizenzen: siehe <code>legal/NOTICE-THIRD-PARTY.md</code>. Dies ist keine Rechtsberatung.</p>
+    </article>
+    <p class="doc-meta"><a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/INSTALL.de.md" rel="noopener">Quelltext auf GitHub</a></p>

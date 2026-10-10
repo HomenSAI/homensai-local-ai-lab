@@ -1,0 +1,75 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Security policy — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="security.en.html">
+  <link rel="alternate" hreflang="ru" href="security.ru.html">
+  <link rel="alternate" hreflang="de" href="security.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Main navigation">
+      <ul class="nav-main"><li><a class="nav-link" href="index.html">Home</a></li><li><a class="nav-link" href="install.en.html">Installation</a></li><li><a class="nav-link" href="docs.en.html" aria-current="page">Documentation</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Results</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.en.html">Contact</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Language"><a href="security.en.html" lang="en" hreflang="en" aria-label="EN – English" class="on" aria-current="true">EN</a><a href="security.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch">DE</a><a href="security.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="security-policy">Security policy</h1>
+    <nav class="card help-toc doc-toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#threat-model">Threat model</a></li><li><a href="#what-the-repository-must-never-contain">What the repository must never contain</a></li><li><a href="#reporting-a-vulnerability">Reporting a vulnerability</a></li><li><a href="#supply-chain">Supply chain</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<h2 id="threat-model">Threat model</h2>
+<p>The console (port 8766) and the gateway (port 8080) are built for <code>127.0.0.1</code> or a <strong>trusted LAN</strong>. They are not hardened for the internet. <strong>Never publish ports 8766, 8080, 3010 or 8767 to the internet</strong>; restrict the firewall rule to your own subnet.</p>
+<p>What the console does to protect itself (<code>console/security.py</code>, <code>console/container_server.py</code>):</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Threat</th><th>Protection</th></tr></thead>
+<tbody>
+<tr><td>A web page in the operator's browser starts, stops or unloads models (cross-site request forgery)</td><td>Every <code>POST</code> must be <code>Content-Type: application/json</code> (a foreign page cannot send that without a CORS preflight, which the console never allows), must not come from another origin (<code>Origin</code>, <code>Sec-Fetch-Site</code> are checked) and answers <code>415</code> / <code>403</code> otherwise</td></tr>
+<tr><td>DNS rebinding (a foreign host name that points to your PC)</td><td>Only <code>localhost</code>, IP addresses and the names in <code>AI_CONSOLE_ALLOWED_HOSTS</code> are accepted as <code>Host</code>; anything else gets <code>421</code> (<code>/health</code> is exempt for the container health check)</td></tr>
+<tr><td>Another person on the LAN uses the console</td><td>Set <code>AI_CONSOLE_PASSWORD</code> in <code>.env</code>: the console then asks for HTTP Basic authentication (any user name) on everything except <code>/health</code>. Use it whenever <code>AI_CONSOLE_BIND_IP</code> is not <code>127.0.0.1</code>. Basic authentication sends the password unencrypted: on an untrusted network put a TLS reverse proxy or a VPN in front</td></tr>
+<tr><td>Framing, content sniffing, injected scripts</td><td>Every answer carries <code>Content-Security-Policy</code> (own scripts only, no framing), <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Referrer-Policy: no-referrer</code></td></tr>
+<tr><td>Path traversal in <code>/report/</code> and <code>/legal/</code></td><td>Paths are resolved and must stay inside the folder; tested</td></tr>
+<tr><td>The Docker socket</td><td>See below</td></tr>
+</tbody>
+</table></div>
+<h3 id="the-docker-socket">The Docker socket</h3>
+<p>The console container mounts <code>/var/run/docker.sock</code>. The <code>read_only</code> flag on that mount is <strong>not</strong> a security boundary, and the socket is equivalent to root on the host. The console uses it to list containers and to run one fixed command inside a model container (<code>curl</code> against the <code>/health</code>, <code>/slots</code> or <code>/metrics</code> address of <code>llama-server</code> on <code>127.0.0.1</code>). The code refuses any other command: the container name must be a plain Docker name and the URL must match that fixed form (<code>docker_exec_read</code>, covered by tests). The container runs with <code>cap_drop: ALL</code>, <code>no-new-privileges</code> and a read-only root file system. Even so, <strong>whoever gets full control of the console gets Docker on this PC</strong>, so keep the network exposure small and set the password.</p>
+<h3 id="known-limits">Known limits</h3>
+<ul>
+<li>The gateway (llama-swap, port 8080) has no authentication at all; it is published on <code>127.0.0.1</code> only. Do not change that without a reverse proxy that authenticates.</li>
+<li><code>scripts/setup_git.py</code> passes the generated Gitea admin password to <code>docker exec</code> on the command line once; other users of the Docker daemon on the same PC can see it for a moment. The password is stored in <code>secrets/gitea-admin.txt</code> (ignored by Git).</li>
+<li>Basic authentication has no rate limit and no lock-out.</li>
+</ul>
+<h2 id="what-the-repository-must-never-contain">What the repository must never contain</h2>
+<p>Passwords, tokens, SSH keys (the folder <code>secrets/</code> is ignored by Git), <code>.env</code> with personal values (only <code>.env.example</code> is committed; <code>.env</code> is ignored, which is why <code>AI_CONSOLE_PASSWORD</code> may live there), model weights, personal data. If you find any, please report it as below.</p>
+<h2 id="reporting-a-vulnerability">Reporting a vulnerability</h2>
+<p>Please do <strong>not</strong> open a public issue for security problems. Write to info [at] homensai [dot] com (author: Serhii Khomenko, <a href="https://homensai.com">https://homensai.com</a>) and describe the problem, the affected file and how to reproduce it. You will get an answer as soon as possible; please allow a reasonable time to fix before disclosure.</p>
+<h2 id="supply-chain">Supply chain</h2>
+<p>Base images, llama.cpp / whisper.cpp / stable-diffusion.cpp commits and llama-swap (release SHA-256) are pinned; model files should be verified against the SHA-256 sums in <code>MODELS.md</code> or on the model page before use. <code>MANIFEST.json</code> lists the size and SHA-256 of every file of the repository; <code>python scripts/make_manifest.py --check</code> verifies it (CI does the same). <code>python scripts/install.py doctor</code> never downloads the 5.6 GB CUDA test image unless you pass <code>--pull</code>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/SECURITY.md" rel="noopener">Source text on GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>JavaScript is required for the menu, the theme switch and the footer.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="virtuelle-rtx-3080-das-ganze-system-ohne-gpu-testen">Virtuelle RTX 3080: das ganze System ohne GPU testen</h1>
+    <article class="card lesson-body doc-body">
+<p>Dieses Paket installiert Local AI Lab auf einem Linux-Rechner mit Docker, aber ohne NVIDIA-Karte, und lässt alle Teile so laufen, als wäre eine RTX 3080 (10 GB) vorhanden: Das Gateway lädt und wechselt Modelle, die Konsole zeigt Videospeicher und GPU-Last, der Test-Runner misst Geschwindigkeit, Kontext und Qualität, der Berichtsgenerator, die Fortschrittsseite und der Git-Versionierer arbeiten mit den Ergebnissen. <strong>Kein Modell ist echt</strong>: Die Antworten sind feste Texte und alle Zahlen sind simuliert. Nutzen Sie es, um das System kennenzulernen, eine Installation zu proben oder Änderungen zu testen, bevor Sie sie auf der echten Karte ausführen. Installieren Sie es nie auf einem Computer mit einer echten NVIDIA-GPU.</p>
+<h2 id="was-simuliert-wird">Was simuliert wird</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Teil</th><th>Ersatz</th><th>Datei</th></tr></thead>
+<tbody>
+<tr><td>NVIDIA-Treiber in Docker (<code>--gpus all</code>, <code>gpus: all</code>)</td><td>ein Hook mit dem Namen, nach dem Docker sucht; er kopiert das virtuelle <code>nvidia-smi</code> in jeden GPU-Container</td><td><code>nvidia-container-runtime-hook</code></td></tr>
+<tr><td><code>nvidia-smi</code></td><td>„NVIDIA GeForce RTX 3080, 10240 MiB“; belegter Speicher und Last stammen von den laufenden virtuellen Modellservern</td><td><code>nvidia-smi</code></td></tr>
+<tr><td>llama.cpp <code>llama-server</code>, <code>llama-bench</code> und <code>llama-swap</code></td><td>ein Python-Programm mit denselben Pfaden und APIs (<code>/health</code>, <code>/v1/chat/completions</code> mit <code>timings</code>, <code>/tokenize</code>, <code>/slots</code>, <code>/metrics</code>, <code>/v1/embeddings</code>, <code>/v1/models</code>, <code>/running</code>, Entladen); Videospeicher = Dateigröße + KV-Cache für den Kontext und den Cache-Typ; ein Modell, das nicht passt, bricht wie das echte mit „out of memory“ ab</td><td><code>fake_llama.py</code>, <code>Dockerfile</code>, <code>curl</code></td></tr>
+<tr><td>Modelldateien</td><td>Sparse-Dateien <code>.gguf</code> mit plausiblen Größen (sie belegen fast keinen Speicherplatz)</td><td><code>make_models.py</code></td></tr>
+</tbody>
+</table></div>
+<h2 id="schritte-linux-docker-engine-als-root-oder-mit-sudo">Schritte (Linux, Docker Engine, als root oder mit sudo)</h2>
+<pre><code># 1. the virtual driver: Docker must find it when it starts
+sudo cp tests/virtual-3080/nvidia-container-runtime-hook tests/virtual-3080/nvidia-smi /usr/local/bin/
+sudo systemctl restart docker
+docker run --rm --gpus all python:3.12-slim nvidia-smi      # must print the RTX 3080 line
+
+# 2. the system, as in the guide (Linux path)
+python3 scripts/install.py doctor
+python3 scripts/install.py init                              # then set MODEL_DIR in .env to any empty folder
+docker build -t local/ai-server-llama-swap:260 tests/virtual-3080    # the virtual gateway instead of the CUDA builds
+docker run --rm -v llm-models-fast:/models -v &quot;$PWD&quot;:/lab:ro python:3.12-slim \
+    python /lab/tests/virtual-3080/make_models.py /lab /models          # the virtual model files
+python3 scripts/install.py build --no-gpu                    # console and versioner (the CUDA images are not needed)
+python3 scripts/install.py up
+python3 scripts/install.py git
+python3 scripts/install.py verify                            # every line [ok]
+
+# 3. the tests
+docker compose --profile bench up -d --build bench-runner</code></pre>
+<p>Öffnen Sie dann <a href="http://localhost:8766/" rel="noopener">http://localhost:8766/</a> (Konsole), <a href="http://localhost:8766/report/progress.html" rel="noopener">http://localhost:8766/report/progress.html</a> (Testfortschritt) und <a href="http://localhost:3010/" rel="noopener">http://localhost:3010/</a> (Versionen).</p>
+<p>Testbericht vom 10.10.2026 (auf Russisch): <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/tests/virtual-3080/REPORT.ru.md">Prüfbericht vom 10.10.2026, auf Russisch (GitHub)</a>.</p>
+<p><strong>Entfernen:</strong> <code>docker compose --profile bench --profile gateway down</code>, <code>docker volume rm llm-models-fast</code>, <code>/usr/local/bin/nvidia-container-runtime-hook</code> und <code>/usr/local/bin/nvidia-smi</code> löschen, Docker neu starten.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.de.html">← Dokumentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/tests/virtual-3080/README.de.md" rel="noopener">Quelltext auf GitHub</a></p>

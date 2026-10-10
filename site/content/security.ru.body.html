@@ -1,0 +1,34 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="политика-безопасности">Политика безопасности</h1>
+    <nav class="card help-toc doc-toc" aria-label="Содержание"><h2>Содержание</h2><ol><li><a href="#модель-угроз">Модель угроз</a></li><li><a href="#чего-репозиторий-никогда-не-должен-содержать">Чего репозиторий никогда не должен содержать</a></li><li><a href="#как-сообщить-об-уязвимости">Как сообщить об уязвимости</a></li><li><a href="#цепочка-поставок">Цепочка поставок</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<h2 id="модель-угроз">Модель угроз</h2>
+<p>Консоль (порт 8766) и шлюз (порт 8080) рассчитаны на <code>127.0.0.1</code> или <strong>доверенную локальную сеть</strong>. Они не защищены для работы в интернете. <strong>Никогда не публикуйте порты 8766, 8080, 3010 или 8767 в интернет</strong>; ограничьте правило брандмауэра своей подсетью.</p>
+<p>Как консоль защищает себя (<code>console/security.py</code>, <code>console/container_server.py</code>):</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Угроза</th><th>Защита</th></tr></thead>
+<tbody>
+<tr><td>Веб-страница в браузере оператора запускает, останавливает или выгружает модели (межсайтовая подделка запроса)</td><td>Каждый <code>POST</code> должен иметь <code>Content-Type: application/json</code> (чужая страница не может отправить такой запрос без предварительного запроса CORS, который консоль никогда не разрешает), не должен приходить с другого источника (проверяются <code>Origin</code>, <code>Sec-Fetch-Site</code>), иначе ответ — <code>415</code> / <code>403</code></td></tr>
+<tr><td>DNS rebinding (чужое имя хоста, указывающее на ваш ПК)</td><td>В качестве <code>Host</code> принимаются только <code>localhost</code>, IP-адреса и имена из <code>AI_CONSOLE_ALLOWED_HOSTS</code>; всё остальное получает <code>421</code> (<code>/health</code> — исключение для проверки состояния контейнера)</td></tr>
+<tr><td>Консолью пользуется другой человек в локальной сети</td><td>Задайте <code>AI_CONSOLE_PASSWORD</code> в <code>.env</code>: тогда консоль требует HTTP Basic-аутентификацию (любое имя пользователя) для всего, кроме <code>/health</code>. Используйте его всегда, когда <code>AI_CONSOLE_BIND_IP</code> не равен <code>127.0.0.1</code>. Basic-аутентификация передаёт пароль без шифрования: в недоверенной сети поставьте перед консолью обратный прокси с TLS или VPN</td></tr>
+<tr><td>Встраивание во фреймы, угадывание типа содержимого, внедрённые скрипты</td><td>Каждый ответ содержит <code>Content-Security-Policy</code> (только свои скрипты, без фреймов), <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Referrer-Policy: no-referrer</code></td></tr>
+<tr><td>Выход за пределы каталога в <code>/report/</code> и <code>/legal/</code></td><td>Пути разрешаются и должны оставаться внутри папки; покрыто тестами</td></tr>
+<tr><td>Сокет Docker</td><td>См. ниже</td></tr>
+</tbody>
+</table></div>
+<h3 id="сокет-docker">Сокет Docker</h3>
+<p>Контейнер консоли монтирует <code>/var/run/docker.sock</code>. Флаг <code>read_only</code> у этого монтирования <strong>не</strong> является границей безопасности, а сокет равнозначен правам root на хосте. Консоль использует его, чтобы получать список контейнеров и выполнять одну фиксированную команду внутри контейнера модели (<code>curl</code> к адресу <code>/health</code>, <code>/slots</code> или <code>/metrics</code> у <code>llama-server</code> на <code>127.0.0.1</code>). Любую другую команду код отклоняет: имя контейнера должно быть простым именем Docker, а URL — соответствовать этой фиксированной форме (<code>docker_exec_read</code>, покрыто тестами). Контейнер работает с <code>cap_drop: ALL</code>, <code>no-new-privileges</code> и корневой файловой системой только для чтения. И всё же <strong>тот, кто получит полный контроль над консолью, получит Docker на этом ПК</strong>, поэтому держите доступ из сети минимальным и задайте пароль.</p>
+<h3 id="известные-ограничения">Известные ограничения</h3>
+<ul>
+<li>У шлюза (llama-swap, порт 8080) нет никакой аутентификации; он опубликован только на <code>127.0.0.1</code>. Не меняйте это без обратного прокси с аутентификацией.</li>
+<li><code>scripts/setup_git.py</code> один раз передаёт сгенерированный пароль администратора Gitea в <code>docker exec</code> в командной строке; другие пользователи демона Docker на том же ПК могут ненадолго его увидеть. Пароль хранится в <code>secrets/gitea-admin.txt</code> (игнорируется Git).</li>
+<li>У Basic-аутентификации нет ограничения частоты попыток и нет блокировки.</li>
+</ul>
+<h2 id="чего-репозиторий-никогда-не-должен-содержать">Чего репозиторий никогда не должен содержать</h2>
+<p>Пароли, токены, SSH-ключи (папка <code>secrets/</code> игнорируется Git), <code>.env</code> с личными значениями (в репозиторий попадает только <code>.env.example</code>; <code>.env</code> игнорируется, поэтому в нём можно хранить <code>AI_CONSOLE_PASSWORD</code>), веса моделей, личные данные. Если вы что-то такое найдёте, сообщите, пожалуйста, как описано ниже.</p>
+<h2 id="как-сообщить-об-уязвимости">Как сообщить об уязвимости</h2>
+<p>Пожалуйста, <strong>не</strong> открывайте публичный issue по проблемам безопасности. Напишите на info [at] homensai [dot] com (автор: Serhii Khomenko, <a href="https://homensai.com">https://homensai.com</a>) и опишите проблему, затронутый файл и способ воспроизведения. Вы получите ответ как можно скорее; пожалуйста, дайте разумное время на исправление до раскрытия.</p>
+<h2 id="цепочка-поставок">Цепочка поставок</h2>
+<p>Базовые образы, коммиты llama.cpp / whisper.cpp / stable-diffusion.cpp и llama-swap (SHA-256 релиза) закреплены; файлы моделей перед использованием следует сверить с суммами SHA-256 в <code>MODELS.md</code> или на странице модели. <code>MANIFEST.json</code> перечисляет размер и SHA-256 каждого файла репозитория; <code>python scripts/make_manifest.py --check</code> проверяет его (CI делает то же самое). <code>python scripts/install.py doctor</code> никогда не скачивает тестовый образ CUDA размером 5,6 ГБ, если вы не передали <code>--pull</code>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.ru.html">← Документация</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/SECURITY.ru.md" rel="noopener">Исходный текст на GitHub</a></p>

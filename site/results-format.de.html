@@ -1,0 +1,101 @@
+<!doctype html>
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="homensai-style" content="1.8.1">
+  <title>Ergebnisdateien und Phasenplan — Local AI Lab</title>
+  <link rel="icon" href="style/brand/logo-mark.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
+  <link rel="alternate" hreflang="en" href="results-format.en.html">
+  <link rel="alternate" hreflang="ru" href="results-format.ru.html">
+  <link rel="alternate" hreflang="de" href="results-format.de.html">
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="style/fonts/ibm-plex/IBMPlexSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="style/js/theme-init.js?v=1.8.1"></script>
+  <link rel="stylesheet" href="style/dist/homensai-full.css?v=1.8.1">
+  <link rel="stylesheet" href="assets/site.css?v=1.6.0">
+</head>
+<body>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+  <header class="topbar">
+    <a class="brand" href="index.de.html" aria-label="HomenS.AI Local AI Lab"><svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50.0 13.0 L48.1 13.1 L46.1 13.2 L44.2 13.5 L42.3 13.8 L42.2 21.0 L40.7 21.5 L39.2 22.0 L37.8 22.6 L36.4 23.3 L31.5 18.0 L29.8 19.0 L28.3 20.1 L26.7 21.2 L25.2 22.5 L28.8 28.8 L27.7 29.9 L26.7 31.1 L25.7 32.4 L24.8 33.7 L18.0 31.5 L17.0 33.2 L16.2 35.0 L15.5 36.7 L14.8 38.6 L21.0 42.2 L20.7 43.8 L20.4 45.3 L20.2 46.9 L20.0 48.4 L13.0 50.0 L13.1 51.9 L13.2 53.9 L13.5 55.8 L13.8 57.7 L21.0 57.8 L21.5 59.3 L22.0 60.8 L22.6 62.2 L23.3 63.6 L18.0 68.5 L19.0 70.2 L20.1 71.7 L21.2 73.3 L22.5 74.8 L28.8 71.2 L29.9 72.3 L31.1 73.3 L32.4 74.3 L33.7 75.2 L31.5 82.0 L33.2 83.0 L35.0 83.8 L36.7 84.5 L38.6 85.2 L42.2 79.0 L43.8 79.3 L45.3 79.6 L46.9 79.8 L48.4 80.0 L50.0 87.0 Z" fill="#c9a24a"/><path d="M50 20 A30 30 0 0 1 50 80" fill="none" stroke="#2bb3c4" stroke-width="5"/><g fill="none" stroke="#2bb3c4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M50 36 H64 L70 30"/><path d="M50 50 H72"/><path d="M50 64 H62 L68 70"/></g><g fill="#2bb3c4"><circle cx="71" cy="29" r="4"/><circle cx="74" cy="50" r="4"/><circle cx="69" cy="71" r="4"/></g><circle cx="50" cy="50" r="9" fill="currentColor"/><circle cx="50" cy="50" r="3.5" fill="#c9a24a"/></svg><span class="brand-word">HomenS<span class="ai">.AI</span> <span class="sub">Local AI Lab</span></span></a>
+    <nav id="nav" aria-label="Hauptnavigation">
+      <ul class="nav-main"><li><a class="nav-link" href="index.de.html">Start</a></li><li><a class="nav-link" href="install.de.html">Installation</a></li><li><a class="nav-link" href="docs.de.html" aria-current="page">Dokumentation</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">Ergebnisse</a></li><li><a class="nav-link" href="https://github.com/HomenSAI/homensai-local-ai-lab" rel="noopener">GitHub</a></li><li><a class="nav-link nav-contact" href="contact.de.html">Kontakt</a></li></ul>
+      <ul class="nav-tools" id="tools"><li><span class="langs" role="group" aria-label="Sprache"><a href="results-format.en.html" lang="en" hreflang="en" aria-label="EN – English">EN</a><a href="results-format.de.html" lang="de" hreflang="de" aria-label="DE – Deutsch" class="on" aria-current="true">DE</a><a href="results-format.ru.html" lang="ru" hreflang="ru" aria-label="RU – Русский">RU</a></span></li></ul>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+<h1 id="ergebnisdateien-und-phasenplan">Ergebnisdateien und Phasenplan</h1>
+    <nav class="card help-toc doc-toc" aria-label="Inhalt"><h2>Inhalt</h2><ol><li><a href="#1-ergebniszeilen-der-dateiname-bestimmt-die-art">1. Ergebniszeilen (der Dateiname bestimmt die Art)</a></li><li><a href="#2-phasen-log-und-marken">2. Phasen-Log und Marken</a></li><li><a href="#3-der-phasenplan">3. Der Phasenplan</a></li><li><a href="#4-der-öffentliche-snapshot">4. Der öffentliche Snapshot</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Ein Testwerkzeug (ein Skript oder ein KI-Supervisor, der von Hand arbeitet) kommuniziert mit dem Berichtsgenerator ausschließlich über Dateien in <code>bench_results/</code>. Der Generator liest <code>results*.jsonl</code> alle 15 Sekunden; sonst muss nichts aufgerufen werden. Ein JSON-Objekt pro Zeile, UTF-8, <strong>nur anhängen</strong>.</p>
+<h2 id="1-ergebniszeilen-der-dateiname-bestimmt-die-art">1. Ergebniszeilen (der Dateiname bestimmt die Art)</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Datei</th><th>Art</th><th>Pflichtfelder</th><th>Optionale Felder</th></tr></thead>
+<tbody>
+<tr><td><code>results_all.jsonl</code></td><td>Allgemeintest</td><td><code>model</code>, <code>load_ok</code> (bool), <code>quality</code>: Liste von <code>{task, cat, score, max}</code> (<code>cat</code> ist eines von <code>Русский</code>, <code>Логика</code>, <code>Код</code>, <code>Инструкции</code>, <code>Зрение</code>); <code>quality</code> darf fehlen, wenn <code>load_ok</code> <code>false</code> ist</td><td><code>file</code>, <code>quant</code>, <code>size_gb</code>, <code>mode</code>, <code>ngl</code>, <code>placement</code>, <code>pp</code>, <code>tg</code>, <code>vram_peak_8k</code>, <code>vram_bench</code>, <code>load_s</code>, <code>max_ctx</code>, <code>ctx</code>, <code>host_free_min_gb</code>, <code>guard_killed</code>, <code>error</code></td></tr>
+<tr><td><code>results_german.jsonl</code></td><td>Deutsch</td><td><code>model</code>, <code>score</code>, <code>n</code>, <code>items</code>: Liste von <code>{cat, ok}</code></td><td><code>tokens</code>, <code>minutes</code>, <code>mode</code></td></tr>
+<tr><td><code>results_ctx.jsonl</code></td><td>maximaler Kontext</td><td><code>model</code>, <code>best_ctx</code>, <code>cfgs</code>: <code>{config: {best_ctx, tg, vram}}</code></td><td><code>native_ctx</code>, <code>cap</code>, <code>ref_tg_8k</code>, <code>best_cfg</code>, <code>recommended_cfg</code>, <code>minutes</code></td></tr>
+<tr><td><code>results_ctx_trials.jsonl</code></td><td>einzelne Kontextversuche</td><td><code>model</code>, <code>ctx</code>, <code>stable</code> (bool)</td><td><code>cfg</code>, <code>hits</code>, <code>pp</code>, <code>tg</code>, <code>vram_peak</code></td></tr>
+<tr><td><code>results_stem.jsonl</code></td><td>Mathematik + Physik</td><td><code>model</code>, <code>math</code>, <code>phys</code>, <code>total</code>, <code>n</code></td><td><code>think</code>, <code>tokens</code>, <code>truncated</code>, <code>minutes</code>, <code>items</code></td></tr>
+<tr><td><code>results_chem.jsonl</code></td><td>Chemie</td><td><code>model</code>, <code>score</code> (von 10)</td><td><code>think</code>, <code>truncated</code>, <code>minutes</code>, <code>items</code></td></tr>
+<tr><td><code>results_code20.jsonl</code></td><td>Code, 20 Aufgaben</td><td><code>model</code>, <code>passed</code>, <code>n</code></td><td><code>by_level</code> (<code>{&quot;1&quot;: [passed, total], ...}</code>), <code>failed</code> (Aufgabennamen), <code>tokens</code>, <code>minutes</code>, <code>request_errors</code></td></tr>
+<tr><td><code>results_accel.jsonl</code></td><td>Beschleuniger / Embeddings</td><td><code>kind</code> (<code>spec</code> oder <code>embed</code>), <code>profile</code></td><td><code>baseline</code>, <code>spec_flags</code>, <code>dim</code>, <code>top1</code>, <code>verdict</code></td></tr>
+<tr><td><code>results_soak.jsonl</code></td><td>Zuverlässigkeit</td><td><code>model</code>, <code>ctx</code>, <code>steps</code></td><td><code>problems</code>, <code>vram_peak</code>, <code>gpu_util_peak</code>, <code>host_free_min_gb</code>, <code>load_s</code></td></tr>
+</tbody>
+</table></div>
+<p>Eine neuere Zeile für dasselbe <code>(suite, model)</code> ersetzt den im Bericht angezeigten Wert, <strong>der ältere Wert bleibt im SQLite-Archiv und in Git</strong>. Eine bereits geschriebene Zeile nie bearbeiten; eine neue anhängen.</p>
+<h3 id="modelle-die-nicht-geladen-wurden-und-ungültige-punktzahlen">Modelle, die nicht geladen wurden, und ungültige Punktzahlen</h3>
+<ul>
+<li>Ein Modell, das nicht geladen wurde, wird als <code>{&quot;model&quot;: &quot;...&quot;, &quot;load_ok&quot;: false, &quot;error&quot;: &quot;short reason&quot;}</code> geschrieben. Die Zeile bleibt erhalten: Das Modell erscheint im Bericht und im öffentlichen Snapshot als <strong>nicht geladen</strong> (nie als „zugelassen“). Keine Pfade oder personenbezogenen Daten in <code>error</code> schreiben.</li>
+<li>In <code>quality</code> muss <code>score</code> eine Zahl von 0 bis <code>max</code> sein und <code>max</code> eine Zahl größer als 0 (ein fehlendes <code>max</code> zählt als 1). Der Generator <strong>ignoriert</strong> ein Element, das dagegen verstößt (ein falscher Prüfer würde sonst als 500 % erscheinen), und begrenzt ein <code>score</code> über <code>max</code> auf <code>max</code>. Die Zahl der ignorierten Elemente wird als <code>invalid_items</code> in der Modellzeile gespeichert: Taucht sie auf, den Prüfer korrigieren und eine neue Zeile anhängen.</li>
+<li>Zeilen, die kein gültiges JSON sind (eine Zeile, die gerade noch geschrieben wird), werden übersprungen.</li>
+</ul>
+<p>Modellnamen müssen zwischen den Dateien gleich bleiben: Derselbe <code>model</code>-String führt die Zeilen verschiedener Tests zu einer Tabellenzeile zusammen. Namen, die in der Modelllistendatei <code>bench_top.py</code> (<code>TOP</code>) stehen, legen fest, welche Modelle zum aktuellen Plan gehören; andere Namen bleiben erhalten, werden aber nicht mitgezählt.</p>
+<h2 id="2-phasen-log-und-marken">2. Phasen-Log und Marken</h2>
+<p>Jede Phase kann ein Log <code>bench_results/&lt;name&gt;.log</code> haben (vom Werkzeug geschrieben):</p>
+<pre><code>=== &lt;model name&gt; (anything)     # starts a model: the console shows &quot;now testing &lt;model&gt;&quot;
+PROGRESS 7/20                   # tasks done of all, before every task: gives an exact progress bar
+DONE ... / STEM ... / CTX ...   # one result line per model (free text, shown as &quot;last result&quot;)
+&lt;NAME&gt;-FINISHED                 # last line: marks the whole stage as done</code></pre>
+<p>Ohne <code>PROGRESS</code>-Zeilen schätzt die Konsole den Fortschritt aus der durchschnittlichen Zeit pro Modell.</p>
+<h2 id="3-der-phasenplan">3. Der Phasenplan</h2>
+<p><code>scripts/build_live_report.py</code> definiert <code>DEFAULT_PLAN</code>; um ihn ohne Codeänderung anzupassen, <code>bench_results/benchmark_plan.json</code> anlegen:</p>
+<pre><code class="language-json">{&quot;stages&quot;: [
+  {&quot;id&quot;: &quot;stem&quot;, &quot;title&quot;: &quot;Math and physics&quot;, &quot;per_model&quot;: false, &quot;scope&quot;: &quot;eligible&quot;,
+   &quot;results&quot;: [&quot;results_stem.jsonl&quot;], &quot;log&quot;: &quot;bench_stem.log&quot;, &quot;finish_marker&quot;: &quot;STEM-FINISHED&quot;,
+   &quot;after&quot;: &quot;accel&quot;, &quot;est_minutes_per_model&quot;: 6, &quot;what&quot;: &quot;short description shown in the console&quot;}
+]}</code></pre>
+<div class="table-wrap"><table>
+<thead><tr><th>Feld</th><th>Bedeutung</th></tr></thead>
+<tbody>
+<tr><td><code>id</code>, <code>title</code>, <code>what</code>, <code>note</code></td><td>Kennung, Name, Beschreibung und Hinweis, die in der Phasenliste angezeigt werden</td></tr>
+<tr><td><code>results</code></td><td>Ergebnisdateien, die für diese Phase zählen (Zeilen anderer Dateien werden hier ignoriert)</td></tr>
+<tr><td><code>log</code>, <code>finish_marker</code></td><td>Log-Datei und die Zeile, die den Abschluss markiert</td></tr>
+<tr><td><code>per_model</code></td><td>true: Fortschritt ist „fertige Modelle von allen Modellen des Plans“</td></tr>
+<tr><td><code>scope: &quot;eligible&quot;</code></td><td>die Phase zählt nur Modelle, die nicht durch die 64K-Regel entfernt wurden</td></tr>
+<tr><td><code>fixed_total</code></td><td>Phase mit einer festen Zahl von Elementen (zum Beispiel 16 Gateway-Profile)</td></tr>
+<tr><td><code>est_minutes_per_model</code>, <code>est_total_minutes</code></td><td>Schätzungen für den Balken „bis alle Tests fertig sind“, solange es noch keine echten Zeitmessungen gibt</td></tr>
+<tr><td><code>after</code></td><td>Phase, die vorher abgeschlossen sein muss (wird nur dem Leser angezeigt)</td></tr>
+</tbody>
+</table></div>
+<p>Entfernte Modelle: Ein Modell gilt als entfernt, wenn <code>results_ctx.jsonl</code> ein <code>best_ctx</code> unter 65536 hat und das Modell nicht in <code>bench_results/ctx_recheck.txt</code> steht (ein Name pro Zeile, für Modelle, die für eine erneute Prüfung behalten werden).</p>
+<h2 id="4-der-öffentliche-snapshot">4. Der öffentliche Snapshot</h2>
+<p><code>python scripts/make_public_results.py [OUT_DIR] [--live FILE]</code> schreibt <code>results-public/RESULTS.md</code>, <code>results-summary.csv</code> und <code>results-summary.json</code> aus <code>report/live-data.json</code>: nur aggregierte Zahlen, keine Prompts oder Antworten.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.de.html">← Dokumentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/docs/RESULTS_FORMAT.de.md" rel="noopener">Quelltext auf GitHub</a></p>
+  </main>
+  <footer class="site-footer" id="footer"></footer>
+  <noscript>Für Menü, Designwechsel und Fußzeile wird JavaScript benötigt.</noscript>
+  <script src="style/js/brand.js?v=1.8.1"></script>
+  <script src="style/js/ui.js?v=1.8.1"></script>
+  <script src="style/js/brand-ui.js?v=1.8.1"></script>
+  <script src="style/js/robot.js?v=1.8.1"></script>
+  <script src="style/js/motion.js?v=1.8.1"></script>
+  <script src="style/js/logo-word.js?v=1.8.1"></script>
+  <script src="style/js/site-init.js?v=1.8.1"></script>
+</body>
+</html>

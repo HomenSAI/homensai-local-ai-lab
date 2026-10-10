@@ -1,6 +1,6 @@
 # Virtual RTX 3080: test the whole system without a GPU
 
-**English** · [Русский](#русский)
+Other languages: [Русский](README.ru.md) · [Deutsch](README.de.md)
 
 This kit installs Local AI Lab on a Linux machine that has Docker but no NVIDIA card, and lets every part run as if an RTX 3080 (10 GB) were present: the gateway loads and swaps models, the console shows video memory and GPU load, the test runner measures speed, context and quality, the report builder, the progress page and the Git versioner work on the results. **No model is real**: answers are fixed texts and all numbers are simulated. Use it to learn the system, to rehearse an installation, or to test changes before running them on the real card. Never install it on a computer with a real NVIDIA GPU.
 
@@ -41,11 +41,3 @@ Then open http://localhost:8766/ (console), http://localhost:8766/report/progres
 Test report of 10.10.2026 (in Russian): [REPORT.ru.md](REPORT.ru.md).
 
 **To remove it:** `docker compose --profile bench --profile gateway down`, `docker volume rm llm-models-fast`, delete `/usr/local/bin/nvidia-container-runtime-hook` and `/usr/local/bin/nvidia-smi`, restart Docker.
-
-## Русский
-
-Этот набор ставит Local AI Lab на Linux-машину с Docker, но без видеокарты NVIDIA, и позволяет всем частям работать так, будто стоит RTX 3080 (10 ГБ): шлюз загружает и переключает модели, консоль показывает видеопамять и загрузку GPU, раннер тестов измеряет скорость, контекст и качество, сборщик отчётов, страница хода тестов и версионер Git работают с результатами. **Настоящих моделей нет**: ответы — заготовленные тексты, все числа условные. Набор нужен, чтобы освоить систему, отрепетировать установку или проверить изменения до запуска на настоящей видеокарте. Не ставьте его на компьютер с настоящей видеокартой NVIDIA.
-
-**Что подменено:** драйвер NVIDIA в Docker (программа с именем, которое ищет Docker; копирует виртуальную `nvidia-smi` в каждый контейнер с GPU), `nvidia-smi` («NVIDIA GeForce RTX 3080, 10240 MiB», занятая память и загрузка — от работающих виртуальных моделей), llama.cpp и llama-swap (одна программа на Python с теми же путями и API; видеопамять = размер файла + кэш контекста; модель, которая не помещается, падает с «out of memory», как настоящая), файлы моделей (разреженные `.gguf` правдоподобного размера, почти не занимают диск).
-
-**Шаги** — те же команды, что в английском разделе выше: 1) драйвер в `/usr/local/bin` и перезапуск Docker; 2) система по руководству (путь для Linux), но вместо сборки CUDA-образов — `docker build -t local/ai-server-llama-swap:260 tests/virtual-3080` и `make_models.py` для файлов моделей, `build --no-gpu`; 3) тесты одной командой. Затем откройте консоль, ход тестов и версии по ссылкам выше. Отчёт о проверке 10.10.2026: [REPORT.ru.md](REPORT.ru.md). **Удалить:** остановить сервисы, удалить том `llm-models-fast`, удалить два файла из `/usr/local/bin`, перезапустить Docker.

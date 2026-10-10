@@ -1,0 +1,35 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="бенчмарки-раннеры-тестов">Бенчмарки: раннеры тестов</h1>
+    <nav class="card help-toc doc-toc" aria-label="Содержание"><h2>Содержание</h2><ol><li><a href="#тесты-скрипты-и-файлы-результатов">Тесты, скрипты и файлы результатов</a></li><li><a href="#запуск-всё-в-docker">Запуск (всё в Docker)</a></li><li><a href="#отличия-от-опубликованного-прогона">Отличия от опубликованного прогона</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<p>Эти скрипты дали опубликованные результаты <a href="https://github.com/HomenSAI/rtx3080-local-ai-benchmarks" rel="noopener">rtx3080-local-ai-benchmarks</a> (23 модели на RTX 3080 / 10 ГБ, 2026-09-29 – 2026-10-06). В том репозитории хранятся только результаты; код, чтобы повторить тесты, — здесь.</p>
+<h2 id="тесты-скрипты-и-файлы-результатов">Тесты, скрипты и файлы результатов</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Тест (папка в репозитории результатов)</th><th>Этап</th><th>Раннер</th><th>Задачи</th><th>Файл результатов в <code>bench_results/</code></th></tr></thead>
+<tbody>
+<tr><td>01-general-quality</td><td><code>general</code></td><td><code>bench_top.py</code> (список моделей <code>TOP</code>) + <code>bench_all.py</code></td><td><code>qtasks.py</code>, 3 задачи по коду из <code>coding_tasks.py</code>, картинки из <code>make_images.py</code></td><td><code>results_all.jsonl</code></td></tr>
+<tr><td>02-german-passive</td><td><code>german</code>, <code>german_fix</code></td><td><code>german_all.py</code>, <code>german_fix.py</code> (повторный прогон пустых ответов), <code>qa_bench.py</code></td><td><code>qa_tasks.py</code></td><td><code>results_german.jsonl</code>, <code>results_german_fix.jsonl</code></td></tr>
+<tr><td>03-max-context</td><td><code>context</code></td><td><code>bench_ctx.py</code> + <code>mneedle.py</code> (3 спрятанных факта при заполнении 80 %)</td><td>текст-заполнитель из стандартной библиотеки Python</td><td><code>results_ctx.jsonl</code>, <code>results_ctx_trials.jsonl</code></td></tr>
+<tr><td>04-soak-reliability</td><td><code>soak</code></td><td><code>soak.py</code> (через шлюз на порту 8080)</td><td>профили из <code>config/llama-swap.yaml</code></td><td><code>results_soak.jsonl</code></td></tr>
+<tr><td>05-math-physics-grade11</td><td><code>stem</code></td><td><code>bench_stem.py</code></td><td><code>stem_tasks.py</code></td><td><code>results_stem.jsonl</code></td></tr>
+<tr><td>06-chemistry-grade11</td><td><code>chem</code></td><td><code>bench_chem.py</code></td><td><code>chem_tasks.py</code></td><td><code>results_chem.jsonl</code></td></tr>
+<tr><td>07-coding-20</td><td><code>code20</code></td><td><code>bench_code20.py</code>, тесты в песочнице без сети (<code>code_eval_harness.py</code>)</td><td><code>coding_tasks.py</code></td><td><code>results_code20.jsonl</code></td></tr>
+<tr><td>08-accelerators-embeddings</td><td><code>accel</code></td><td><code>bench_accel.py</code></td><td>профили спекулятивного декодирования из <code>config/llama-swap.yaml</code>, модели эмбеддингов</td><td><code>results_accel.jsonl</code></td></tr>
+</tbody>
+</table></div>
+<p>В <code>bench_top.py</code> и <code>bench_all.py</code> лежат общие части: список моделей, запуск модели в собственном контейнере (<code>bench-srv</code>, порт 8090, образ <code>local/ai-server-llama-swap:260</code>, модели из тома Docker <code>llm-models-fast</code>), контроль оперативной памяти и чекеры.
+После теста контекста <code>gen_profiles_from_ctx.py</code> и <code>finalize_profiles.py</code> превращают измеренные окна в профили шлюза (<code>config/llama-swap-ctx.yaml</code> → <code>config/llama-swap-final.yaml</code>; это кандидаты, которые не действуют, пока вы их не скопируете); в <code>exclude_not_gpu.md</code> перечислены модели, снятые по правилу 64K.</p>
+<h2 id="запуск-всё-в-docker">Запуск (всё в Docker)</h2>
+<p>Сначала соберите образы шлюза (<code>docs/INSTALL.*</code>, разделы о сборке), положите модели в том <code>llm-models-fast</code> и заполните пути в <code>TOP</code> файла <code>bench_top.py</code>. Затем:</p>
+<pre><code>docker compose --profile bench up -d --build bench-runner</code></pre>
+<p>Раннер копирует эти скрипты в <code>bench_results/</code>, рисует картинки для задач на зрение и запускает этапы в порядке <code>BENCH_PHASES</code> (по умолчанию <code>general german context german_fix accel stem chem code20</code>; добавьте <code>soak</code>, чтобы проверить профили шлюза). Каждый этап пишет свой журнал (<code>bench_full.log</code>, <code>bench_ctx.log</code>, ...) с маркером завершения, которого ждёт консоль, поэтому консоль показывает этап, полосу прогресса и оставшееся время. Каждый этап пропускает уже готовые модели, так что после перезапуска работа продолжается с того места, где остановилась. Чтобы запустить другие этапы: <code>BENCH_PHASES=&quot;stem chem&quot;</code> в <code>.env</code>, удалите <code>bench_results/run_all.log</code> и снова запустите раннер. Остановить его: <code>docker compose --profile bench stop bench-runner</code>.</p>
+<p>Раннер управляет Docker на этом ПК через сокет Docker (запускает и останавливает контейнеры моделей и шлюз): запускайте его только на время прогона тестов.</p>
+<h2 id="отличия-от-опубликованного-прогона">Отличия от опубликованного прогона</h2>
+<ul>
+<li>Картинки для задач на зрение из опубликованного прогона не сохранились; <code>make_images.py</code> рисует заново то же содержание (фигуры, код заказа, 7 точек), поэтому оценки зрения сравнимы, но не идентичны.</li>
+<li>Песочница для кода теперь использует обычный образ <code>python:3.12-slim</code> (<code>SANDBOX_IMAGE</code>) и копирует в него файлы, поэтому работает внутри контейнера раннера.</li>
+<li>Текст-заполнитель теста контекста собирается заново из стандартной библиотеки Python образа раннера; результаты могут немного отличаться между версиями Python.</li>
+<li>Проверено в облаке без GPU: контейнер раннера, этапы, журналы и маркеры, песочница для кода (эталонные решения проходят, сломанное — не проходит) и картинки. Для полного прогона нужны видеокарта NVIDIA и модели.</li>
+</ul>
+    </article>
+    <p class="doc-meta"><a href="docs.ru.html">← Документация</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/benchmarks/README.ru.md" rel="noopener">Исходный текст на GitHub</a></p>

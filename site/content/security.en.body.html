@@ -1,0 +1,34 @@
+<!-- HomenS.AI Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ -->
+    <h1 id="security-policy">Security policy</h1>
+    <nav class="card help-toc doc-toc" aria-label="Contents"><h2>Contents</h2><ol><li><a href="#threat-model">Threat model</a></li><li><a href="#what-the-repository-must-never-contain">What the repository must never contain</a></li><li><a href="#reporting-a-vulnerability">Reporting a vulnerability</a></li><li><a href="#supply-chain">Supply chain</a></li></ol></nav>
+    <article class="card lesson-body doc-body">
+<h2 id="threat-model">Threat model</h2>
+<p>The console (port 8766) and the gateway (port 8080) are built for <code>127.0.0.1</code> or a <strong>trusted LAN</strong>. They are not hardened for the internet. <strong>Never publish ports 8766, 8080, 3010 or 8767 to the internet</strong>; restrict the firewall rule to your own subnet.</p>
+<p>What the console does to protect itself (<code>console/security.py</code>, <code>console/container_server.py</code>):</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Threat</th><th>Protection</th></tr></thead>
+<tbody>
+<tr><td>A web page in the operator's browser starts, stops or unloads models (cross-site request forgery)</td><td>Every <code>POST</code> must be <code>Content-Type: application/json</code> (a foreign page cannot send that without a CORS preflight, which the console never allows), must not come from another origin (<code>Origin</code>, <code>Sec-Fetch-Site</code> are checked) and answers <code>415</code> / <code>403</code> otherwise</td></tr>
+<tr><td>DNS rebinding (a foreign host name that points to your PC)</td><td>Only <code>localhost</code>, IP addresses and the names in <code>AI_CONSOLE_ALLOWED_HOSTS</code> are accepted as <code>Host</code>; anything else gets <code>421</code> (<code>/health</code> is exempt for the container health check)</td></tr>
+<tr><td>Another person on the LAN uses the console</td><td>Set <code>AI_CONSOLE_PASSWORD</code> in <code>.env</code>: the console then asks for HTTP Basic authentication (any user name) on everything except <code>/health</code>. Use it whenever <code>AI_CONSOLE_BIND_IP</code> is not <code>127.0.0.1</code>. Basic authentication sends the password unencrypted: on an untrusted network put a TLS reverse proxy or a VPN in front</td></tr>
+<tr><td>Framing, content sniffing, injected scripts</td><td>Every answer carries <code>Content-Security-Policy</code> (own scripts only, no framing), <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, <code>Referrer-Policy: no-referrer</code></td></tr>
+<tr><td>Path traversal in <code>/report/</code> and <code>/legal/</code></td><td>Paths are resolved and must stay inside the folder; tested</td></tr>
+<tr><td>The Docker socket</td><td>See below</td></tr>
+</tbody>
+</table></div>
+<h3 id="the-docker-socket">The Docker socket</h3>
+<p>The console container mounts <code>/var/run/docker.sock</code>. The <code>read_only</code> flag on that mount is <strong>not</strong> a security boundary, and the socket is equivalent to root on the host. The console uses it to list containers and to run one fixed command inside a model container (<code>curl</code> against the <code>/health</code>, <code>/slots</code> or <code>/metrics</code> address of <code>llama-server</code> on <code>127.0.0.1</code>). The code refuses any other command: the container name must be a plain Docker name and the URL must match that fixed form (<code>docker_exec_read</code>, covered by tests). The container runs with <code>cap_drop: ALL</code>, <code>no-new-privileges</code> and a read-only root file system. Even so, <strong>whoever gets full control of the console gets Docker on this PC</strong>, so keep the network exposure small and set the password.</p>
+<h3 id="known-limits">Known limits</h3>
+<ul>
+<li>The gateway (llama-swap, port 8080) has no authentication at all; it is published on <code>127.0.0.1</code> only. Do not change that without a reverse proxy that authenticates.</li>
+<li><code>scripts/setup_git.py</code> passes the generated Gitea admin password to <code>docker exec</code> on the command line once; other users of the Docker daemon on the same PC can see it for a moment. The password is stored in <code>secrets/gitea-admin.txt</code> (ignored by Git).</li>
+<li>Basic authentication has no rate limit and no lock-out.</li>
+</ul>
+<h2 id="what-the-repository-must-never-contain">What the repository must never contain</h2>
+<p>Passwords, tokens, SSH keys (the folder <code>secrets/</code> is ignored by Git), <code>.env</code> with personal values (only <code>.env.example</code> is committed; <code>.env</code> is ignored, which is why <code>AI_CONSOLE_PASSWORD</code> may live there), model weights, personal data. If you find any, please report it as below.</p>
+<h2 id="reporting-a-vulnerability">Reporting a vulnerability</h2>
+<p>Please do <strong>not</strong> open a public issue for security problems. Write to info [at] homensai [dot] com (author: Serhii Khomenko, <a href="https://homensai.com">https://homensai.com</a>) and describe the problem, the affected file and how to reproduce it. You will get an answer as soon as possible; please allow a reasonable time to fix before disclosure.</p>
+<h2 id="supply-chain">Supply chain</h2>
+<p>Base images, llama.cpp / whisper.cpp / stable-diffusion.cpp commits and llama-swap (release SHA-256) are pinned; model files should be verified against the SHA-256 sums in <code>MODELS.md</code> or on the model page before use. <code>MANIFEST.json</code> lists the size and SHA-256 of every file of the repository; <code>python scripts/make_manifest.py --check</code> verifies it (CI does the same). <code>python scripts/install.py doctor</code> never downloads the 5.6 GB CUDA test image unless you pass <code>--pull</code>.</p>
+    </article>
+    <p class="doc-meta"><a href="docs.en.html">← Documentation</a> · <a href="https://github.com/HomenSAI/homensai-local-ai-lab/blob/main/SECURITY.md" rel="noopener">Source text on GitHub</a></p>

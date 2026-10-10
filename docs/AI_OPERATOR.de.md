@@ -8,7 +8,7 @@ Dieses Projekt ist dafür gebaut, von einem **KI-Assistenten installiert, gestar
 
 - **Der Server läuft von selbst.** Gateway, Konsole, Berichtsgenerator und Git-Versionierer laufen ohne KI; die KI ist nur der Bediener.
 - **Die KI ist der Supervisor.** Sie entscheidet, welche Tests auf welchen Modellen laufen, startet sie, prüft die Plausibilität der Zahlen (Zeitüberschreitungen, leere Antworten, Ausreißer, Modelle, die auf die CPU ausgewichen sind), wiederholt verdächtige Läufe und schreibt Schlussfolgerungen. Einen zweiten, eingebauten „Richter“ enthält der Server absichtlich nicht (siehe [DESIGN.de.md](DESIGN.de.md)).
-- **Auf der Serverseite ist nichts Besonderes nötig** – es gibt kein Plug-in zu installieren. Der Supervisor nutzt, was schon da ist: die Shell auf diesem PC, die REST-API der Konsole ([API.md](API.md)), das OpenAI-kompatible Gateway auf Port 8080, die Ergebnisdateien ([RESULTS_FORMAT.md](RESULTS_FORMAT.md)) und das Git-Repository der Berichtsversionen.
+- **Auf der Serverseite ist nichts Besonderes nötig** – es gibt kein Plug-in zu installieren. Der Supervisor nutzt, was schon da ist: die Shell auf diesem PC, die REST-API der Konsole ([API.de.md](API.de.md)), das OpenAI-kompatible Gateway auf Port 8080, die Ergebnisdateien ([RESULTS_FORMAT.de.md](RESULTS_FORMAT.de.md)) und das Git-Repository der Berichtsversionen.
 
 ## Was der Assistent braucht
 
@@ -39,7 +39,7 @@ Du bist Installateur und Supervisor dieses Projekts „Local AI Server“ (lies 
 
 ## Wie die Konsole Skripte und Assistenten behandelt
 
-Die Konsole prüft jede Anfrage ([API.md](API.md), [SECURITY.md](../SECURITY.md)). Ihre Befehle müssen das einhalten; eine Ablehnung ist eine Information, kein Hindernis, das man umgeht:
+Die Konsole prüft jede Anfrage ([API.de.md](API.de.md), [SECURITY.de.md](../SECURITY.de.md)). Ihre Befehle müssen das einhalten; eine Ablehnung ist eine Information, kein Hindernis, das man umgeht:
 
 - `POST`-Aufrufe brauchen `-H "Content-Type: application/json"` (auch ohne Body), z. B. `curl -X POST http://localhost:8766/api/start -H "Content-Type: application/json" -d '{"model_key":"..."}'`. `415` heißt: Der Header fehlt.
 - Hat der Mensch `AI_CONSOLE_PASSWORD` gesetzt, fragen Sie ihn danach und verwenden `curl -u any:PASSWORT`; schreiben Sie es nie in Dateien, die in Git landen, in Ergebnisdateien oder in einen Bericht. `401` heißt: Passwort nötig.
@@ -62,5 +62,5 @@ Die Konsole prüft jede Anfrage ([API.md](API.md), [SECURITY.md](../SECURITY.md)
 - Keine Prompts oder Antworten mit personenbezogenen Daten in Git; das Repository soll teilbar sein (Ergebnisse unter CC BY-NC 4.0 mit Nennung von <https://homensai.com>).
 - Vor Folgendem den Menschen fragen: Dateien oder Volumes löschen, Netzwerkadressen in `.env` ändern, Ports öffnen, große Dateien laden, etwas veröffentlichen.
 - Den Schutz der Konsole nicht abschwächen (Host-/Origin-/Passwort-Prüfung, die feste Form von `docker exec`) und das Passwort nie veröffentlichen; wird ein Aufruf abgelehnt, das melden.
-- Ein Modell, das nicht geladen wurde, wird als `{"model": ..., "load_ok": false, "error": "kurzer Grund"}` erfasst (keine Pfade in `error`); es wird als fehlgeschlagen angezeigt, nicht versteckt. Erhält eine Ergebniszeile `invalid_items`, lieferte der Prüfer unmögliche Punktzahlen: Prüfer korrigieren und eine neue Zeile anhängen ([RESULTS_FORMAT.md](RESULTS_FORMAT.md)).
+- Ein Modell, das nicht geladen wurde, wird als `{"model": ..., "load_ok": false, "error": "kurzer Grund"}` erfasst (keine Pfade in `error`); es wird als fehlgeschlagen angezeigt, nicht versteckt. Erhält eine Ergebniszeile `invalid_items`, lieferte der Prüfer unmögliche Punktzahlen: Prüfer korrigieren und eine neue Zeile anhängen ([RESULTS_FORMAT.de.md](RESULTS_FORMAT.de.md)).
 - Schlägt ein Befehl fehl, das Log lesen (`docker logs <Container>`), die Ursache beheben, nicht blind wiederholen.
