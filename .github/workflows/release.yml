@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Create the GitHub release
         env:
@@ -30,8 +32,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Invalid tag: $TAG (expected vX.Y.Z)" >&2
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "Invalid tag: $TAG (expected vX.Y or vX.Y.Z)" >&2
             exit 1
           fi
           if gh release view "$TAG" >/dev/null 2>&1; then
@@ -54,6 +56,6 @@ jobs:
           PY
           args=("$TAG" --title "$TAG" --notes-file notes.md)
           if [[ -n "$TARGET" ]]; then
-            args+=(--target "$TARGET")
+            args+=(--target "$(git rev-parse --verify "$TARGET^{commit}")")
           fi
           gh release create "${args[@]}"
