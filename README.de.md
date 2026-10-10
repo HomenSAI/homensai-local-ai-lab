@@ -3,7 +3,7 @@
 **Lokale Sprachmodelle auf einer einzelnen NVIDIA-Grafikkarte betreiben: Web-Konsole, automatische Testberichte, Videogenerierung und versionierte Ergebnisse.**
 Sprachen: [English](README.md) · [Русский](README.ru.md) · Deutsch
 
-Autor: **Serhii Khomenko** · [homensai.com](https://homensai.com) · info@homensai.com · Ergebnisse und Berichte: CC BY 4.0 (Namensnennung erforderlich) · Code: MIT
+Autor: **Serhii Khomenko** · [homensai.com](https://homensai.com) · info@homensai.com · Ergebnisse und Berichte: CC BY-NC 4.0 · Code: PolyForm Noncommercial 1.0.0 · nur nichtkommerzielle Nutzung, Namensnennung erforderlich
 
 ## Was es ist
 
@@ -51,6 +51,6 @@ Modellgewichte (selbst herunterladen und deren Lizenzen beachten), eigene Tester
 
 ## Lizenz und Namensnennung
 
-- Ergebnisse, Berichte und Texte: **[CC BY 4.0](legal/LICENSE-RESULTS-CC-BY-4.0.md)** – Nutzung und Weitergabe erlaubt, **Verweis auf den Autor ist Pflicht**: `Daten: homensai.com (https://homensai.com), CC BY 4.0`.
-- Code: **[MIT](LICENSE)** unter Beibehaltung des Urheberrechtsvermerks.
+- Ergebnisse, Berichte und Texte: **[CC BY-NC 4.0](legal/LICENSE-RESULTS-CC-BY-NC-4.0.md)** – Nutzung und Weitergabe **nur für nichtkommerzielle Zwecke**, **Verweis auf den Autor ist Pflicht**: `Daten: homensai.com (https://homensai.com), CC BY-NC 4.0`.
+- Code: **[PolyForm Noncommercial 1.0.0](LICENSE)** – nur nichtkommerzielle Nutzung; der Required Notice und die Autorenzeile bleiben in jeder Kopie. Kommerzielle Nutzung von Code oder Ergebnissen nur nach schriftlicher Vereinbarung mit dem Autor.
 - Software und Modelle Dritter behalten ihre Lizenzen: [NOTICE-THIRD-PARTY.md](legal/NOTICE-THIRD-PARTY.md). Produktnamen sind Marken ihrer Inhaber; das Projekt steht in keiner Verbindung zu ihnen und wird von ihnen nicht unterstützt.

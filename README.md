@@ -3,7 +3,7 @@
 **Run local language models on one NVIDIA GPU, with a web console, automatic test reports, video generation and versioned results.**
 Languages: English · [Русский](README.ru.md) · [Deutsch](README.de.md)
 
-Author: **Serhii Khomenko** · [homensai.com](https://homensai.com) · info@homensai.com · Results & reports: CC BY 4.0 (credit required) · Code: MIT
+Author: **Serhii Khomenko** · [homensai.com](https://homensai.com) · info@homensai.com · Results & reports: CC BY-NC 4.0 · Code: PolyForm Noncommercial 1.0.0 · noncommercial use only, credit required
 
 ## Purpose
 
@@ -55,6 +55,6 @@ Model weights (download them yourself and respect their licenses), your own test
 
 ## License and attribution
 
-- Results, reports and texts: **[CC BY 4.0](legal/LICENSE-RESULTS-CC-BY-4.0.md)** - you may use and share them, **a link to the author is mandatory**: `Data: homensai.com (https://homensai.com), CC BY 4.0`.
-- Code: **[MIT](LICENSE)** with the copyright notice kept.
+- Results, reports and texts: **[CC BY-NC 4.0](legal/LICENSE-RESULTS-CC-BY-NC-4.0.md)** - you may use and share them **for noncommercial purposes only**, **a link to the author is mandatory**: `Data: homensai.com (https://homensai.com), CC BY-NC 4.0`.
+- Code: **[PolyForm Noncommercial 1.0.0](LICENSE)** - noncommercial use only; the Required Notice and the author line stay in every copy. Commercial use of the code or the results needs a written agreement with the author.
 - Third-party software and models keep their own licenses: [NOTICE-THIRD-PARTY.md](legal/NOTICE-THIRD-PARTY.md). Product names are trademarks of their owners; this project is not affiliated with or endorsed by them.

@@ -79,7 +79,7 @@ def main() -> None:
     provenance = {"server_version": version, "snapshot_built_utc": data.get("built_utc"), "hardware": HARDWARE, "models_tested": len(rows),
                   "models_admitted": sum(1 for r in rows if r["status"] == "admitted"),
                   "chain": "server core (gateway + console + report builder) -> Claude as supervisor (prepared, ran and checked the tests) -> results -> this repository",
-                  "license": "CC BY 4.0, credit: homensai.com (https://homensai.com)"}
+                  "license": "CC BY-NC 4.0, credit: homensai.com (https://homensai.com)"}
     (out / "results-summary.json").write_text(json.dumps({"provenance": provenance, "models": rows}, ensure_ascii=False, indent=1), encoding="utf-8")
     with (out / "results-summary.csv").open("w", encoding="utf-8", newline="") as sink:
         writer = csv.writer(sink)
@@ -91,7 +91,7 @@ def main() -> None:
              f"{provenance['models_tested']} models tested, {provenance['models_admitted']} admitted to the later stages (stable GPU context of at least 64K). "
              "How the numbers were produced (server core -> Claude as supervisor -> results): [METHODOLOGY](../docs/METHODOLOGY.en.md) · "
              "[RU](../docs/METHODOLOGY.ru.md) · [DE](../docs/METHODOLOGY.de.md).", "",
-             "Data: homensai.com (https://homensai.com), CC BY 4.0. Results are from one machine and from small task sets: use them as a guide, not as a ranking of model quality.", "",
+             "Data: homensai.com (https://homensai.com), CC BY-NC 4.0. Results are from one machine and from small task sets: use them as a guide, not as a ranking of model quality.", "",
              "## All models", "", table(rows, COLUMNS)]
     boards = [("general", "General test, %"), ("german", "German, %"), ("ctx_k", "Stable context, K"), ("stem", "Math + Physics, %"), ("chem", "Chemistry, %"), ("code20", "Code, of 20"), ("tg", "Generation speed, tok/s")]
     for key, title in boards:

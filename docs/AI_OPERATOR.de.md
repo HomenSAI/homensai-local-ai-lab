@@ -59,7 +59,7 @@ Die Konsole prüft jede Anfrage ([API.md](API.md), [SECURITY.md](../SECURITY.md)
 
 - Ein Modell gleichzeitig im Videospeicher; keinen zweiten GPU-Job starten, solange ein Test oder ein Video-Rendering läuft.
 - Ergebnisse früherer Läufe nie ändern oder löschen; neue Zeilen anhängen (das Archiv behält alte Werte, aber die Historie ist der Beleg).
-- Keine Prompts oder Antworten mit personenbezogenen Daten in Git; das Repository soll teilbar sein (Ergebnisse unter CC BY 4.0 mit Nennung von <https://homensai.com>).
+- Keine Prompts oder Antworten mit personenbezogenen Daten in Git; das Repository soll teilbar sein (Ergebnisse unter CC BY-NC 4.0 mit Nennung von <https://homensai.com>).
 - Vor Folgendem den Menschen fragen: Dateien oder Volumes löschen, Netzwerkadressen in `.env` ändern, Ports öffnen, große Dateien laden, etwas veröffentlichen.
 - Den Schutz der Konsole nicht abschwächen (Host-/Origin-/Passwort-Prüfung, die feste Form von `docker exec`) und das Passwort nie veröffentlichen; wird ein Aufruf abgelehnt, das melden.
 - Ein Modell, das nicht geladen wurde, wird als `{"model": ..., "load_ok": false, "error": "kurzer Grund"}` erfasst (keine Pfade in `error`); es wird als fehlgeschlagen angezeigt, nicht versteckt. Erhält eine Ergebniszeile `invalid_items`, lieferte der Prüfer unmögliche Punktzahlen: Prüfer korrigieren und eine neue Zeile anhängen ([RESULTS_FORMAT.md](RESULTS_FORMAT.md)).

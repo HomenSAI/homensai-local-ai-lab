@@ -4,7 +4,7 @@ Server version 1.0.0 · snapshot 2026-10-06T13:50:04Z · NVIDIA GeForce RTX 3080
 
 23 models tested, 15 admitted to the later stages (stable GPU context of at least 64K). How the numbers were produced (server core -> Claude as supervisor -> results): [METHODOLOGY](../docs/METHODOLOGY.en.md) · [RU](../docs/METHODOLOGY.ru.md) · [DE](../docs/METHODOLOGY.de.md).
 
-Data: homensai.com (https://homensai.com), CC BY 4.0. Results are from one machine and from small task sets: use them as a guide, not as a ranking of model quality.
+Data: homensai.com (https://homensai.com), CC BY-NC 4.0. Results are from one machine and from small task sets: use them as a guide, not as a ranking of model quality.
 
 ## All models
 

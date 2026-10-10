@@ -90,7 +90,7 @@ def snapshot():
     legal = os.environ.get("LEGAL_DIR", "/legal")
     if os.path.isdir(legal):
         for name in os.listdir(legal):
-            shutil.copyfile(os.path.join(legal, name), os.path.join(WORK, "LICENSE-RESULTS-CC-BY-4.0.md" if False else name))
+            shutil.copyfile(os.path.join(legal, name), os.path.join(WORK, name))
     live = None
     path = os.path.join(REPORT, "live-data.json")
     if os.path.isfile(path):

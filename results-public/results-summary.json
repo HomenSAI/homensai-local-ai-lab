@@ -6,7 +6,7 @@
   "models_tested": 23,
   "models_admitted": 15,
   "chain": "server core (gateway + console + report builder) -> Claude as supervisor (prepared, ran and checked the tests) -> results -> this repository",
-  "license": "CC BY 4.0, credit: homensai.com (https://homensai.com)"
+  "license": "CC BY-NC 4.0, credit: homensai.com (https://homensai.com)"
  },
  "models": [
   {

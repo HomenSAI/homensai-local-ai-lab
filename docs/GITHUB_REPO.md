@@ -31,7 +31,7 @@
 
 - Tag `v1.0.0`, title "Local AI Server 1.0.0".
 - Text: copy the 1.0.0 section of `CHANGELOG.md`; add: results snapshot in `results-public/`, methodology in `docs/METHODOLOGY.en.md`, installation by an AI assistant in `docs/AI_OPERATOR.en.md`.
-- License line: results and texts CC BY 4.0 (credit to https://homensai.com required), code MIT.
+- License line: results and texts CC BY-NC 4.0, code PolyForm Noncommercial 1.0.0; noncommercial use only, credit to https://homensai.com required.
 
 ## After the repository is public
 

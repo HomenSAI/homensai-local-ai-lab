@@ -4,7 +4,7 @@ Other languages: [Русский](INSTALL.ru.md) · [Deutsch](INSTALL.de.md) · 
 
 This guide takes you from an empty machine to a working **Local AI Server**: a gateway that loads one local language model at a time into the video memory of a single NVIDIA GPU, a web console (models, chat, tests, video generation, reports) in three languages, automatic test reports and a local Git server that keeps every version of the reports.
 
-> Author and rights: results and reports are licensed **CC BY 4.0** (use and share, but you must link to the author, <https://homensai.com>); code is **MIT**. Model weights are **not** part of this package and keep their own licenses. See `legal/`.
+> Author and rights: results and reports are licensed **CC BY-NC 4.0** (use and share for noncommercial purposes only, and you must link to the author, <https://homensai.com>); code is **PolyForm Noncommercial 1.0.0**. Model weights are **not** part of this package and keep their own licenses. See `legal/`.
 
 ## Contents
 

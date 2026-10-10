@@ -1,6 +1,9 @@
 # Changelog
 
-## 1.2.0 - test runners, security and reliability fixes (2026-10-10)
+## 1.2.0 - test runners, noncommercial licence, security and reliability fixes (2026-10-10)
+
+Licence
+- Noncommercial use only, credit to the author mandatory, as in `rtx3080-local-ai-benchmarks`: code under PolyForm Noncommercial 1.0.0 (full text in `LICENSE` and `legal/LICENSE-CODE-POLYFORM-NC.txt`, with the Required Notice and the author line), results, reports and texts under CC BY-NC 4.0 (`legal/LICENSE-RESULTS-CC-BY-NC-4.0.md`). Commercial use needs a written agreement with the author. README, INSTALL, DESIGN, AI_OPERATOR, CONTRIBUTING, the console and report footers and the public results snapshot are updated.
 
 Test runners
 - The runners and task files of the published results moved here from `rtx3080-local-ai-benchmarks` (that repository now holds only the results): `benchmarks/`, one flat folder as in the original run (the scripts import each other; the copy split into per-test folders could not run). `benchmarks/README.md` maps every test to its runner, tasks and result file.

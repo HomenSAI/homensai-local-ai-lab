@@ -43,4 +43,4 @@ No personal data, passwords or tokens are stored in the backup or the versions r
 ## Товарные знаки и отказ от ответственности
 
 Все названия продуктов и компаний — товарные знаки их владельцев; проект с ними не связан и не одобрен ими.
-Все материалы предоставляются «как есть» (см. `LICENSE-RESULTS-CC-BY-4.0.md` и `LICENSE-CODE-MIT.txt`). Это не юридическая консультация.
+Все материалы предоставляются «как есть» (см. `LICENSE-RESULTS-CC-BY-NC-4.0.md` и `LICENSE-CODE-POLYFORM-NC.txt`). Это не юридическая консультация.

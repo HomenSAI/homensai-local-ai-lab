@@ -4,8 +4,9 @@
 
 В этом репозитории автоматически сохраняются версии отчётов (теги `v0001`, `v0002` …, `stage-<этап>-done`, `final-<дата>`).
 
-* Результаты, таблицы, отчёты: **CC BY 4.0** — можно использовать и распространять **со ссылкой на автора** (https://homensai.com). См. `LICENSE-RESULTS-CC-BY-4.0.md`.
-* Код: **MIT** с сохранением авторства. См. `LICENSE-CODE-MIT.txt`.
+* Результаты, таблицы, отчёты: **CC BY-NC 4.0** — можно использовать и распространять **только в некоммерческих целях** и **со ссылкой на автора** (https://homensai.com). См. `LICENSE-RESULTS-CC-BY-NC-4.0.md`.
+* Код: **PolyForm Noncommercial 1.0.0** — только некоммерческое использование, с сохранением авторства. См. `LICENSE-CODE-POLYFORM-NC.txt`.
+* Results, tables, reports: CC BY-NC 4.0; code: PolyForm Noncommercial 1.0.0. Noncommercial use only, credit to the author required; commercial use needs a written agreement.
 * Права третьих лиц (модели, программы): `NOTICE-THIRD-PARTY.md`.
 
-Пример подписи / Example credit: `Данные: homensai.com (https://homensai.com), CC BY 4.0`
+Пример подписи / Example credit: `Данные: homensai.com (https://homensai.com), CC BY-NC 4.0`

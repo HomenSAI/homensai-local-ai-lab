@@ -59,7 +59,7 @@ The console checks every request ([API.md](API.md), [SECURITY.md](../SECURITY.md
 
 - One model in video memory at a time; do not start a second GPU job while a test or a video renders.
 - Never edit or delete results of earlier runs; add new rows (the archive keeps old values, but the history is the evidence).
-- Do not put prompts or answers that contain personal data into Git; the repository is meant to be shareable (results are CC BY 4.0 with credit to <https://homensai.com>).
+- Do not put prompts or answers that contain personal data into Git; the repository is meant to be shareable (results are CC BY-NC 4.0 with credit to <https://homensai.com>).
 - Ask the human before: deleting files or volumes, changing `.env` network addresses, opening ports, downloading large files, publishing anything.
 - Do not weaken the console's protection (Host / Origin / password checks, the fixed `docker exec` form) and never publish the password; if a call is refused, say so.
 - A model that did not load is recorded as `{"model": ..., "load_ok": false, "error": "short reason"}` (no paths in `error`); it is shown as failed, not hidden. If a result row gets `invalid_items`, the checker produced impossible scores: fix the checker and append a new row ([RESULTS_FORMAT.md](RESULTS_FORMAT.md)).

@@ -4,7 +4,7 @@ Andere Sprachen: [English](INSTALL.en.md) · [Русский](INSTALL.ru.md) · 
 
 Diese Anleitung führt Sie von einem leeren Rechner zu einem funktionierenden **Local AI Server**: ein Gateway, das ein lokales Sprachmodell nach dem anderen in den Videospeicher einer einzelnen NVIDIA-Grafikkarte lädt; eine Web-Konsole (Modelle, Chat, Tests, Videogenerierung, Berichte) in drei Sprachen; automatische Testberichte und ein lokaler Git-Server, der jede Version der Berichte aufbewahrt.
 
-> Urheberschaft und Rechte: Ergebnisse und Berichte stehen unter **CC BY 4.0** (nutzen und weitergeben erlaubt, aber **mit Verweis auf den Autor**, <https://homensai.com>); der Code steht unter **MIT**. Modellgewichte sind **nicht** Teil dieses Pakets und behalten ihre eigenen Lizenzen. Siehe Ordner `legal/`.
+> Urheberschaft und Rechte: Ergebnisse und Berichte stehen unter **CC BY-NC 4.0** (nutzen und weitergeben nur für nichtkommerzielle Zwecke und **mit Verweis auf den Autor**, <https://homensai.com>); der Code steht unter **PolyForm Noncommercial 1.0.0**. Modellgewichte sind **nicht** Teil dieses Pakets und behalten ihre eigenen Lizenzen. Siehe Ordner `legal/`.
 
 ## Inhalt
 

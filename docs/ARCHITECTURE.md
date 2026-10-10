@@ -30,7 +30,7 @@
 | `tests/` | Standard-library unit tests: console security, report builder, public results, installer, manifest (`python -m unittest discover -s tests`). |
 | `hermes-telemetry/` | Small metrics exporter (GPU, llama). |
 | `benchmarks/`, `docker/bench-runner/` | Test runners of the published results and their container (profile `bench`); they write `bench_results/`. See `benchmarks/README.md`. |
-| `legal/` | CC BY 4.0 (results), MIT (code), third-party notices. |
+| `legal/` | CC BY-NC 4.0 (results), PolyForm Noncommercial 1.0.0 (code), third-party notices. |
 
 ## Design decisions
 
