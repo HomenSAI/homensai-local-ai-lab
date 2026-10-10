@@ -51,7 +51,7 @@ NVIDIA GPU with 8 GB+ video memory, 16-32 GB RAM, ~25 GB disk for images plus 50
 
 ## Not included
 
-Model weights (download them yourself and respect their licenses), benchmark scripts and results, videos, secrets. The gateway has **no password** and the console's password (`AI_CONSOLE_PASSWORD`) is optional: use both on `127.0.0.1` or a trusted network only, never on the internet. The console also refuses cross-site requests and foreign `Host` names ([SECURITY.md](SECURITY.md)).
+Model weights (download them yourself and respect their licenses), your own test results (`bench_results/`, written when you run the tests), videos, secrets. The test runners are in [benchmarks/](benchmarks/README.md); the published results are in [rtx3080-local-ai-benchmarks](https://github.com/HomenSAI/rtx3080-local-ai-benchmarks). The gateway has **no password** and the console's password (`AI_CONSOLE_PASSWORD`) is optional: use both on `127.0.0.1` or a trusted network only, never on the internet. The console also refuses cross-site requests and foreign `Host` names ([SECURITY.md](SECURITY.md)).
 
 ## License and attribution
 

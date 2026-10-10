@@ -452,6 +452,37 @@ services:
       retries: 12
       start_period: 30s
 
+  # Test runner: runs the benchmark phases of benchmarks/ one model at a time and writes bench_results/.
+  # It starts each model in its own container (bench-srv, port 8090) through the Docker socket, so it controls Docker
+  # on this PC: start it only for a test run.   docker compose --profile bench up -d --build bench-runner
+  bench-runner:
+    image: local/ai-server-bench-runner:1
+    build:
+      context: ./docker/bench-runner
+    profiles: ["bench"]
+    pull_policy: never
+    container_name: ai-bench-runner
+    init: true
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      BENCH_PHASES: ${BENCH_PHASES:-general german context german_fix accel stem chem code20}
+    volumes:
+      - type: bind
+        source: ./benchmarks
+        target: /ai-server/benchmarks
+        read_only: true
+      - type: bind
+        source: ./config
+        target: /ai-server/config
+        read_only: true
+      - type: bind
+        source: ./bench_results
+        target: /ai-server/bench_results
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+
   # Build-only helpers: they create the runtime images the gateway is built on (nothing is started from them).
   #   docker compose --profile build build build-upstream build-bonsai
   build-upstream:

@@ -29,6 +29,7 @@
 | `scripts/make_manifest.py` | Writes / checks `MANIFEST.json` (size and SHA-256 of every tracked file). |
 | `tests/` | Standard-library unit tests: console security, report builder, public results, installer, manifest (`python -m unittest discover -s tests`). |
 | `hermes-telemetry/` | Small metrics exporter (GPU, llama). |
+| `benchmarks/`, `docker/bench-runner/` | Test runners of the published results and their container (profile `bench`); they write `bench_results/`. See `benchmarks/README.md`. |
 | `legal/` | CC BY 4.0 (results), MIT (code), third-party notices. |
 
 ## Design decisions

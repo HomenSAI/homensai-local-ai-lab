@@ -278,7 +278,7 @@ docker compose -f compose.yaml up -d --build
 
 ## 8. Результаты тестов, отчёты и версии в Git
 
-- Бенчмарки пишут `bench_results/results*.jsonl` (по одному JSON-объекту в строке: `model`, оценки, скорости, …). Сборщик отчёта объединяет их, не удаляя старые результаты, в SQLite (`results-db/llm-results.sqlite`) и строит `report/live-data.json`. Сами скрипты бенчмарка в этот пакет не входят; подойдёт любой инструмент, который пишет такие же файлы.
+- Бенчмарки пишут `bench_results/results*.jsonl` (по одному JSON-объекту в строке: `model`, оценки, скорости, …). Сборщик отчёта объединяет их, не удаляя старые результаты, в SQLite (`results-db/llm-results.sqlite`) и строит `report/live-data.json`. Раннеры тестов, которыми получены опубликованные результаты, лежат в `benchmarks/` и запускаются в Docker: `docker compose --profile bench up -d --build bench-runner` (см. `benchmarks/README.md`); подойдёт и любой другой инструмент, который пишет такие же файлы.
 - `report-versioner` при каждом изменении сохраняет в Gitea `results/`, `tables/`, `report/` и JSON-выгрузку базы: коммиты `vNNNN`, завершённые этапы получают `stage-<этап>-done`, конец всех тестов — `final-<дата>`. История не переписывается. Старый отчёт восстанавливается командой `git checkout v0042`.
 - План этапов и общая оценка берутся из `scripts/build_live_report.py` (`DEFAULT_PLAN`) и могут быть заменены файлом `bench_results/benchmark_plan.json`.
 

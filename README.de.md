@@ -47,7 +47,7 @@ NVIDIA-GPU mit mindestens 8 GB, 16–32 GB RAM, etwa 25 GB Speicher für Images 
 
 ## Nicht enthalten
 
-Modellgewichte (selbst herunterladen und deren Lizenzen beachten), Benchmark-Skripte und -Ergebnisse, Videos, Geheimnisse. Das Gateway hat **kein Passwort**, das Passwort der Konsole (`AI_CONSOLE_PASSWORD`) ist optional: beide nur auf `127.0.0.1` oder in einem vertrauenswürdigen Netzwerk verwenden, nie im Internet. Die Konsole weist außerdem seitenübergreifende Anfragen und fremde `Host`-Namen ab ([SECURITY.md](SECURITY.md)).
+Modellgewichte (selbst herunterladen und deren Lizenzen beachten), eigene Testergebnisse (`bench_results/`, entstehen beim Testlauf), Videos, Geheimnisse. Die Test-Runner liegen in [benchmarks/](benchmarks/README.md); die veröffentlichten Ergebnisse in [rtx3080-local-ai-benchmarks](https://github.com/HomenSAI/rtx3080-local-ai-benchmarks). Das Gateway hat **kein Passwort**, das Passwort der Konsole (`AI_CONSOLE_PASSWORD`) ist optional: beide nur auf `127.0.0.1` oder in einem vertrauenswürdigen Netzwerk verwenden, nie im Internet. Die Konsole weist außerdem seitenübergreifende Anfragen und fremde `Host`-Namen ab ([SECURITY.md](SECURITY.md)).
 
 ## Lizenz und Namensnennung
 

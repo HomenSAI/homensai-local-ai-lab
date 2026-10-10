@@ -19,6 +19,7 @@ report/legal/
 media/images/*
 !media/images/.gitkeep
 /benchmark/
+benchmarks/images/
 /benchmark-output/
 video-generation/output/*
 !video-generation/output/.gitkeep

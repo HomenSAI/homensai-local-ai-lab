@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.2.0 - security and reliability fixes (2026-10-10)
+## 1.2.0 - test runners, security and reliability fixes (2026-10-10)
+
+Test runners
+- The runners and task files of the published results moved here from `rtx3080-local-ai-benchmarks` (that repository now holds only the results): `benchmarks/`, one flat folder as in the original run (the scripts import each other; the copy split into per-test folders could not run). `benchmarks/README.md` maps every test to its runner, tasks and result file.
+- New `bench-runner` service (profile `bench`): `docker compose --profile bench up -d --build bench-runner` runs the phases of `BENCH_PHASES` inside Docker, with the log names and finish markers of the console stage plan, and resumes after a restart. `scripts/bench/` moved into `benchmarks/`; the old `/ai-server/bench_results/run_container.sh` path is fixed.
+- Code test: the sandbox uses `python:3.12-slim` and copies the files in (the removed `local/cad-sandbox:cq` image and host-path mounts made it unusable). Context test: the filler text is found on Linux too (the pattern worked only on Windows). Vision tasks: `make_images.py` draws the three pictures, which were never published; a missing picture skips the task instead of stopping the run. `gen_profiles_from_ctx.py` no longer needs a hand-edited project path.
+
 
 
 Security

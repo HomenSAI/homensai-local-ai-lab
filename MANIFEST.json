@@ -9,24 +9,24 @@
    "sha256": "ded9f23a509b96724276948ec60172c230e01762f976a1a1f76c76080f14da51"
   },
   ".github/workflows/ci.yml": {
-   "bytes": 1365,
-   "sha256": "bea237a5c2a56ad12b46122771737b1e7370dfff074c74eedfd065136abe92ae"
+   "bytes": 1381,
+   "sha256": "d4083a0847783c66adaac23418657dd0fc54c1ae803c9b0663679983a5b651db"
   },
   ".github/workflows/release.yml": {
    "bytes": 1901,
    "sha256": "157965aa4f75985de4bc08fcf915f5fe6d03a853b25b8a9b13e00fe29a0097c7"
   },
   ".gitignore": {
-   "bytes": 706,
-   "sha256": "c9e5fdb78e3d266e52c8c0bb47210b38942ee361a3f961539a0d8cf66ae8b558"
+   "bytes": 725,
+   "sha256": "6cebaca65618a35af1c2b0e2f0162f54419076467ed1f27de8513f005312d32c"
   },
   "AGENTS.md": {
    "bytes": 3753,
    "sha256": "f3838eda1d6684a974cfd1dd9136424febe96a53e1bf74d72c395fddc3e0b96b"
   },
   "CHANGELOG.md": {
-   "bytes": 5114,
-   "sha256": "8d5c554cb0c2416a1bf59f3b9f1e92cfc96f9cd74d5bc7c7522449f2afb76136"
+   "bytes": 6329,
+   "sha256": "95548d09aeecfb28a81ee7707087bf93708e1d8327aad1d071f10997ed9ae8a6"
   },
   "CLAUDE.md": {
    "bytes": 1556,
@@ -85,16 +85,16 @@
    "sha256": "f0390da035ac5fd73b5bcf089bf5632146b7a3180e4982fc9c476354e92ce216"
   },
   "README.de.md": {
-   "bytes": 4861,
-   "sha256": "4f26f0ffe1d93b7165434f2bc5d6c62239b133efc090e8e58040160933153a03"
+   "bytes": 5080,
+   "sha256": "98b608fbb5a37b36f50383b5adff94f283c70e24a05ac2413d545be1c09448d4"
   },
   "README.md": {
-   "bytes": 4809,
-   "sha256": "1ec7fe4d46e5a0e260cfc8f9c676b5cb97ce778d220c79296a9ac40861d3311d"
+   "bytes": 5030,
+   "sha256": "58c3c956a762251db78519e99f014a7c287e5862fa678f3c9debb345a79342d9"
   },
   "README.ru.md": {
-   "bytes": 6637,
-   "sha256": "9f202ab717578bac5cc8a49ff62680d3dfff8fecd36d0a79e8b3f414f17b88e1"
+   "bytes": 6930,
+   "sha256": "b11a013a784a544bc2ae02da87ec9d090696bbbaf717401d9d727ab0cda08949"
   },
   "SECURITY.md": {
    "bytes": 4173,
@@ -115,6 +115,102 @@
   "bench_results/.gitkeep": {
    "bytes": 0,
    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "benchmarks/README.md": {
+   "bytes": 4125,
+   "sha256": "2f8dd7c67d8858340ccf0b4979e490acdcea3bd95321d7671378973956766463"
+  },
+  "benchmarks/bench_accel.py": {
+   "bytes": 8509,
+   "sha256": "dca6efc388e498a5871fe0262d561cd453e8cb7caa87bfcf0524f7b21c25868b"
+  },
+  "benchmarks/bench_all.py": {
+   "bytes": 16829,
+   "sha256": "b91fe5d0aa5af5931f6c4fd722f6b980fe6994afe8362ba640fcfdbc966e2ed4"
+  },
+  "benchmarks/bench_chem.py": {
+   "bytes": 2780,
+   "sha256": "54c8f292a20b8bae597d28f9e22809a48d2aa0adb634a4be6188778483fa6afa"
+  },
+  "benchmarks/bench_code20.py": {
+   "bytes": 4406,
+   "sha256": "8b9da16df72bb9e84fa12b9d224b2ce2f73606271a9cd8fbc5b8f1421c86101c"
+  },
+  "benchmarks/bench_ctx.py": {
+   "bytes": 11398,
+   "sha256": "8c7a650bcf459734ed9cfae736a7b7a34908e53f21315129eb87f28a26a1ebbb"
+  },
+  "benchmarks/bench_stem.py": {
+   "bytes": 5751,
+   "sha256": "cd42bdcd4166af641aef83d007583f69a5ab4e7482c9b9075054473929d9e2bc"
+  },
+  "benchmarks/bench_top.py": {
+   "bytes": 12544,
+   "sha256": "bdb2e770ba021d991a5efb35daa2c6c55d4ef6a1eac1a140f2a77333109a15ad"
+  },
+  "benchmarks/chem_tasks.py": {
+   "bytes": 4409,
+   "sha256": "bd23f9ad7e331a14a72ee9a7b051cff198548afd463ddd38d6955b50f587c783"
+  },
+  "benchmarks/code_eval_harness.py": {
+   "bytes": 1189,
+   "sha256": "e769a696d00a68fd279690db7008bdaae2fd8d9f85980e4bcc7c8631bc419761"
+  },
+  "benchmarks/coding_tasks.py": {
+   "bytes": 17387,
+   "sha256": "b16e1e25d937fa0167c2e3a77a5c44313316820cfcffb3c33556c90f1c9c5c27"
+  },
+  "benchmarks/exclude_not_gpu.md": {
+   "bytes": 2861,
+   "sha256": "05d16e50df879ef24ecda42246fdef56e1e35c0edad99d51fcde767b080317bd"
+  },
+  "benchmarks/finalize_profiles.py": {
+   "bytes": 4979,
+   "sha256": "cb427b25b0c59f87fe6bff9991bbb7199d5af8fc88365e855832e5fc9a26cb57"
+  },
+  "benchmarks/gen_profiles_from_ctx.py": {
+   "bytes": 5001,
+   "sha256": "5ee1e21edf5ab066463aa8b1ebda9dbee53f1133b1f919a3fe62f144cef216e0"
+  },
+  "benchmarks/german_all.py": {
+   "bytes": 3443,
+   "sha256": "a1eabfb02cc389c92f8954f55a8432faa39bfda0c959110b9822d8bcd0997d0d"
+  },
+  "benchmarks/german_fix.py": {
+   "bytes": 3128,
+   "sha256": "2797b2968b4180dd9e5ad4269a97f23062c8896308648124adf142fbfc092d2b"
+  },
+  "benchmarks/make_images.py": {
+   "bytes": 3787,
+   "sha256": "2b7269cb9573a7b99b7257c0a5bb64e5fa92baf0228242815a41b08a18aef18a"
+  },
+  "benchmarks/mneedle.py": {
+   "bytes": 5590,
+   "sha256": "ed6439c634899442045f65b528f12ea0ae9b6abd0e336043a9494e2a98176d07"
+  },
+  "benchmarks/qa_bench.py": {
+   "bytes": 3494,
+   "sha256": "ab39f2db0c8936c0fcb668a7df87b8f1e5240fe2e8630c1476624dc52c3a1995"
+  },
+  "benchmarks/qa_tasks.py": {
+   "bytes": 8770,
+   "sha256": "45b14794609c832949d981a5a1e335693ffaea881a059161c8e62875394c9a2f"
+  },
+  "benchmarks/qtasks.py": {
+   "bytes": 10482,
+   "sha256": "7dc2523c1711cd47c646aa4fca4d71e518b2898804797fc7bb25ad08fddf53a7"
+  },
+  "benchmarks/run_container.sh": {
+   "bytes": 2537,
+   "sha256": "fb87c6ab05af4b0c760b9b111165468e8c82d4cd7b043699a735b2efc4daeebf"
+  },
+  "benchmarks/soak.py": {
+   "bytes": 7710,
+   "sha256": "b057e786404f9270f3a6aa3c0ddcffd93e10ae536ad210675c4f967863214a63"
+  },
+  "benchmarks/stem_tasks.py": {
+   "bytes": 13508,
+   "sha256": "4ac8e9aa425c7d7c978b4856be1561b28e0803be62f7bb85663fd03b2a47a094"
   },
   "config/generation-feedback.json": {
    "bytes": 9152,
@@ -161,12 +257,12 @@
    "sha256": "53312e5aca154d3cb919b7b4e852f3883008de80b5e569b3e736b500d53831fe"
   },
   "docker-compose.yml": {
-   "bytes": 14008,
-   "sha256": "27dcc274c85c805321deaebe8c3d31b91b46e82394bd5d7d4b7afa94599d7219"
+   "bytes": 15114,
+   "sha256": "5fccf0a075719273250fc9831ef60dcca80a01c7a04ca98bf7b0865b9e05ae6f"
   },
   "docker/bench-runner/Dockerfile": {
-   "bytes": 236,
-   "sha256": "d520c65e8e7797ba759b9ceb484f5d63ff79d427ef74a286759994e564b84935"
+   "bytes": 233,
+   "sha256": "e99c5d5bf4bbac73a3d303e94d87ad1f9364862b94a356a15a327217031a3c57"
   },
   "docker/convert/Dockerfile": {
    "bytes": 755,
@@ -189,8 +285,8 @@
    "sha256": "061e2d6d5a8e8235d76724fe9ac9f0488da6440fbd9a387e6cd426baa1556f7c"
   },
   "docs/ARCHITECTURE.md": {
-   "bytes": 4184,
-   "sha256": "4786010231c3d610993ec3ee9660c2191fbf9b312de483ff0b467141ceda28b5"
+   "bytes": 4362,
+   "sha256": "9b774f0a69a2f31e039188d2ae1d337c182b8876778eccf792504e4e749f92a3"
   },
   "docs/DESIGN.de.md": {
    "bytes": 5158,
@@ -209,16 +305,16 @@
    "sha256": "d5519cf7acf90b2a8d9ea94773481649eff68565112cf4337b18e71ddd257db7"
   },
   "docs/INSTALL.de.md": {
-   "bytes": 26190,
-   "sha256": "c94bfa46ae988a15a6bbb46f8601f4d9c4ef71e2a35647ecc02276c618766a00"
+   "bytes": 26357,
+   "sha256": "66c23bfc2bfd552eae4843d497997affa438b9bd85199b3ae12704974b60660b"
   },
   "docs/INSTALL.en.md": {
-   "bytes": 24439,
-   "sha256": "162ae409536bce0b3e6b7e8078f52a22606e0ef50997c82f8067d81ee31123e1"
+   "bytes": 24565,
+   "sha256": "04c18e43235b16c4f61cb1e801286f8d876f2567fc03da9aed2be056fa8ac058"
   },
   "docs/INSTALL.ru.md": {
-   "bytes": 35334,
-   "sha256": "12e3248f24d37611fc9cde0edbcae540d9b42844717fbabd12169ae32cd74d0d"
+   "bytes": 35536,
+   "sha256": "091d29a72c6432ff1db889d473dab82599d5c1b13dac97a6d35188b2b7945382"
   },
   "docs/METHODOLOGY.de.md": {
    "bytes": 5860,
@@ -315,22 +411,6 @@
   "results-public/results-summary.json": {
    "bytes": 6873,
    "sha256": "3b8d1c5df57ac58bc7a4528e237dd261a4f8a46f647ffceb802040a260ea4648"
-  },
-  "scripts/bench/exclude_not_gpu.md": {
-   "bytes": 2861,
-   "sha256": "05d16e50df879ef24ecda42246fdef56e1e35c0edad99d51fcde767b080317bd"
-  },
-  "scripts/bench/finalize_profiles.py": {
-   "bytes": 4979,
-   "sha256": "cb427b25b0c59f87fe6bff9991bbb7199d5af8fc88365e855832e5fc9a26cb57"
-  },
-  "scripts/bench/gen_profiles_from_ctx.py": {
-   "bytes": 4926,
-   "sha256": "462fa353838fc6b316558f2767db813da2fdfdf076e770a32345138ac744d648"
-  },
-  "scripts/bench/run_container.sh": {
-   "bytes": 775,
-   "sha256": "17b0056269bf70bc70d38faabc6369b689d5999b9eb2a45a104bc6ad3efc8154"
   },
   "scripts/benchmark-all.ps1": {
    "bytes": 16621,

@@ -278,7 +278,7 @@ Ist `AI_CONSOLE_PASSWORD` gesetzt, hängen Sie `-u any:PASSWORT` an die `curl`-A
 
 ## 8. Testergebnisse, Berichte und Git-Versionen
 
-- Benchmarks schreiben `bench_results/results*.jsonl` (ein JSON-Objekt pro Zeile: `model`, Bewertungen, Geschwindigkeiten, …). Der Berichtsgenerator führt sie, ohne ältere Ergebnisse zu löschen, in SQLite (`results-db/llm-results.sqlite`) zusammen und erzeugt `report/live-data.json`. Die Benchmark-Skripte selbst sind nicht Teil dieses Pakets; jedes Werkzeug, das dieselben Dateien schreibt, funktioniert.
+- Benchmarks schreiben `bench_results/results*.jsonl` (ein JSON-Objekt pro Zeile: `model`, Bewertungen, Geschwindigkeiten, …). Der Berichtsgenerator führt sie, ohne ältere Ergebnisse zu löschen, in SQLite (`results-db/llm-results.sqlite`) zusammen und erzeugt `report/live-data.json`. Die Test-Runner, mit denen die veröffentlichten Ergebnisse entstanden, liegen in `benchmarks/` und laufen in Docker: `docker compose --profile bench up -d --build bench-runner` (siehe `benchmarks/README.md`); jedes andere Werkzeug, das dieselben Dateien schreibt, funktioniert ebenfalls.
 - `report-versioner` speichert bei jeder Änderung `results/`, `tables/`, `report/` und einen JSON-Dump der Datenbank in Gitea: Commits heißen `vNNNN`, abgeschlossene Phasen erhalten `stage-<Phase>-done`, das Ende aller Tests `final-<Datum>`. Die Historie wird nie umgeschrieben. Einen alten Bericht stellen Sie mit `git checkout v0042` wieder her.
 - Phasenplan und Gesamtschätzung stammen aus `scripts/build_live_report.py` (`DEFAULT_PLAN`) und lassen sich durch `bench_results/benchmark_plan.json` ersetzen.
 

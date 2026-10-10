@@ -277,7 +277,7 @@ If `AI_CONSOLE_PASSWORD` is set, add `-u any:PASSWORD` to the console `curl` cal
 
 ## 8. Test results, reports and Git versions
 
-- Benchmarks write `bench_results/results*.jsonl` (one JSON object per line: `model`, scores, speeds, ...). The report builder merges them without ever deleting an older result into SQLite (`results-db/llm-results.sqlite`) and builds `report/live-data.json`. The benchmark scripts themselves are not included in this package; any tool that writes the same files works.
+- Benchmarks write `bench_results/results*.jsonl` (one JSON object per line: `model`, scores, speeds, ...). The report builder merges them without ever deleting an older result into SQLite (`results-db/llm-results.sqlite`) and builds `report/live-data.json`. The test runners that produced the published results are in `benchmarks/` and run in Docker: `docker compose --profile bench up -d --build bench-runner` (see `benchmarks/README.md`); any other tool that writes the same files works too.
 - `report-versioner` commits `results/`, `tables/`, `report/` and a JSON dump of the database to Gitea every time something changes: commits are `vNNNN`, finished stages get `stage-<id>-done`, the end of all tests gets `final-<date>`. History is never rewritten. Restore an old report with `git checkout v0042`.
 - The stage plan and the overall estimate come from `scripts/build_live_report.py` (`DEFAULT_PLAN`) and can be overridden with `bench_results/benchmark_plan.json`.
 
