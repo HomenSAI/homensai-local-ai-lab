@@ -2,6 +2,8 @@
 // Тема оформления: выбор пользователя (светлая/тёмная) из localStorage, иначе — системная.
 // Подключать в <head> обычным <script src> БЕЗ defer, чтобы страница не мигала при загрузке.
 (function () {
+  // Скрипты работают: включает скрытие блоков .reveal до их появления (css/motion.css). Без JavaScript всё видно сразу.
+  document.documentElement.classList.add("js");
   try {
     var saved = localStorage.getItem("homensai.theme");
     if (saved === "light" || saved === "dark") document.documentElement.setAttribute("data-theme", saved);

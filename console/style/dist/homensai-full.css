@@ -1,4 +1,4 @@
-/* HomenS.AI Style 1.4.0 — https://github.com/HomenSAI/homensai-style */
+/* HomenS.AI Style 1.6.0 — https://github.com/HomenSAI/homensai-style */
 /* ===== fonts.css ===== */
 /* HomenS.AI Style · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ */
 /* Шрифты IBM Plex (SIL OFL 1.1, без изменений): кириллица, латиница, немецкие знаки. Файлы — ../fonts/ibm-plex/, лицензия — OFL.txt рядом. */
@@ -41,6 +41,23 @@
   --pv-term-ok: #5fc388;
   --pv-term-teal: #4fbac8;
   --pv-done-text: #ffffff;
+  /* Палитра «Космос» (анимация «От сегодня к звёздам», js/cosmos.js): всегда тёмная, одинакова в обеих темах. */
+  --cosmos-bg: #0a1220;
+  --cosmos-grid: #aacdeb;
+  --cosmos-ink: #d6e6f2;
+  --cosmos-mute: #7f95a8;
+  --cosmos-teal: #4fbac8;
+  --cosmos-gold: #d4b25e;
+  --cosmos-earth: #5aa0e0;
+  --cosmos-count: #e8f2fa;
+  --cosmos-stat: #9fb6c9;
+  --cosmos-mercury: #b9b3a8;
+  --cosmos-venus: #e0c58f;
+  --cosmos-mars: #d98b6a;
+  --cosmos-jupiter: #d9b58a;
+  --cosmos-saturn: #e6d3a0;
+  --cosmos-uranus: #8fd3dc;
+  --cosmos-neptune: #6f8fe0;
   /* Запасные шрифты — системные: если файлы IBM Plex убрать, интерфейс продолжит работать */
   --font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
@@ -74,6 +91,22 @@
     --pv-term-ok: #5fc388;
     --pv-term-teal: #4fbac8;
     --pv-done-text: #06210f;
+    --cosmos-bg: #0a1220;
+    --cosmos-grid: #aacdeb;
+    --cosmos-ink: #d6e6f2;
+    --cosmos-mute: #7f95a8;
+    --cosmos-teal: #4fbac8;
+    --cosmos-gold: #d4b25e;
+    --cosmos-earth: #5aa0e0;
+    --cosmos-count: #e8f2fa;
+    --cosmos-stat: #9fb6c9;
+    --cosmos-mercury: #b9b3a8;
+    --cosmos-venus: #e0c58f;
+    --cosmos-mars: #d98b6a;
+    --cosmos-jupiter: #d9b58a;
+    --cosmos-saturn: #e6d3a0;
+    --cosmos-uranus: #8fd3dc;
+    --cosmos-neptune: #6f8fe0;
   }
 }
 :root[data-theme="dark"] {
@@ -102,6 +135,22 @@
   --pv-term-ok: #5fc388;
   --pv-term-teal: #4fbac8;
   --pv-done-text: #06210f;
+  --cosmos-bg: #0a1220;
+  --cosmos-grid: #aacdeb;
+  --cosmos-ink: #d6e6f2;
+  --cosmos-mute: #7f95a8;
+  --cosmos-teal: #4fbac8;
+  --cosmos-gold: #d4b25e;
+  --cosmos-earth: #5aa0e0;
+  --cosmos-count: #e8f2fa;
+  --cosmos-stat: #9fb6c9;
+  --cosmos-mercury: #b9b3a8;
+  --cosmos-venus: #e0c58f;
+  --cosmos-mars: #d98b6a;
+  --cosmos-jupiter: #d9b58a;
+  --cosmos-saturn: #e6d3a0;
+  --cosmos-uranus: #8fd3dc;
+  --cosmos-neptune: #6f8fe0;
 }
 
 /* ===== base.css ===== */
@@ -524,6 +573,22 @@ pre.output { margin: .25rem 0 .5rem; padding: .5rem; overflow-x: auto; backgroun
 .author-links a:hover { border-color: var(--accent); color: var(--accent); }
 @media (max-width: 700px) { .author-card { grid-template-columns: 1fr; } }
 
+/* Надпись «HomenS.AI» под большим знаком (js/logo-word.js). Пока знак крутится, её нет (.wait); когда он собрался (.on) —
+   буквы по одной поднимаются снизу (0,6 с, задержка 70 мс на букву), «.AI» вспыхивает бирюзовым, под словом выдвигается линия.
+   Без скриптов знака надпись видна сразу. При «уменьшить движение» — сразу, без движения. */
+.robo-word { margin: .9rem 0 0; text-align: center; font-weight: 700; font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: -.02em; line-height: 1.1; color: var(--text); }
+.robo-word .ai { color: var(--teal); }
+.robo-word::after { content: ""; display: block; width: 4.5rem; height: 2px; margin: .55rem auto 0; border-radius: 2px; background: var(--teal); }
+.robo-word.wait .l { opacity: 0; transform: translateY(.7em) scale(.9); filter: blur(4px); }
+.robo-word.wait::after { width: 0; }
+.robo-word .l { display: inline-block; white-space: pre; transition: opacity .5s ease, transform .6s cubic-bezier(.2, .9, .3, 1.3), filter .5s ease; transition-delay: calc(var(--i, 0) * 70ms); }
+.robo-word::after { transition: width .8s cubic-bezier(.65, 0, .35, 1) .7s; }
+.robo-word.wait.on .l { opacity: 1; transform: none; filter: none; }
+.robo-word.wait.on::after { width: 4.5rem; }
+.robo-word.wait.on .ai .l { animation: hm-wordglow 1.2s ease 1; animation-delay: calc(var(--i, 0) * 70ms + .5s); }
+@keyframes hm-wordglow { 0%, 100% { text-shadow: 0 0 0 transparent; } 40% { text-shadow: 0 0 .6em color-mix(in srgb, var(--teal) 70%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .robo-word .l, .robo-word::after { transition: none; } .robo-word.wait.on .ai .l { animation: none; } }
+
 /* ===== process.css ===== */
 /* HomenS.AI Style · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI */
 /* A/B/C из convert-page-variants.html. Все классы изолированы; цвета живут в tokens.css. */
@@ -620,3 +685,456 @@ pre.output { margin: .25rem 0 .5rem; padding: .5rem; overflow-x: auto; backgroun
 @media (max-width: 860px) { .pv-grid4, .pv-grid3, .pv-grid2, .pv-grid21 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .pv-grid4, .pv-grid3, .pv-grid2, .pv-grid21 { grid-template-columns: minmax(0, 1fr); } .pv-bars li { grid-template-columns: minmax(0, 1fr) auto; } .pv-bars .pv-bar-label { grid-column: 1 / -1; } }
 @media (prefers-reduced-motion: reduce) { .pv-cursor::after { animation: none; } }
+
+/* ===== motion.css ===== */
+/* HomenS.AI Style · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ */
+/* Общие правила движения: проявление при прокрутке, выключатель анимаций, смена имени, общие ключевые кадры. Скрипт — js/motion.js. */
+/* Время и кривые — docs/MOTION.md, раздел 1. Перенесено с homensai.com (style.css 2.21), переменные сайта заменены токенами ядра. */
+
+.mono { font-family: var(--font-mono); }
+
+/* Проявление: только когда скрипт работает (класс .js ставит js/theme-init.js в <head>), иначе текст виден сразу */
+html.js .reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; }
+html.js .reveal.in { opacity: 1; transform: none; }
+
+/* Выключатель анимаций (WCAG 2.2.2): кнопка-капсула, по умолчанию в подвале */
+.motion-toggle { min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: .8rem; cursor: pointer; }
+.motion-toggle:hover { border-color: var(--text); color: var(--text); }
+html.motion-paused *, html.motion-paused *::before, html.motion-paused *::after { animation-play-state: paused !important; }
+
+/* Смена имени: «Serhii Khomenko» → «HomenS.AI» → «HomenS.A Inc.». Два слоя в одной ячейке сетки, смена 0,6 с;
+   «Inc.» раскрывается за 0,7 с: открывается пробел и «nc.», буква I из бирюзовой (.AI) становится цветом текста. */
+.name-swap { display: inline-grid; }
+.name-swap > span { grid-area: 1 / 1; white-space: nowrap; transition: opacity .6s, transform .6s; }
+.name-swap > .n2 { opacity: 0; transform: translateY(6px); }
+.name-swap.alt > .n1 { opacity: 0; transform: translateY(-6px); }
+.name-swap.alt > .n2 { opacity: 1; transform: none; }
+.name-swap .ai { color: var(--teal); }
+.name-swap .sp, .name-swap .nc { display: inline-block; max-width: 0; overflow: hidden; vertical-align: bottom; white-space: pre; transition: max-width .7s cubic-bezier(.3, .7, .2, 1); }
+.name-swap .i { transition: color .7s; }
+.name-swap.inc .sp { max-width: .4em; }
+.name-swap.inc .nc { max-width: 2em; transition-delay: .15s; }
+.name-swap.inc .i { color: var(--text); }
+
+/* Общие ключевые кадры (используются схемами) */
+@keyframes hm-capin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes hm-live { 50% { opacity: .3; } }
+@keyframes hm-blink { 50% { opacity: 0; } }
+@keyframes hm-fillbar { to { width: 100%; } }
+@keyframes hm-flow { from { left: -20%; } to { left: 100%; } }
+@keyframes hm-flowv { from { top: -20%; } to { top: 100%; } }
+@keyframes hm-spark { from { left: 0; } to { left: calc(100% - 10px); } }
+@keyframes hm-sparkv { from { top: 0; } to { top: calc(100% - 10px); } }
+@keyframes hm-pulse { 0% { transform: scale(1); } 35% { transform: scale(1.1); } 100% { transform: scale(1); } }
+@keyframes hm-shimmer { to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal { opacity: 1; transform: none; transition: none; }
+  .motion-toggle { display: none; }
+  .name-swap > span, .name-swap .sp, .name-swap .nc { transition: none; }
+}
+
+/* Строка с выключателем анимаций в конце страницы */
+.motion-bar { display: flex; justify-content: flex-end; margin: 2rem 0 0; }
+
+/* ===== motion-diagrams.css ===== */
+/* HomenS.AI Style · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ */
+/* Анимированные схемы (js/motion-diagrams.js). Перенесено с homensai.com (style.css 2.21): переменные сайта заменены токенами ядра */
+/* (--ink → --text, --ink-2/--ink-3 → --muted, --manifest → --accent, --lab → --teal, --path → --gold), тени карточек убраны. */
+/* Золотой = железо, механика (non-IT); бирюзовый = софт, ИТ; синий = ход процесса. Разметка каждой схемы — docs/MOTION.md, раздел 4. */
+
+/* ---------- Общая рамка схемы ---------- */
+.dia { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+.dia-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 12px; min-width: 0; margin-bottom: 16px;
+  font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.dia-top > * { min-width: 0; }
+.dia-top b { color: var(--accent); font-weight: 600; }
+.dia-canvas { width: 100%; }
+.dia-note { margin-top: 14px; font-size: 12px; letter-spacing: .04em; color: var(--muted); }
+.dia-note::before { content: "◇ "; color: var(--accent); }
+.dia-hint { margin-top: 16px; font-size: 12px; color: var(--muted); }
+.dia-badge { color: var(--teal); border: 1px solid var(--teal); border-radius: 999px; padding: 4px 12px; opacity: 0; transform: scale(.9); transition: opacity .35s, transform .35s; }
+.dia-badge.show { opacity: 1; transform: none; }
+.dia-replay { display: inline-flex; align-items: center; min-height: 44px; background: none; border: 1px solid var(--line); border-radius: 999px; padding: 0 12px; color: var(--muted);
+  font: inherit; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+.dia-replay:hover { border-color: var(--accent); color: var(--accent); }
+.dia-pause { width: 44px; height: 44px; border-radius: 50%; padding: 0; display: inline-grid; place-items: center; cursor: pointer;
+  border: 1.5px solid var(--accent); background: none; color: var(--accent); transition: background .2s, color .2s; }
+.dia-pause svg { width: 14px; height: 14px; fill: currentColor; }
+.dia-pause:hover, .paused .dia-pause { background: var(--accent); color: var(--surface); }
+@media (max-width: 480px) { .dia { padding: 18px; } }
+
+/* ---------- 1. Цикл роста ---------- */
+.dia-cycle { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.cycle-svg { width: 100%; max-width: 540px; height: auto; display: block; margin: 0 auto; overflow: visible; }
+.c-ring { fill: none; stroke: var(--line); stroke-width: 2; }
+.c-prog { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; }
+.c-spoke { stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 3 7; }
+.c-node { cursor: pointer; outline: none; }
+.c-node circle { fill: var(--surface); stroke: var(--line); stroke-width: 2; transition: fill .45s, stroke .45s; }
+.c-node text { fill: var(--muted); font: 600 15px var(--font); text-anchor: middle; transition: fill .45s; }
+.c-node text.n { font: 500 11px var(--font-mono); }
+html[lang="ru"] .c-node text:not(.n) { font-size: 13px; }
+.c-node:hover circle { stroke: var(--accent); }
+.c-node.done circle { stroke: var(--accent); }
+.c-node.on circle { fill: var(--accent); stroke: var(--accent); }
+.c-node.on text, .c-node.on text.n { fill: var(--surface); }
+.c-center { transform-box: fill-box; transform-origin: center; }
+.c-center circle { fill: var(--bg); stroke: var(--line); stroke-width: 2; transition: stroke .4s; }
+.c-center-t { fill: var(--text); font: 700 28px var(--font); text-anchor: middle; letter-spacing: -.02em; }
+.c-center-s { fill: var(--muted); font: 600 11px var(--font-mono); text-anchor: middle; letter-spacing: .06em; }
+.c-center.pulse { animation: hm-pulse 1s ease; }
+.c-center.pulse circle { stroke: var(--accent); }
+.c-center.hit circle:first-child { animation: hm-hitflash .6s ease; }
+@keyframes hm-hitflash { 0%, 100% { stroke: var(--line); stroke-width: 2; } 25% { stroke: var(--accent); stroke-width: 4; } }
+.c-fill { fill: var(--accent); opacity: .26; }
+.c-fill-back { opacity: .12; }
+.c-comet { fill: var(--accent); }
+.c-glow { fill: var(--accent); opacity: .2; }
+.c-bolt, .c-bolt-glow { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.c-bolt { stroke: color-mix(in srgb, var(--accent) 45%, white); }   /* блик молнии: синий, разбавленный белым */
+.c-bolt-glow { stroke: var(--accent); stroke-opacity: .6; filter: blur(3px); }
+.dia-caption .cap-num { color: var(--accent); font-family: var(--font-mono); font-size: 13px; letter-spacing: .12em; }
+.dia-caption h3 { font-size: clamp(34px, 4vw, 52px); letter-spacing: -.035em; line-height: 1.05; margin: 10px 0 14px; }
+.dia-caption .cap-text { color: var(--muted); font-size: 18px; min-height: 5.4em; }
+.dia-caption.swap h3, .dia-caption.swap .cap-text { animation: hm-capin .5s ease; }
+.dia-meter { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 22px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.dia-meter span { border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; }
+.dia-meter b { color: var(--accent); font-weight: 600; margin-left: 4px; }
+.c-steps { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.c-steps button { min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; }
+.c-steps button:hover { border-color: var(--accent); color: var(--accent); }
+.c-steps button[aria-current="step"] { background: var(--text); color: var(--surface); border-color: var(--text); }
+.c-steps .n { font-family: var(--font-mono); margin-right: 6px; }
+@media (max-width: 900px) {
+  .dia-cycle { grid-template-columns: 1fr; gap: 24px; }
+  .dia-caption .cap-text { min-height: 0; }
+}
+
+/* ---------- 2. Петля проверки ---------- */
+.loop-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.l-edge { fill: none; stroke: var(--line); stroke-width: 2; }
+.l-loop { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 5 6; }
+.l-node rect { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; transition: fill .4s, stroke .4s; }
+.l-node text { fill: var(--muted); font: 500 13px var(--font-mono); text-anchor: middle; dominant-baseline: central; transition: fill .4s; }
+.l-node.on rect { stroke: var(--accent); }
+.l-node.on text { fill: var(--text); }
+.l-node.warn rect { stroke: var(--gold); fill: color-mix(in srgb, var(--gold) 14%, var(--bg)); }
+.l-node.ok rect { stroke: var(--teal); fill: color-mix(in srgb, var(--teal) 14%, var(--bg)); }
+.l-token { opacity: 0; transition: opacity .2s; }
+.l-token.moving { opacity: 1; }
+.l-dot { fill: var(--accent); }
+.l-glow { fill: var(--accent); opacity: .22; }
+.dia-log { margin-top: 20px; min-height: calc(9 * 1.9em + 48px); font-family: var(--font-mono); font-size: 13px; }
+.dia-log div { animation: hm-capin .35s ease; white-space: pre-wrap; }
+.dia-log .w { color: var(--warn); }
+.dia-log .ok { color: var(--ok); }
+@media (max-width: 480px) { .dia-log { font-size: 11px; } }
+
+/* ---------- 3. «Код → намерение» ---------- */
+.shift { display: grid; grid-template-columns: 1fr 72px 1fr; gap: 20px; align-items: stretch; }
+.shift-col { border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--bg); min-height: 330px; display: flex; flex-direction: column; }
+.shift-code { transition: opacity .8s, filter .8s; }
+.shift-code.fade { opacity: .38; filter: grayscale(1) blur(.6px); }
+.code-lines { display: grid; gap: 9px; }
+.code-line { display: flex; gap: 6px; height: 10px; opacity: 0; transform: translateX(-8px); transition: opacity .3s, transform .3s; }
+.code-line.show { opacity: 1; transform: none; }
+.code-line i { display: block; height: 100%; border-radius: 3px; background: var(--muted); opacity: .45; }
+.code-line i.kw { background: var(--accent); opacity: .7; }
+.shift-arrow { position: relative; align-self: center; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.shift-arrow i { position: absolute; top: 0; left: -20%; width: 20%; height: 100%; border-radius: 2px; background: var(--accent); opacity: 0; }
+.shift.phase-2 .shift-arrow i { animation: hm-flow 1.2s linear infinite; opacity: 1; }
+.shift.phase-2 .shift-arrow i:nth-child(2) { animation-delay: .4s; }
+.shift.phase-2 .shift-arrow i:nth-child(3) { animation-delay: .8s; }
+.shift-intent { border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); background: var(--surface); }
+.intent-text { font-size: 22px; line-height: 1.35; letter-spacing: -.015em; font-weight: 600; min-height: 3.6em; }
+.intent-text::after { content: ""; display: inline-block; width: 2px; height: 1.05em; margin-left: 3px; vertical-align: -3px; background: var(--accent); animation: hm-blink 1s steps(1) infinite; }
+.shift.phase-3 .intent-text::after { display: none; }
+.intent-out { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; }
+.intent-out li { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); opacity: .35; transition: all .35s; }
+.intent-out li.show { opacity: 1; color: var(--teal); border-color: var(--teal); }
+.intent-out li.show::before { content: "✓ "; }
+.intent-result { margin-top: auto; padding-top: 18px; font-size: 15px; font-weight: 600; color: var(--accent); opacity: 0; transform: translateY(6px); transition: all .5s; }
+.intent-result.show { opacity: 1; transform: none; }
+@media (max-width: 900px) {
+  .shift { grid-template-columns: 1fr; }
+  .shift-col { min-height: 0; }
+  .shift-arrow { width: 4px; height: 56px; justify-self: center; }
+  .shift-arrow i { left: 0; top: -20%; width: 100%; height: 20%; }
+  .shift.phase-2 .shift-arrow i { animation-name: hm-flowv; }
+}
+@media (prefers-reduced-motion: reduce) { .shift-code.fade { opacity: 1; filter: none; } .shift-code.fade .code-lines { opacity: .45; } }
+
+/* Журнал загрузки (строки .boot проявляются по одной, последняя «✓» дышит) */
+.console .boot { opacity: 0; transform: translateX(-6px); transition: opacity .35s, transform .35s; }
+.console .boot.in { opacity: 1; transform: none; }
+.console div:last-child .ok:first-child { display: inline-block; animation: hm-live 1.6s ease-in-out infinite; }
+
+/* ---------- 4. Шаги: карточки по очереди ---------- */
+.stepper .card, .stepper .exp { position: relative; overflow: hidden; transition: border-color .4s, transform .4s; }
+.stepper .card::after, .stepper .exp::after { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; width: 0; background: var(--accent); }
+.stepper .card.on, .stepper .exp.on { border-color: var(--accent); border-style: solid; transform: translateY(-3px); }
+.stepper .card.on::after, .stepper .exp.on::after { animation: hm-fillbar 2.4s linear forwards; }
+.stepper .card.past::after, .stepper .exp.past::after { width: 100%; opacity: .35; }
+
+/* ---------- 5. Полный цикл заказа ---------- */
+.pc-bar { height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; margin-bottom: 22px; }
+.pc-bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .6s ease; }
+.pc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.pc-col { border: 1px solid var(--line); border-radius: 14px; padding: 18px; background: var(--bg); transition: border-color .4s, background .4s, transform .4s; }
+.pc-col.active { border-color: var(--accent); background: var(--surface); transform: translateY(-3px); }
+.pc-col.complete { border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+.pc-head { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--text); font-weight: 600; margin-bottom: 14px; }
+.pc-head span { color: var(--accent); margin-right: 8px; }
+.pc-head small { display: block; font-weight: 400; color: var(--muted); letter-spacing: .06em; margin-top: 2px; }
+.pc-col ol { list-style: none; display: grid; gap: 8px; margin: 0; padding: 0; }
+.pc-col li { font-size: 14px; line-height: 1.35; color: var(--muted); padding: 8px 10px 8px 28px; border-radius: 8px; position: relative; transition: color .35s, background .35s; }
+.pc-col li::before { content: ""; position: absolute; left: 10px; top: 13px; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--muted); transition: all .35s; }
+.pc-col li.done::before { background: var(--accent); border-color: var(--accent); }
+.pc-col li.on { color: var(--text); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); font-weight: 500; }
+.pc-col li.on::before { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent); animation: hm-live 1s ease-in-out infinite; }
+@media (max-width: 1000px) { .pc-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .pc-grid { grid-template-columns: 1fr; } }
+
+/* ---------- 6. Переключатель «тогда / сейчас» и разрыв «идея → реальность» ---------- */
+.gap-toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; gap: 2px; }
+.gap-toggle button { min-height: 44px; border: 0; background: none; font: inherit; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+  padding: 0 12px; border-radius: 999px; cursor: pointer; transition: all .3s; }
+.gap-toggle button.on { background: var(--accent); color: var(--surface); }
+.gap-track { display: flex; align-items: center; margin: 30px 0 20px; }
+.gap-end { flex: 0 0 auto; padding: 14px 22px; border-radius: 12px; font-weight: 700; font-size: 17px; letter-spacing: -.01em; border: 1.5px solid var(--line); position: relative; z-index: 1; }
+.gap-end.idea { border-color: var(--accent); color: var(--accent); background: var(--surface); box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 10%, transparent); }
+.gap-end.reality { background: var(--text); color: var(--bg); border-color: var(--text); }
+.gap-mid { position: relative; flex: 1 1 auto; max-width: 100%; display: flex; align-items: center; height: 60px; padding: 0 6px; overflow: hidden; transition: max-width 1.1s cubic-bezier(.65, 0, .35, 1); }
+.gap-mid::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--line); }
+.seg { position: relative; flex: 1 1 0; min-width: 0; margin: 0 3px; text-align: center; font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+  padding: 9px 4px; border: 1px dashed var(--muted); border-radius: 8px; background: var(--bg); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: flex 1.1s cubic-bezier(.65, 0, .35, 1), opacity .5s, padding 1.1s, margin 1.1s, border-width 1.1s; }
+.seg.tool { flex: 0 0 0; opacity: 0; padding-left: 0; padding-right: 0; margin: 0; border-width: 0; border-style: solid; border-color: var(--accent); color: var(--accent); font-weight: 600; background: var(--surface); }
+.gap.now .gap-mid { max-width: 200px; }
+.gap.now .seg:not(.tool) { flex: 0 0 0; opacity: 0; padding-left: 0; padding-right: 0; margin: 0; border-width: 0; }
+.gap.now .seg.tool { flex: 1 1 auto; opacity: 1; padding: 9px 10px; margin: 0 3px; border-width: 1.5px; }
+.gap-spark { position: absolute; z-index: 2; top: 50%; left: 0; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent); animation: hm-spark 6s linear infinite; }
+.gap.now .gap-spark { animation-duration: .9s; }
+.gap-caption { color: var(--muted); font-size: 18px; max-width: 720px; min-height: 3.2em; }
+.gap-caption.swap { animation: hm-capin .5s ease; }
+@media (max-width: 600px) {
+  .gap-track { flex-direction: column; align-items: stretch; }
+  .gap-end { text-align: center; }
+  .gap-mid { height: auto; max-width: none; max-height: 260px; flex-direction: column; padding: 8px 0; transition: max-height 1.1s cubic-bezier(.65, 0, .35, 1); }
+  .gap-mid::before { left: 50%; right: auto; top: 0; bottom: 0; width: 2px; height: auto; margin: 0 0 0 -1px; }
+  .seg { flex: 0 0 auto; width: 70%; margin: 3px auto; max-height: 40px; }
+  .seg.tool { width: 70%; max-height: 0; }
+  .gap.now .gap-mid { max-height: 64px; max-width: none; }
+  .gap.now .seg:not(.tool) { max-height: 0; padding-top: 0; padding-bottom: 0; }
+  .gap.now .seg.tool { margin: 6px auto; max-height: 40px; }
+  .gap-spark { left: 50%; top: 0; margin: 0 0 0 -5px; animation-name: hm-sparkv; }
+}
+
+/* ---------- 7. «ИИ и бизнес»: тот же заказ тогда и сейчас ---------- */
+.aibiz { --ai: var(--teal); --gate: var(--gold); }
+.ab-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 8px; }
+.ab-col { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--bg); }
+.ab-head { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; margin-bottom: 12px; }
+.ab-head span { color: var(--accent); margin-right: 8px; }
+.ab-col ol { list-style: none; display: grid; gap: 8px; margin: 0; padding: 0; }
+.ab-col li { font-size: 15px; font-weight: 500; padding: 9px 11px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface);
+  transition: border-color .4s, background .4s; transition-delay: calc(var(--i, 0) * 90ms); }
+.ab-note { display: block; font-size: 11px; font-weight: 500; letter-spacing: .02em; max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height .4s, opacity .4s, margin .4s; transition-delay: calc(var(--i, 0) * 90ms); }
+.aibiz.now .ab-note { max-height: 40px; opacity: 1; margin-top: 4px; }
+.aibiz.now .r-ai { border-color: var(--ai); background: color-mix(in srgb, var(--ai) 9%, var(--surface)); }
+.aibiz.now .r-ai .ab-note { color: var(--ai); }
+.aibiz.now .r-gate { border-color: var(--gate); border-width: 1.5px; background: color-mix(in srgb, var(--gate) 10%, var(--surface)); }
+.aibiz.now .r-gate .ab-note { color: var(--gate); }
+.aibiz.now .r-people .ab-note { color: var(--muted); }
+.ab-legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 18px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); opacity: .35; transition: opacity .5s; }
+.aibiz.now .ab-legend { opacity: 1; }
+.ab-legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; border: 1.5px solid var(--line); }
+.ab-legend .lg-ai::before { border-color: var(--ai); background: color-mix(in srgb, var(--ai) 20%, transparent); }
+.ab-legend .lg-gate::before { border-color: var(--gate); background: color-mix(in srgb, var(--gate) 20%, transparent); }
+@media (max-width: 1000px) { .ab-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .ab-grid { grid-template-columns: 1fr; } }
+
+/* ---------- 8. Два мира: физический (золото) и цифровой (бирюза) ---------- */
+/* Переход золото → бирюза разрешён только там, где он значит «два мира сходятся» (решение S-009). */
+.worlds { --phys: var(--gold); --digi: var(--teal); }
+.w-head { display: grid; grid-template-columns: 1fr 96px 1fr; margin: 8px 0 18px; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
+.w-head small { display: block; font-weight: 400; letter-spacing: .04em; color: var(--muted); text-transform: none; margin-top: 2px; }
+.w-ph { color: var(--phys); text-align: right; }
+.w-dg { color: var(--digi); }
+.w-rows { position: relative; display: grid; gap: 10px; }
+.w-rows::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--line); }
+.w-spine { position: absolute; left: 50%; top: 0; width: 2px; height: 0; margin-left: -1px; background: linear-gradient(var(--phys), var(--digi)); transition: height .6s ease; }
+.w-row { position: relative; display: grid; grid-template-columns: 1fr 96px 1fr; align-items: center; opacity: .18; transform: translateY(6px); transition: opacity .5s, transform .5s; }
+.w-row.lit { opacity: 1; transform: none; }
+.w-yr { grid-column: 2; grid-row: 1; justify-self: center; position: relative; z-index: 1; font-size: 11px; letter-spacing: .04em; padding: 4px 8px; border-radius: 999px;
+  background: var(--surface); border: 1.5px solid var(--line); color: var(--muted); white-space: nowrap; transition: border-color .4s, color .4s; }
+.w-card { grid-row: 1; font-size: 15px; line-height: 1.4; color: var(--muted); padding: 12px 14px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); }
+.w-tag { display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+.w-row.p .w-card { grid-column: 1; border-right: 3px solid var(--phys); text-align: right; }
+.w-row.p .w-tag, .w-row.p.lit .w-yr { color: var(--phys); }
+.w-row.p.lit .w-yr { border-color: var(--phys); }
+.w-row.d .w-card { grid-column: 3; border-left: 3px solid var(--digi); }
+.w-row.d .w-tag, .w-row.d.lit .w-yr { color: var(--digi); }
+.w-row.d.lit .w-yr { border-color: var(--digi); }
+.w-row.both { grid-template-rows: auto auto; row-gap: 8px; }
+.w-row.both .w-card { grid-column: 1 / -1; grid-row: 2; justify-self: center; text-align: center; max-width: 560px; position: relative; z-index: 1;
+  border: 1.5px solid transparent; background-image: linear-gradient(var(--surface), var(--surface)), linear-gradient(90deg, var(--phys), var(--digi));
+  background-origin: border-box; background-clip: padding-box, border-box; }
+.w-row.both .w-tag { background: linear-gradient(90deg, var(--phys), var(--digi)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.w-row.both.lit .w-yr { border-color: var(--text); color: var(--text); }
+.w-row.origin .w-card { border-style: dashed; }
+.w-row.now.lit .w-card { box-shadow: 0 0 0 6px color-mix(in srgb, var(--digi) 12%, transparent); }
+@media (max-width: 700px) {
+  .w-head { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .w-head > div:nth-child(2) { display: none; }
+  .w-ph { text-align: left; }
+  .w-rows::before, .w-spine { left: 30px; }
+  .w-row, .w-row.both { grid-template-columns: 60px 1fr; grid-template-rows: auto; column-gap: 10px; }
+  .w-yr { grid-column: 1; font-size: 10px; padding: 3px 6px; }
+  .w-row.p .w-card, .w-row.d .w-card, .w-row.both .w-card { grid-column: 2; grid-row: 1; text-align: left; justify-self: stretch; max-width: none; }
+  .w-row.p .w-card { border-right: 1px solid var(--line); border-left: 3px solid var(--phys); }
+}
+
+/* ---------- 9. Шифр Цезаря — в цветах терминала (токены --pv-term-*) ---------- */
+.caesar { margin-top: 18px; padding: 12px 14px; border-radius: 10px; background: var(--pv-term); color: var(--pv-term-text); display: flex; flex-direction: column; gap: 4px; font-family: var(--font-mono); }
+.c-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--pv-term-time); }
+.c-text { font-size: 20px; letter-spacing: .18em; overflow-wrap: anywhere; }
+.c-text b { color: var(--pv-term-warn); font-weight: 600; }
+.c-text i { font-style: normal; color: var(--pv-term-time); }
+.caesar.solved .c-text b { color: var(--pv-term-ok); transition: color .4s; }
+
+/* ---------- 10–11. Живой знак и знак с выносками ---------- */
+.hero.has-mark { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); column-gap: 32px; align-items: center; }
+.hero.has-mark > :not(.hero-mark) { grid-column: 1; }
+.hero-mark { grid-column: 2; grid-row: 1 / span 4; position: relative; cursor: pointer; color: var(--text); }
+.hm-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.co-leader path { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.co-leader circle { fill: var(--text); }
+.co-leader { transition: opacity .5s; }
+.lead-merged { opacity: 0; }
+.co { transition: transform .32s cubic-bezier(.5, 0, .2, 1), opacity .4s; opacity: .45; }
+.co.hot { opacity: 1; }
+.co-t { font: 600 24px var(--font); letter-spacing: -.01em; }
+.co-s { font: 500 12px var(--font-mono); letter-spacing: .14em; text-transform: uppercase; fill: var(--muted); }
+.co-hw .co-t { fill: var(--gold); }
+.co-it .co-t { fill: var(--teal); }
+.co-merged { opacity: 0; transition: opacity .6s; }
+.co-merged .co-t { font-size: 22px; fill: var(--text); }
+.co-merged .m-hw { fill: var(--gold); }
+.co-merged .m-it { fill: var(--teal); }
+.hero-mark.joined .co, .hero-mark.joined .lead-top, .hero-mark.joined .lead-bottom { opacity: 0; }
+.hero-mark.joined .lead-merged, .hero-mark.joined .co-merged { opacity: 1; }
+@media (max-width: 900px) {
+  .hero.has-mark { grid-template-columns: 1fr; }
+  .hero-mark { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 32px; max-width: 520px; }
+}
+
+/* ---------- 12. Канат: железо и софт скручиваются в один трос, в кольце — робот ---------- */
+.rope-legend { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.rope-legend i { display: inline-block; align-self: flex-start; width: 18px; height: 4px; border-radius: 2px; margin: 5px 0 0 6px; }
+.rope-legend i:first-child { margin-left: 0; }
+.rope-legend .lg-hw { background: var(--gold); }
+.rope-legend .lg-sw { background: var(--teal); }
+.rope-legend .lg-t { display: inline-flex; flex-direction: column; line-height: 1.1; }
+.rope-legend .lg-t small { font-size: 10px; letter-spacing: .1em; color: var(--muted); }
+.rope-canvas { position: relative; }
+.rope-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.r-hw, .r-sw { fill: none; stroke-linecap: round; }
+.r-hw { stroke: var(--gold); }
+.r-sw { stroke: var(--teal); }
+.r-gap { fill: none; stroke: var(--surface); stroke-linecap: butt; }
+.r-label { position: absolute; max-width: 132px; font-size: 12.5px; line-height: 1.3; color: var(--muted); opacity: 0; transition: opacity .5s, transform .5s; }
+.r-label b { display: block; font-size: 12px; letter-spacing: .06em; font-weight: 600; margin-bottom: 2px; }
+.r-label.r-hw b { color: var(--gold); }
+.r-label.r-sw b { color: var(--teal); }
+.r-label.r-both b { background: linear-gradient(90deg, var(--gold), var(--teal)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.r-label.up { text-align: center; transform: translate(-50%, calc(-100% + 8px)); }
+.r-label.down { text-align: center; transform: translate(-50%, -8px); }
+.r-label.side { text-align: left; max-width: calc(100% - 100px); transform: translate(8px, -50%); }
+.r-label.up.on { opacity: 1; transform: translate(-50%, -100%); }
+.r-label.down.on { opacity: 1; transform: translate(-50%, 0); }
+.r-label.side.on { opacity: 1; transform: translate(0, -50%); }
+/* Кольцо в конце троса: координаты центра ставит скрипт (left/top), --rr — радиус кольца, --rs — размер робота */
+.rope-logo { position: absolute; display: block; width: 0; height: 0; opacity: 0; cursor: pointer; transition: opacity .6s; }
+.rope-logo.show { opacity: 1; }
+.rope-logo .robo { position: absolute; left: 0; top: 0; width: var(--rs, 150px); height: var(--rs, 150px); margin: 0; border: 0; background: none; transform: translate(-50%, -50%); color: var(--text); }
+.rope-word { position: absolute; top: calc(var(--rr, 60px) + 14px); left: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-align: center; }
+.rope-logo.wide .rope-word { left: var(--rr, 60px); transform: translateX(-100%); align-items: flex-end; text-align: right; }
+.rope-word > b { display: block; font-size: 16px; letter-spacing: -.01em; white-space: nowrap; }
+.rope-word > span { display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.rope-word .tagline { display: inline-grid; grid-template-columns: auto auto auto; column-gap: 6px; justify-items: center; }
+.rope-word .tagline em, .rope-word .tagline i { font-style: normal; }
+.rope-word .tagline small { font-size: 10px; letter-spacing: .1em; color: var(--muted); }
+.rope-word .since { margin-top: 2px; }
+.rope-word .name-swap { display: grid; }
+.rope-word .name-swap > span { justify-self: center; }
+.rope-logo.wide .rope-word .name-swap > span { justify-self: end; }
+
+/* «Техника становится волшебством»: появляется после подмигивания робота (параметр after у каната) */
+.magic-now .mq { font-size: clamp(26px, 3.8vw, 44px); line-height: 1.22; max-width: 860px; color: var(--text); opacity: 0; transform: translateY(14px); transition: opacity 1s, transform 1s; }
+.magic-now .mq small { display: block; font-size: 18px; color: var(--muted); margin-top: 14px; }
+.magic-now.on .mq { opacity: 1; transform: none; }
+.mq .magic { font-style: italic; background: linear-gradient(90deg, var(--gold), var(--teal), var(--gold)); background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: hm-shimmer 4s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .magic-now .mq { opacity: 1; transform: none; } .mq .magic { animation: none; } }
+
+/* Крупный живой знак отдельно от шапки (data-dia="mark") */
+.mark-stage { width: 10rem; max-width: 100%; color: var(--text); cursor: pointer; }
+.mark-stage svg { display: block; width: 100%; height: auto; }
+
+/* ===== cosmos.css ===== */
+/* HomenS.AI Style · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ */
+/* «Вселенная» — плеер анимации «От сегодня к звёздам» (js/cosmos.js). Перенесено с homensai.com (vision, 2.02). */
+/* Сцена всегда тёмная (палитра «Космос», токены --cosmos-*), рамка и кнопки — в цветах текущей темы. */
+.cosmos { border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 14px; }
+.cosmos-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--font-mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.cosmos-stages { display: flex; gap: 6px; flex-wrap: wrap; }
+.cosmos-stages span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+.cosmos-stages span.on { border-color: var(--teal); color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, transparent); }
+.cosmos-box { position: relative; border-radius: 10px; overflow: hidden; background: var(--cosmos-bg); }
+.cosmos-box canvas { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+.cosmos-count { position: absolute; left: 18px; top: 16px; font-family: var(--font-mono); font-size: clamp(18px, 3.2vw, 34px); font-weight: 600; color: var(--cosmos-count); letter-spacing: -.01em; text-shadow: 0 0 18px color-mix(in srgb, var(--cosmos-teal) 45%, transparent); }
+.cosmos-stat { position: absolute; left: 18px; bottom: 14px; font-family: var(--font-mono); font-size: clamp(10px, 1.5vw, 13px); color: var(--cosmos-stat); letter-spacing: .04em; }
+.cosmos-ctl { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.cosmos-btn { min-height: 44px; border: 1px solid var(--text); background: transparent; color: var(--text); border-radius: 999px; padding: 0 18px; font-family: var(--font-mono); font-size: .82rem; cursor: pointer; }
+.cosmos-btn:hover { background: var(--text); color: var(--surface); }
+.cosmos-range { display: flex; align-items: center; gap: 10px; flex: 1 1 220px; font-family: var(--font-mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.cosmos-range input { flex: 1; accent-color: var(--teal); min-height: 44px; }
+.cosmos-note { margin-top: 10px; font-family: var(--font-mono); font-size: .75rem; color: var(--muted); }
+
+/* ===== contact.css ===== */
+/* HomenS.AI Style · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/ */
+/* Блок «Контакт» — как homensai.com/contact.html (2.21): карточки, место, адрес с кнопкой «Скопировать», срок ответа. */
+/* Строится HomenS.brandUi.renderContact() из brand/brand.json (раздел contact). Описание — docs/DESIGN.md, раздел 13. */
+/* Верх блока: текст слева, робот с надписью справа (на узком экране — друг под другом) */
+.contact-hero { display: grid; grid-template-columns: 1.3fr 1fr; gap: 2.5rem; align-items: center; }
+.contact-robot { margin: 0; }
+.contact-title { margin-top: .25rem; }
+.contact-lead { max-width: 46rem; color: var(--muted); font-size: 1.05rem; overflow-wrap: anywhere; }
+.ccards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 1.5rem; }
+.ccard { display: block; min-width: 0; border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 20px; background: var(--surface); color: var(--text); text-decoration: none; transition: border-color .2s, transform .2s; }
+.ccard:hover { border-color: var(--text); transform: translateY(-2px); }
+.ccard span { display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.ccard b { display: block; font-size: 17px; font-weight: 600; margin-top: 8px; overflow-wrap: anywhere; }
+.contact-facts { display: grid; gap: 14px; max-width: 420px; margin: 32px 0 0; font-size: 14px; }
+.contact-facts div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.contact-facts dt { color: var(--muted); }
+.contact-facts dd { margin: 0; font-weight: 600; text-align: right; }
+.mail-line { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 24px; }
+.mail-text { font-family: var(--font-mono); font-size: 17px; user-select: all; overflow-wrap: anywhere; }
+.copy-btn { min-height: 44px; padding: 0 18px; border: 1px solid var(--text); border-radius: 999px; background: none; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.copy-btn:hover { background: var(--text); color: var(--surface); }
+.copy-status { width: 100%; min-height: 1.5em; font-size: 14px; color: var(--muted); }
+.copy-status.err { color: var(--bad); }
+.copy-buffer { position: fixed; top: 0; left: 0; opacity: 0; }
+.contact-note { margin-top: 18px; color: var(--muted); font-size: 14px; }
+.em-link { text-decoration: underline; text-underline-offset: 3px; }
+/* Пункт «Контакт» в меню — капсула, как на сайте */
+.nav-link.nav-contact { border: 1px solid var(--text); border-radius: 999px; color: var(--text); }
+.nav-link.nav-contact:hover, .nav-link.nav-contact[aria-current="page"] { background: var(--text); color: var(--surface); box-shadow: none; border-radius: 999px; }
+@media (prefers-reduced-motion: reduce) { .ccard, .ccard:hover { transition: none; transform: none; } }
+@media (max-width: 900px) { .ccards { grid-template-columns: 1fr 1fr; } .contact-hero { grid-template-columns: 1fr; gap: 1rem; } }
+@media (max-width: 480px) { .ccards { grid-template-columns: 1fr; } }

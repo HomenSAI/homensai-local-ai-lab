@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Ход испытаний моделей — Local AI Lab</title>
+  <title>Контакт — Local AI Lab</title>
   <meta name="homensai-style" content="1.6.0">
   <link rel="icon" href="/style/brand/logo-mark.svg" type="image/svg+xml">
   <meta name="theme-color" content="#edf1f4" media="(prefers-color-scheme: light)">
@@ -20,9 +20,10 @@
   <script src="/style/js/ui.js" defer></script>
   <script src="/style/js/brand-ui.js" defer></script>
   <script src="/shell.js?v=1" defer></script>
-  <script src="/style/js/process-charts.js" defer></script>
-  <script src="/style/js/process-view.js" defer></script>
-  <script src="/report/progress.js?v=1" defer></script>
+  <script src="/style/js/robot.js" defer></script>
+  <script src="/style/js/motion.js" defer></script>
+  <script src="/style/js/logo-word.js" defer></script>
+  <script src="/report/contact.js?v=1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Перейти к содержанию</a>
@@ -32,27 +33,25 @@
       <ul class="nav-main">
         <li><a class="nav-link" href="/">Консоль</a></li>
         <li><a class="nav-link" href="/report/">Отчёт и результаты</a></li>
-        <li><a class="nav-link" href="/report/progress.html" aria-current="page">Ход тестов</a></li>
+        <li><a class="nav-link" href="/report/progress.html">Ход тестов</a></li>
         <li><a class="nav-link" href="/BENCHMARK_RESULTS.csv" download>Скачать CSV</a></li>
         <li><a class="nav-link" href="/BENCHMARK_RESULTS.db" download>SQLite DB</a></li>
-        <li><a class="nav-link nav-contact" href="/report/contact.html">Контакт</a></li>
+        <li><a class="nav-link nav-contact" href="/report/contact.html" aria-current="page">Контакт</a></li>
       </ul>
       <ul class="nav-tools" id="tools"><li><span class="badge local-pill">● Локальная сеть</span></li></ul>
     </nav>
   </header>
 
   <main id="main" tabindex="-1">
-    <div class="page-head"><p class="eyebrow">LOCAL AI LAB · TEST LAB</p><h1>Ход испытаний моделей</h1>
-      <p class="muted">План этапов, текущая модель, оставшееся время и последние итоги. Обновляется каждые 15 секунд; здесь ничего не запускается.</p></div>
-    <p class="notice" id="connection" role="status">Загрузка данных испытаний…</p>
-    <div id="process"></div>
+    <section id="contact" data-heading="h1" data-no-i18n></section>
   </main>
+  <noscript>info [at] homensai [dot] com</noscript>
   <nav class="bottomnav" aria-label="Основная навигация">
     <a href="/">Консоль</a>
     <a href="/report/">Отчёт и результаты</a>
-    <a href="/report/progress.html" aria-current="page">Ход тестов</a>
+    <a href="/report/progress.html">Ход тестов</a>
     <a href="/BENCHMARK_RESULTS.csv" download>Скачать CSV</a>
-    <a href="/report/contact.html">Контакт</a>
+    <a href="/report/contact.html" aria-current="page">Контакт</a>
   </nav>
   <footer class="site-footer console-footer">
     <p data-license><span>Результаты и код можно использовать только в некоммерческих целях со ссылкой на автора</span> ·

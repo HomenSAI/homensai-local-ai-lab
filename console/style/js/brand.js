@@ -1,7 +1,7 @@
 // HomenS.AI Style · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/
 // ГЕНЕРИРУЕТСЯ из brand/brand.json командой `python3 tools/style.py build`. Руками не править.
 window.HomenS = window.HomenS || {};
-window.HomenS.styleVersion = "1.4.0";
+window.HomenS.styleVersion = "1.6.0";
 window.HomenS.brand = {
   "schema": 1,
   "brand": {
@@ -33,9 +33,10 @@ window.HomenS.brand = {
       "primary": "HomenS.AI",
       "site_swap": [
         "Serhii Khomenko",
+        "HomenS.AI",
         "HomenS.A Inc."
       ],
-      "note": "На сайте homensai.com в шапке название плавно меняется между «Serhii Khomenko» и «HomenS.A Inc.». Это оформление сайта; в документах, подвалах и юридических текстах «Inc.» не пишется."
+      "note": "Смена имени в шапке и в кольце каната (css/motion.css, .name-swap): «Serhii Khomenko» → «HomenS.AI» → «HomenS.A Inc.», шаг 2,6 с. «HomenS.A Inc.» — придуманное автором название, компании нет. Это только оформление; в документах, подвалах и юридических текстах «Inc.» не пишется."
     },
     "palette_roles": {
       "blue": {
@@ -345,11 +346,186 @@ window.HomenS.brand = {
       "email"
     ]
   },
+  "contact": {
+    "source": "homensai.com/contact.html и de/contact.html (версия сайта 2.21), 10.10.2026; русский текст — перевод с английского; робот справа от заголовка — решение владельца S-011",
+    "eyebrow": {
+      "ru": "Контакт",
+      "en": "Contact",
+      "de": "Kontakt"
+    },
+    "title": {
+      "ru": "Давайте поговорим.",
+      "en": "Let’s talk.",
+      "de": "Lassen Sie uns ins Gespräch kommen."
+    },
+    "lead": {
+      "ru": "Я ищу работу. Предложения о работе, профессиональные вопросы и идеи для сотрудничества приветствуются — пишите мне напрямую.",
+      "en": "I am looking for a position. Job offers, professional questions and ideas for collaboration are welcome — please write to me directly.",
+      "de": "Ich suche eine Stelle. Stellenangebote, fachliche Fragen und Ideen zur Zusammenarbeit sind willkommen — schreiben Sie mir gern direkt."
+    },
+    "email_parts": {
+      "user": "info",
+      "domain": "homensai.com"
+    },
+    "cards": [
+      {
+        "link": "email",
+        "kicker": {
+          "ru": "E-mail",
+          "en": "E-mail",
+          "de": "E-Mail"
+        },
+        "value": {
+          "ru": "info [at] homensai [dot] com",
+          "en": "info [at] homensai [dot] com",
+          "de": "info [at] homensai [dot] com"
+        },
+        "email": true
+      },
+      {
+        "link": "linkedin",
+        "kicker": {
+          "ru": "LinkedIn",
+          "en": "LinkedIn",
+          "de": "LinkedIn"
+        },
+        "value": {
+          "ru": "Serhii Khomenko",
+          "en": "Serhii Khomenko",
+          "de": "Serhii Khomenko"
+        }
+      },
+      {
+        "link": "github",
+        "kicker": {
+          "ru": "GitHub",
+          "en": "GitHub",
+          "de": "GitHub"
+        },
+        "value": {
+          "ru": "Код и эксперименты",
+          "en": "Code & experiments",
+          "de": "Code & Experimente"
+        }
+      },
+      {
+        "link": "orcid",
+        "kicker": {
+          "ru": "ORCID",
+          "en": "ORCID",
+          "de": "ORCID"
+        },
+        "value": {
+          "ru": "0009-0009-5371-9717",
+          "en": "0009-0009-5371-9717",
+          "de": "0009-0009-5371-9717"
+        }
+      },
+      {
+        "link": "benchmarks_repo",
+        "kicker": {
+          "ru": "GitHub · Бенчмарки",
+          "en": "GitHub · Benchmarks",
+          "de": "GitHub · Benchmarks"
+        },
+        "value": {
+          "ru": "Локальный ИИ на RTX 3080",
+          "en": "RTX 3080 local AI",
+          "de": "RTX 3080 lokale KI"
+        }
+      },
+      {
+        "link": "book_repo",
+        "kicker": {
+          "ru": "GitHub · Книга",
+          "en": "GitHub · Book",
+          "de": "GitHub · Buch"
+        },
+        "value": {
+          "ru": "Two Worlds. One Mind. (v1.1)",
+          "en": "Two Worlds. One Mind. (v1.1)",
+          "de": "Two Worlds. One Mind. (v1.1)"
+        }
+      },
+      {
+        "link": "book_zenodo",
+        "kicker": {
+          "ru": "Zenodo · Книга",
+          "en": "Zenodo · Book",
+          "de": "Zenodo · Buch"
+        },
+        "value": {
+          "ru": "DOI 10.5281/zenodo.23160031",
+          "en": "DOI 10.5281/zenodo.23160031",
+          "de": "DOI 10.5281/zenodo.23160031"
+        }
+      }
+    ],
+    "facts": [
+      {
+        "label": {
+          "ru": "Где",
+          "en": "Based in",
+          "de": "Wohnort"
+        },
+        "value": {
+          "ru": "Регион Штутгарт, Германия",
+          "en": "Stuttgart region, Germany",
+          "de": "Region Stuttgart, Deutschland"
+        }
+      }
+    ],
+    "mail_label": {
+      "ru": "E-mail:",
+      "en": "E-mail:",
+      "de": "E-Mail:"
+    },
+    "copy": {
+      "button": {
+        "ru": "Скопировать адрес",
+        "en": "Copy e-mail address",
+        "de": "E-Mail-Adresse kopieren"
+      },
+      "ok": {
+        "ru": "Адрес скопирован в буфер обмена.",
+        "en": "Address copied to the clipboard.",
+        "de": "Adresse in die Zwischenablage kopiert."
+      },
+      "fail": {
+        "ru": "Скопировать не получилось. Адрес выделен — скопируйте его вручную (Ctrl+C).",
+        "en": "Copying was not possible. The address is selected — please copy it manually (Ctrl+C).",
+        "de": "Kopieren war nicht möglich. Die Adresse ist markiert — bitte manuell kopieren (Strg+C)."
+      }
+    },
+    "reply": {
+      "ru": "Обычно отвечаю в течение двух рабочих дней (пн–пт).",
+      "en": "I usually reply within two working days (Monday to Friday).",
+      "de": "Ich antworte in der Regel innerhalb von zwei Arbeitstagen (Mo–Fr)."
+    },
+    "nav_label": {
+      "ru": "Контакт",
+      "en": "Contact",
+      "de": "Kontakt"
+    },
+    "robot": {
+      "alt": {
+        "ru": "Знак превращается в робота",
+        "en": "Logo turning into a robot",
+        "de": "Das Logo verwandelt sich in einen Roboter"
+      },
+      "replay": {
+        "ru": "Повторить анимацию",
+        "en": "Replay the animation",
+        "de": "Animation erneut abspielen"
+      }
+    }
+  },
   "site": {
     "url": "https://homensai.com/",
     "languages": [
       "en",
-      "de"
+      "de",
+      "ru"
     ],
     "nature": {
       "ru": "частный некоммерческий личный сайт: цифровая визитка, видение и профессиональный путь автора для поиска работы; без рекламы и партнёрских ссылок",
@@ -409,6 +585,7 @@ window.HomenS.brand = {
       }
     ],
     "de_prefix": "de/",
+    "ru_prefix": "ru/",
     "source": "homensai.com/contact.html, impressum.html и страницы разделов, 07.10.2026"
   },
   "sources": [

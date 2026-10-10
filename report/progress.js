@@ -1,6 +1,6 @@
 /* Local AI Lab · © 2026 Serhii Khomenko · https://homensai.com/ */
 /* "Test progress" page: the stage plan of the report builder (live-data.json, field plan) shown with the process view
-   A/B/C of HomenS.AI Style 1.4.0. Only display: nothing here starts or stops a test. */
+   A/B/C of HomenS.AI Style 1.6.0. Only display: nothing here starts or stops a test. */
 (() => {
   const H = window.HomenS;
   const lang = (window.i18n && window.i18n.lang()) || "ru";
