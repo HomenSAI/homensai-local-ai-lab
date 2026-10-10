@@ -23,7 +23,7 @@ import tests_feed
 
 WEB = Path(__file__).resolve().parent
 REPORT_DIR = Path("/app/report")
-STYLE_DIR = WEB / "style"   # HomenS.AI Style 1.3.0 (copied from the homensai-style repository; version in the pages' homensai-style meta)
+STYLE_DIR = WEB / "style"   # HomenS.AI Style 1.4.0 (copied from the homensai-style repository; version in the pages' homensai-style meta)
 STYLE_TYPES = {".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".svg": "image/svg+xml",
                ".woff2": "font/woff2", ".txt": "text/plain; charset=utf-8"}
 DOWNLOADS = {"/BENCHMARK_RESULTS.csv": Path("/app/downloads/BENCHMARK_RESULTS.csv"),

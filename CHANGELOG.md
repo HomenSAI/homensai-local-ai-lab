@@ -2,10 +2,11 @@
 
 ## 1.3.0 - console and report on HomenS.AI Style (2026-10-10)
 
-- The console (port 8766) and the report page (`/report/`) use HomenS.AI Style 1.3.0, the shared design of all HomenS.AI projects: header with the HomenS.AI logo, navigation, language switch and theme button, light and dark theme (the console was dark only), IBM Plex fonts, footer with the author links from the brand data, bottom navigation on phones.
-- The style package is copied into `console/style/` (pinned by `<meta name="homensai-style" content="1.3.0">` in both pages) and served at `/style/` with path checks; `shell.js` sets up the theme button and the footer.
+- The console (port 8766) and the report page (`/report/`) use HomenS.AI Style 1.4.0, the shared design of all HomenS.AI projects: header with the HomenS.AI logo, navigation, language switch and theme button, light and dark theme (the console was dark only), IBM Plex fonts, footer with the author links from the brand data, bottom navigation on phones.
+- The style package is copied into `console/style/` (pinned by `<meta name="homensai-style" content="1.4.0">` in both pages) and served at `/style/` with path checks; `shell.js` sets up the theme button and the footer.
 - `app.css` and `report.css` keep the layout, but every colour and font is now a style token (about 200 fixed colours replaced).
 - Content-Security-Policy allows the console's own fonts (`font-src 'self'`); without it the fonts would have been blocked.
+- New page "Test progress" (`/report/progress.html`, linked from the console and the report): the stage plan of the report builder in the process view A/B/C of HomenS.AI Style 1.4.0 (command centre, pipeline, terminal) with labels for model tests; display only, refreshed every 15 seconds.
 - Footer: noncommercial licence of results and code with links to both licence texts; translations for the new texts (RU/EN/DE).
 
 ## 1.2.0 - test runners, noncommercial licence, security and reliability fixes (2026-10-10)

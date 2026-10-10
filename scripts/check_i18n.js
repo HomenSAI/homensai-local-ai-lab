@@ -14,7 +14,7 @@ function build(i) {
 }
 const R = {en: build(1), de: build(2)};
 const tr = (t, l) => t.replace(R[l][1], x => R[l][0].get(x.toLowerCase()) ?? x);
-const files = ["console/index.html", "console/app.js", "console/container_server.py", "console/tests_feed.py", "report/index.html", "report/report.js", "report/live.js", "scripts/build_live_report.py"];
+const files = ["console/index.html", "console/app.js", "console/container_server.py", "console/tests_feed.py", "report/index.html", "report/report.js", "report/progress.html", "report/progress.js", "report/live.js", "scripts/build_live_report.py"];
 const files2 = process.env.I18N_FILES ? process.env.I18N_FILES.split(",") : null;
 const lang = process.argv[2] || "de";
 const missing = new Map();

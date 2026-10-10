@@ -1,7 +1,7 @@
 // HomenS.AI Style · © 2026 Serhii Khomenko · https://homensai.com/ · https://github.com/HomenSAI · https://www.linkedin.com/in/serhii-khomenko-homensai/
 // ГЕНЕРИРУЕТСЯ из brand/brand.json командой `python3 tools/style.py build`. Руками не править.
 window.HomenS = window.HomenS || {};
-window.HomenS.styleVersion = "1.3.0";
+window.HomenS.styleVersion = "1.4.0";
 window.HomenS.brand = {
   "schema": 1,
   "brand": {
