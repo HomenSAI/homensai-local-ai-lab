@@ -51,7 +51,7 @@ NVIDIA GPU with 8 GB+ video memory, 16-32 GB RAM, ~25 GB disk for images plus 50
 
 ## Not included
 
-Model weights (download them yourself and respect their licenses), benchmark scripts and results, videos, secrets. The console and gateway have **no password**: use them on `127.0.0.1` or a trusted network only.
+Model weights (download them yourself and respect their licenses), benchmark scripts and results, videos, secrets. The gateway has **no password** and the console's password (`AI_CONSOLE_PASSWORD`) is optional: use both on `127.0.0.1` or a trusted network only, never on the internet. The console also refuses cross-site requests and foreign `Host` names ([SECURITY.md](SECURITY.md)).
 
 ## License and attribution
 

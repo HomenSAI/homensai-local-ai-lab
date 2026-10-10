@@ -10,6 +10,7 @@ Reads report/live-data.json (written by the report builder) and writes
 
 Provenance (who did what) is explained in docs/METHODOLOGY.*.md; the numbers come only from bench_results/results*.jsonl.
 """
+import argparse
 import csv
 import json
 import os
@@ -28,6 +29,12 @@ def value(entry: dict, suite: str, key: str):
     return (entry.get(suite) or {}).get(key)
 
 
+def status(name: str, general: dict, excluded: dict) -> str:
+    if general.get("failed"):
+        return "failed to load"
+    return "removed from later tests: " + excluded[name] if name in excluded else "admitted"
+
+
 def row(entry: dict, excluded: dict) -> dict:
     general = entry.get("general") or {}
     ctx = value(entry, "context", "stable_ctx") or value(entry, "context", "best_ctx")
@@ -35,7 +42,7 @@ def row(entry: dict, excluded: dict) -> dict:
     return {"model": name, "quant": general.get("quant"), "size_gb": general.get("size_gb"), "vram_mib": general.get("vram_mib"),
             "pp": general.get("pp"), "tg": general.get("tg"), "general": general.get("total"), "german": value(entry, "german", "pct"),
             "ctx_k": round(ctx / 1024) if ctx else None, "stem": value(entry, "stem", "pct"), "chem": value(entry, "chem", "pct"),
-            "code20": value(entry, "code20", "passed"), "status": "removed from later tests: " + excluded[name] if name in excluded else "admitted"}
+            "code20": value(entry, "code20", "passed"), "status": status(name, general, excluded)}
 
 
 def fmt(v) -> str:
@@ -48,9 +55,16 @@ def table(rows: list[dict], columns: list[tuple[str, str]]) -> str:
 
 
 def main() -> None:
-    out = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "results-public"
+    parser = argparse.ArgumentParser(description="Write the publishable results snapshot (no prompts, no answers).")
+    parser.add_argument("out", nargs="?", type=Path, default=ROOT / "results-public", help="output folder (default: results-public)")
+    parser.add_argument("--live", type=Path, default=LIVE, help="report data file written by the report builder (default: report/live-data.json)")
+    args = parser.parse_args()
+    out = args.out
+    try:
+        data = json.loads(args.live.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        sys.exit(f"cannot read {args.live}: {exc}. Start the report builder (python scripts/install.py up) and wait for the first results.")
     out.mkdir(parents=True, exist_ok=True)
-    data = json.loads(LIVE.read_text(encoding="utf-8"))
     excluded = {}
     for stage in (data.get("plan") or {}).get("stages", []):
         for item in stage.get("excluded") or []:

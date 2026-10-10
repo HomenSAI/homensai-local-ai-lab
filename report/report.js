@@ -140,6 +140,7 @@
     renderRuns(runs); renderResponses(runs);renderSpeedChart(runs);renderQualityViews(runs);
   }
   fetch(dataUrl).then(r=>{if(!r.ok)throw new Error(`Не удалось загрузить ${dataUrl}: HTTP ${r.status}`);return r.json()}).then(value=>{
+    for(const key of ["runs","scores","responses","assets"])if(!Array.isArray(value[key]))value[key]=[];  // an empty or older data file must not break the page
     data=value;
     const generated=new Date(value.generated_utc),generatedText=Number.isNaN(generated.getTime())?"—":generated.toLocaleString("ru-RU");
     $("generated").textContent=`База испытаний обновлена ${generatedText} · ${value.runs.length} прогонов · ${value.responses.length} ответов`;
@@ -154,5 +155,5 @@
     fillSelect("phaseFilter",[...new Set(value.runs.map(x=>x.phase))].sort(),"Все источники");
     renderAssets();renderRecommendations(); ["modelFilter","suiteFilter","phaseFilter","searchFilter"].forEach(id=>$(id).addEventListener("input",render));
     render();
-  }).catch(error=>{ $("generated").textContent=error.message; $("notice").hidden=false; $("notice").textContent="Откройте отчёт через python -m http.server (скрипт scripts/serve-report.ps1), чтобы браузер разрешил загрузить JSON."; });
+  }).catch(error=>{ $("generated").textContent=error.message; $("notice").hidden=false; $("notice").textContent="Не удалось загрузить данные отчёта. Откройте отчёт через консоль."; });
 })();

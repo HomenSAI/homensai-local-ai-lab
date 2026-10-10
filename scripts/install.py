@@ -2,10 +2,12 @@
 """Installer / doctor for the Local AI Server (Windows, Linux, macOS with Docker + NVIDIA GPU).
 
   python scripts/install.py doctor      # check the machine: Docker, GPU in Docker, ports, free disk
+                                        #   --pull      also download the 5.6 GB CUDA test image if it is missing (ask the owner first)
+                                        #   --no-gpu    skip the GPU check (console, report and Git only)
   python scripts/install.py init        # create .env, folders, placeholder files, Docker network and model volume
   python scripts/install.py build       # build the base images and the gateway (one at a time, low RAM use)
-  python scripts/install.py up          # start console, report builder, report redirect, Git; start the gateway
-  python scripts/install.py verify      # HTTP checks of every part (run after `up`)
+  python scripts/install.py up          # start console, report builder, report redirect, Git; start the gateway (--no-gpu: without the gateway)
+  python scripts/install.py verify      # HTTP checks of every part (run after `up`; --no-gpu skips the gateway check)
   python scripts/install.py all         # doctor + init + build + up + verify
 
 Nothing here needs third-party Python packages. Every step is idempotent: run it again after fixing a problem.
@@ -24,6 +26,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ENV_FILE, ENV_EXAMPLE = ROOT / ".env", ROOT / ".env.example"
 PORTS = {"console/report": 8766, "gateway API": 8080, "report redirect": 8765, "Gitea web": 3010, "Gitea ssh": 2222}
+
+
+CUDA_IMAGE = "nvidia/cuda:12.8.1-runtime-ubuntu24.04"
+
+
+def compose_args(no_gpu):
+    """`docker compose` prefix; without a GPU the console must not request one."""
+    return ["docker", "compose", "-f", "docker-compose.yml", "-f", "docker-compose.nogpu.yml"] if no_gpu else ["docker", "compose"]
 
 
 def run(cmd, check=True, capture=False, timeout=None, **kw):
@@ -54,7 +64,7 @@ def port_free(port):
         return sock.connect_ex(("127.0.0.1", port)) != 0
 
 
-def doctor():
+def doctor(pull=False, no_gpu=False):
     ok = True
     if not shutil.which("docker"):
         say("FAIL", "docker is not on PATH (install Docker Desktop with WSL2, or Docker Engine + NVIDIA Container Toolkit)")
@@ -67,13 +77,19 @@ def doctor():
     compose = run(["docker", "compose", "version", "--short"], check=False, capture=True)
     say("ok" if compose.returncode == 0 else "FAIL", f"docker compose {compose.stdout.strip()}")
     ok &= compose.returncode == 0
-    gpu = run(["docker", "run", "--rm", "--gpus", "all", "nvidia/cuda:12.8.1-runtime-ubuntu24.04", "nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
-              check=False, capture=True, timeout=600)
-    if gpu.returncode:
-        say("FAIL", "GPU is not visible inside Docker: " + (gpu.stderr or "").strip()[-200:])
-        ok = False
+    if no_gpu:
+        say("warn", "GPU check skipped (--no-gpu): the gateway cannot load models on this machine")
+    elif run(["docker", "image", "inspect", CUDA_IMAGE], check=False, capture=True).returncode and not pull:
+        say("warn", f"GPU check skipped: the test image {CUDA_IMAGE} (5.6 GB) is not downloaded. "
+                    "Ask the owner, then run `python scripts/install.py doctor --pull`")
     else:
-        say("ok", "GPU in Docker: " + gpu.stdout.strip().splitlines()[-1])
+        gpu = run(["docker", "run", "--rm", "--gpus", "all", CUDA_IMAGE, "nvidia-smi", "--query-gpu=name,memory.total", "--format=csv,noheader"],
+                  check=False, capture=True, timeout=1800)
+        if gpu.returncode:
+            say("FAIL", "GPU is not visible inside Docker: " + (gpu.stderr or "").strip()[-200:])
+            ok = False
+        else:
+            say("ok", "GPU in Docker: " + gpu.stdout.strip().splitlines()[-1])
     free_gb = shutil.disk_usage(ROOT).free / 1e9
     say("ok" if free_gb > 60 else "warn", f"free disk next to the project: {free_gb:.0f} GB (images ~25 GB, models 50-200 GB)")
     for name, port in PORTS.items():
@@ -121,21 +137,27 @@ def init():
     return cfg.returncode == 0
 
 
-def build():
-    steps = [("llama.cpp (CUDA) base image", ["--profile", "build", "build", "build-upstream"]),
-             ("Bonsai llama.cpp fork image", ["--profile", "build", "build", "build-bonsai"]),
-             ("llama-swap gateway image", ["--profile", "gateway", "build", "llama-swap-gateway"]),
-             ("console, report builder, versioner", ["build", "ai-console", "report-versioner"])]
+def build(no_gpu=False):
+    console = ("console, report builder, versioner", ["build", "ai-console", "report-versioner"])
+    steps = [console] if no_gpu else [
+        ("llama.cpp (CUDA) base image", ["--profile", "build", "build", "build-upstream"]),
+        ("Bonsai llama.cpp fork image", ["--profile", "build", "build", "build-bonsai"]),
+        ("llama-swap gateway image", ["--profile", "gateway", "build", "llama-swap-gateway"]),
+        console]
     for title, args in steps:
-        say("..", f"building: {title} (the CUDA builds take 15-40 minutes the first time)")
-        run(["docker", "compose", *args])
+        say("..", f"building: {title}" + ("" if no_gpu else " (the CUDA builds take 15-40 minutes the first time)"))
+        run([*compose_args(no_gpu), *args])
         say("ok", f"built: {title}")
     return True
 
 
-def up():
-    run(["docker", "compose", "up", "-d", "ai-console", "report-builder", "stats-report", "gitea", "report-versioner"])
-    run(["docker", "compose", "--profile", "gateway", "up", "-d", "llama-swap-gateway"])
+def up(no_gpu=False):
+    compose = compose_args(no_gpu)
+    run([*compose, "up", "-d", "ai-console", "report-builder", "stats-report", "gitea", "report-versioner"])
+    if no_gpu:
+        say("ok", "services started without the gateway (no GPU): the console, report and Git work, models cannot be loaded")
+        return True
+    run([*compose, "--profile", "gateway", "up", "-d", "llama-swap-gateway"])
     say("ok", "services started; the gateway needs ~30 s to become healthy")
     return True
 
@@ -148,11 +170,13 @@ def http(url, timeout=8):
         return None, str(exc)
 
 
-def verify():
+def verify(no_gpu=False):
     checks = [("console health", "http://127.0.0.1:8766/health", 200), ("console status API", "http://127.0.0.1:8766/api/status", 200),
               ("model catalog", "http://127.0.0.1:8766/api/models", 200), ("report page", "http://127.0.0.1:8766/report/", 200),
-              ("video page", "http://127.0.0.1:8766/video", 200), ("license files", "http://127.0.0.1:8766/legal/README.md", 200), ("version", "http://127.0.0.1:8766/api/version", 200),
-              ("gateway models", "http://127.0.0.1:8080/v1/models", 200), ("Gitea", "http://127.0.0.1:3010/api/healthz", 200)]
+              ("license files", "http://127.0.0.1:8766/legal/README.md", 200), ("version", "http://127.0.0.1:8766/api/version", 200),
+              ("Gitea", "http://127.0.0.1:3010/api/healthz", 200)]
+    if not no_gpu:
+        checks.insert(-1, ("gateway models", "http://127.0.0.1:8080/v1/models", 200))
     good = True
     for title, url, code in checks:
         status, body = http(url)
@@ -167,14 +191,20 @@ def verify():
 
 
 def main():
-    command = sys.argv[1] if len(sys.argv) > 1 else ""
-    steps = {"doctor": doctor, "init": init, "build": build, "up": up, "verify": verify}
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    flags = {a for a in sys.argv[1:] if a.startswith("--")}
+    command = args[0] if args else ""
+    if flags - {"--pull", "--no-gpu"} or len(args) > 1:
+        raise SystemExit(__doc__)
+    no_gpu, pull = "--no-gpu" in flags, "--pull" in flags
+    steps = {"doctor": lambda: doctor(pull, no_gpu), "init": init, "build": lambda: build(no_gpu),
+             "up": lambda: up(no_gpu), "verify": lambda: verify(no_gpu)}
     if command == "all":
         for name in ("doctor", "init", "build", "up"):
             if not steps[name]():
                 raise SystemExit(f"stopped at step '{name}'")
         time.sleep(40)
-        raise SystemExit(0 if verify() else 1)
+        raise SystemExit(0 if verify(no_gpu) else 1)
     if command not in steps:
         raise SystemExit(__doc__)
     raise SystemExit(0 if steps[command]() else 1)

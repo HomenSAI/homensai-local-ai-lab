@@ -29,13 +29,22 @@ Open the assistant in the repository folder (or attach `docs/INSTALL.en.md`) and
 
 ```
 You are the installer and supervisor of this "Local AI Server" project (read AGENTS.md / CLAUDE.md, docs/INSTALL.en.md, docs/AI_OPERATOR.en.md).
-1. Install it on this machine following docs/INSTALL.en.md: run `python scripts/install.py doctor`, fix what it reports, then init, build, up, verify.
+1. Install it on this machine following docs/INSTALL.en.md: run `python scripts/install.py doctor`, fix what it reports, then init, build, up, verify. `doctor` never downloads the 5.6 GB CUDA test image by itself: ask me before `doctor --pull`. On a PC without an NVIDIA GPU use `--no-gpu`.
    Ask me before anything destructive, before downloading files larger than 1 GB, and for every choice that I must make (model folder, network address).
 2. Put the models I name into the Docker volume as described in section 4.5. Do not invent download sources; verify SHA-256.
 3. Run the tests I ask for on the models I ask for (see docs/RESULTS_FORMAT.md for the result files). Run one model at a time; the gateway swaps models by itself.
 4. Supervise: after each test check that the results are plausible, repeat suspicious runs, and report to me in a short table: model, test, score, speed, anything odd.
 5. Never expose the console or the gateway to the internet, never write secrets into files that go to Git, never delete my data.
 ```
+
+## How the console treats scripts and assistants
+
+The console checks every request ([API.md](API.md), [SECURITY.md](../SECURITY.md)). Your commands must comply, and a refusal is information, not an obstacle to get around:
+
+- `POST` calls need `-H "Content-Type: application/json"` (also without a body), for example `curl -X POST http://localhost:8766/api/start -H "Content-Type: application/json" -d '{"model_key":"..."}'`. `415` means the header is missing.
+- If the human set `AI_CONSOLE_PASSWORD`, ask them for it and use `curl -u any:PASSWORD`; never write it into a file that goes to Git, into a result file or into a report. `401` means a password is required.
+- `421` means a host name that is not allowed: use `localhost` or the IP address; ask the human before adding names to `AI_CONSOLE_ALLOWED_HOSTS`.
+- Do not disable these checks, do not edit `console/security.py` or the password to get a call through; report the refusal to the human.
 
 ## The supervision loop (what the assistant does)
 
@@ -52,4 +61,6 @@ You are the installer and supervisor of this "Local AI Server" project (read AGE
 - Never edit or delete results of earlier runs; add new rows (the archive keeps old values, but the history is the evidence).
 - Do not put prompts or answers that contain personal data into Git; the repository is meant to be shareable (results are CC BY 4.0 with credit to <https://homensai.com>).
 - Ask the human before: deleting files or volumes, changing `.env` network addresses, opening ports, downloading large files, publishing anything.
+- Do not weaken the console's protection (Host / Origin / password checks, the fixed `docker exec` form) and never publish the password; if a call is refused, say so.
+- A model that did not load is recorded as `{"model": ..., "load_ok": false, "error": "short reason"}` (no paths in `error`); it is shown as failed, not hidden. If a result row gets `invalid_items`, the checker produced impossible scores: fix the checker and append a new row ([RESULTS_FORMAT.md](RESULTS_FORMAT.md)).
 - If a command fails, read the log (`docker logs <container>`), fix the cause, do not retry blindly.

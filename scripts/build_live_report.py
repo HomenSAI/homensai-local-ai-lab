@@ -14,6 +14,7 @@ import collections
 import glob
 import hashlib
 import json
+import math
 import os
 import re
 import sqlite3
@@ -75,24 +76,38 @@ def current_model(updated):
             "updated_utc": iso(log_mtime), "log_file": os.path.basename(logs[-1])}
 
 
+def number(value):
+    """A finite number (not a bool) or None."""
+    return value if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) else None
+
+
 def model_row(r, code, source, tested):
     base = {"model": r.get("model"), "file": r.get("file"), "quant": r.get("quant"), "size_gb": r.get("size_gb"),
             "origin": r.get("origin"), "mode": r.get("mode"), "source": source, "tested_utc": tested}
     if not r.get("load_ok"):
         return {**base, "failed": True, "error": str(r.get("error") or "не загрузилась")[:240]}
     got = collections.defaultdict(lambda: [0, 0])
+    invalid = 0
     for q in r.get("quality") or []:
+        if not isinstance(q, dict):
+            invalid += 1
+            continue
         task = q.get("task", "")
         if task.startswith("cd_"):
             score, top = int(bool(code.get(r["model"], {}).get(CODE_TASKS.get(task, task[3:]), False))), 1
         else:
-            score, top = q.get("score") or 0, q.get("max") or 1
+            raw = q.get("score")
+            score, top = (0 if raw is None else number(raw)), number(q.get("max", 1))
+            if score is None or top is None or top <= 0 or score < 0:  # a wrong checker must not show up as 500 %
+                invalid += 1
+                continue
+            score = min(score, top)
         got[q.get("cat", "?")][0] += score
         got[q.get("cat", "?")][1] += top
     pct = {c: round(100 * v[0] / v[1]) for c, v in got.items() if v[1]}
     text = [pct[c] for c in CATS[:4] if c in pct]
     ctx = r.get("ctx") or {}
-    return {**base, "failed": False, "ngl": r.get("ngl"), "fits": r.get("fits_gpu"),
+    return {**base, **({"invalid_items": invalid} if invalid else {}), "failed": False, "ngl": r.get("ngl"), "fits": r.get("fits_gpu"),
             "placement": r.get("placement"), "vram_mib": max(r.get("vram_peak_8k") or 0, r.get("vram_bench") or 0) or None,
             "pp": r.get("pp"), "tg": r.get("tg"), "load_s": r.get("load_s"), "max_ctx": r.get("max_ctx"),
             "ctx": {k: bool(v.get("ok")) for k, v in ctx.items()}, "pct": pct,
@@ -180,7 +195,7 @@ def collect():
             if not model:
                 continue
             raw.append(("results", name, model, r))
-            if "quality" in r:
+            if "quality" in r or "load_ok" in r:  # a model that did not load may have no quality list
                 out["general"][model] = (model_row(r, code, name, iso(mtime)), mtime, name)
             elif name.startswith("results_code20"):
                 row = {k: r.get(k) for k in ("passed", "n", "by_level", "tokens", "minutes", "failed", "request_errors")}
@@ -541,9 +556,10 @@ def cycle(last_version):
     data = build()
     version = hashlib.sha1(json.dumps(data, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:12]
     os.makedirs(OUT, exist_ok=True)
-    if version != last_version:
+    target = os.path.join(OUT, "live-data.json")
+    changed = version != last_version or not os.path.isfile(target)  # a deleted output file is written again
+    if changed:
         payload = {"version": version, "built_utc": iso(time.time()), **data}
-        target = os.path.join(OUT, "live-data.json")
         with open(target + ".tmp", "w", encoding="utf-8") as sink:
             json.dump(payload, sink, ensure_ascii=False, separators=(",", ":"))
         os.replace(target + ".tmp", target)
@@ -551,7 +567,7 @@ def cycle(last_version):
     with open(beat + ".tmp", "w", encoding="utf-8") as sink:
         json.dump({"version": version, "checked_utc": iso(time.time()), "models": len(data["models"])}, sink)
     os.replace(beat + ".tmp", beat)
-    return version, len(data["models"]), version != last_version
+    return version, len(data["models"]), changed
 
 
 def main():

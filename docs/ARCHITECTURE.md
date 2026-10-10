@@ -3,7 +3,7 @@
 ```
  browser ──► console :8766 (Python, stdlib only) ──► gateway :8080 (llama-swap) ──► llama-server (one model in VRAM)
                 │  │                                      ▲
-                │  └─ docker.sock (read-only) (only to refuse an LLM start while Video Studio holds the GPU)
+                │  └─ docker.sock (container list; status of llama-server via a fixed `docker exec curl`; refuses an LLM start while Video Studio holds the GPU)
                 │
                 ├─ /report/  ◄── report/live-data.json ◄── report-builder ◄── bench_results/results*.jsonl
                 │                                              └──► results-db/llm-results.sqlite (never loses old results)
@@ -16,15 +16,18 @@
 
 | Path | Role |
 |---|---|
+| `docker-compose.nogpu.yml` | Override for a machine without an NVIDIA GPU: the console starts without requesting one (`install.py up --no-gpu`). |
 | `docker-compose.yml` | All services. Profiles: `gateway` (llama-swap), `build` (base image builders), `whisper`, `qwen-image`, `media-tools` (optional). |
 | `Dockerfile.upstream` / `.bonsai` | llama.cpp (CUDA 12.8, architecture 86) and the PrismML fork, built from pinned commits. |
 | `Dockerfile.llama-swap` | llama-swap v260 (SHA-256 checked) on top of the upstream image, with the Bonsai runtime copied to `/opt/prism`. |
 | `config/llama-swap.yaml` | One profile per model: file, context size, KV-cache type, speculative decoding, TTL. Edit it to add or remove models. |
-| `console/` | `container_server.py` (HTTP server, Docker/gateway access), `tests_feed.py` (test table feed); static `index.html`, `app.js`, `app.css`; `i18n.js` + `i18n-dict.js` (RU/EN/DE). |
+| `console/` | `container_server.py` (HTTP server, Docker/gateway access), `security.py` (Host / Origin / password checks and security headers), `tests_feed.py` (test table feed); static `index.html`, `app.js`, `app.css`; `i18n.js` + `i18n-dict.js` (RU/EN/DE). |
 | `report/` | Static report page; `live-data.json` and `live-status.json` are written by the builder. |
 | `scripts/build_live_report.py` | Collects result files, merges them into SQLite (`raw_rows`, `results`, `history`, `model_scores`), builds the stage plan, the progress and the time-left estimate. |
 | `scripts/versioner.py`, `scripts/setup_git.py` | Report versioning into Gitea and its one-time setup. |
-| `scripts/install.py` | doctor / init / build / up / verify. |
+| `scripts/install.py` | doctor / init / build / up / verify (`--no-gpu`, `doctor --pull`). |
+| `scripts/make_manifest.py` | Writes / checks `MANIFEST.json` (size and SHA-256 of every tracked file). |
+| `tests/` | Standard-library unit tests: console security, report builder, public results, installer, manifest (`python -m unittest discover -s tests`). |
 | `hermes-telemetry/` | Small metrics exporter (GPU, llama). |
 | `legal/` | CC BY 4.0 (results), MIT (code), third-party notices. |
 

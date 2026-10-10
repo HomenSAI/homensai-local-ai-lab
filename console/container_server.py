@@ -18,6 +18,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import quote, urlsplit
 
+import security
 import tests_feed
 
 WEB = Path(__file__).resolve().parent
@@ -28,27 +29,13 @@ DOWNLOADS = {"/BENCHMARK_RESULTS.csv": Path("/app/downloads/BENCHMARK_RESULTS.cs
 MODEL_ROOT = Path(os.environ.get("MODEL_DIR", "/models"))
 GATEWAY = os.environ.get("AI_GATEWAY_URL", "http://llama-swap-gateway:8080").rstrip("/")
 PORT = int(os.environ.get("AI_CONSOLE_PORT", "8766"))
+PASSWORD = os.environ.get("AI_CONSOLE_PASSWORD", "")
+ALLOWED_HOSTS = security.parse_hosts(os.environ.get("AI_CONSOLE_ALLOWED_HOSTS"))
 MODEL_FAST = Path(os.environ.get("MODEL_FAST_DIR", "/models-fast"))
 GATEWAY_CONFIG = Path("/app/llama-swap.yaml")
 RECOMMENDATIONS = Path("/app/recommended-settings.json")
 TIMER_FILE = Path("/state/unload-timer.json")
 
-ASSETS = {
-    "MiniCPM5-2B-Q8_0": ("009_MiniCPM5-2B/MiniCPM5-2B-Q8_0.gguf",),
-    "Spark-X2.5-4B-Q8_0": ("018_Spark-X2.5-4B/Spark-X2.5-4B-Q8_0.gguf",),
-    "Qwen3.5-9B-MTP-Q4_K_XL": ("016_Qwen3.5-9B/Qwen3.5-9B-UD-Q4_K_XL.gguf",),
-    "Qwen3.5-9B-MTP-Q4_K_XL-Vision": (
-        "016_Qwen3.5-9B/Qwen3.5-9B-UD-Q4_K_XL.gguf", "016_Qwen3.5-9B/mmproj/mmproj-F16.gguf"),
-    "Qwen3.5-9B-Q5_K_S": ("016_Qwen3.5-9B/Qwen3.5-9B-Q5_K_S-4.60bpw.gguf",),
-    "Ternary-Bonsai-2-27B-PTQ1_0": ("001_Bonsai-2-27B/Ternary-Bonsai-2-27B-PTQ1_0.gguf",),
-    "Qwen3-VL-8B-Instruct-Q4_K_M": (
-        "015_Qwen3-VL-8B/Qwen3VL-8B-Instruct-Q4_K_M.gguf",
-        "015_Qwen3-VL-8B/mmproj/mmproj-Qwen3VL-8B-Instruct-F16.gguf"),
-}
-CONTEXTS = {"MiniCPM5-2B-Q8_0": 131072, "Spark-X2.5-4B-Q8_0": 98304,
-            "Qwen3.5-9B-MTP-Q4_K_XL": 65536, "Qwen3.5-9B-MTP-Q4_K_XL-Vision": 49152,
-            "Qwen3.5-9B-Q5_K_S": 65536, "Ternary-Bonsai-2-27B-PTQ1_0": 32768,
-            "Qwen3-VL-8B-Instruct-Q4_K_M": 16384}
 # Models run only through the llama-swap gateway; these are the remaining separate service containers.
 SERVICE_MODELS = {"whisper": "Whisper large-v3 turbo", "qwen-image": "Qwen-Image 2.1"}
 metric_history: dict[str, tuple[float, float]] = {}
@@ -160,8 +147,17 @@ def docker_log_tail(container: str, lines: int = 4) -> list[str]:
     return [line.strip() for line in re.split(r"[\r\n]+", text) if re.search(r"\w", line)]
 
 
+EXEC_CONTAINER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}")
+EXEC_URL = re.compile(r"http://127\.0\.0\.1:\d{1,5}/(?:slots|metrics|health)")
+
+
 def docker_exec_read(container: str, url: str, fail: bool = True) -> bytes:
-    """Read an internal model endpoint without publishing its port on the network."""
+    """Read an internal model endpoint without publishing its port on the network.
+
+    The Docker socket is root-equivalent, so only one fixed kind of command is ever sent through it: curl against a
+    llama-server status endpoint on 127.0.0.1 inside a container whose name has the plain Docker name form."""
+    if not EXEC_CONTAINER.fullmatch(container) or not EXEC_URL.fullmatch(url):
+        raise OSError("docker exec refused: container or URL is not an allowed form")
     command = ["curl", "--max-time", "2", "-fsS" if fail else "-sS", url]
     payload = json.dumps({"AttachStdout": True, "AttachStderr": True, "Tty": True,
                           "Cmd": command}).encode("utf-8")
@@ -338,12 +334,12 @@ def config_assets() -> dict[str, tuple[str, ...]]:
         _config_cache.update(mtime=mtime, assets=assets)
         return assets
     except OSError:
-        return dict(ASSETS)
+        return {}
 
 
 def model_files(alias: str) -> list[Path]:
     """Model files as this container sees them: the fast volume first, then the legacy MODEL_DIR mount."""
-    relative = config_assets().get(alias) or ASSETS.get(alias, ())
+    relative = config_assets().get(alias, ())
     return [MODEL_FAST / file if (MODEL_FAST / file).is_file() or not (MODEL_ROOT / file).is_file() else MODEL_ROOT / file
             for file in relative]
 
@@ -404,8 +400,7 @@ def config_catalog() -> list[dict]:
 def catalog_models(models: list[dict]) -> list[dict]:
     if models:
         return models
-    entries = config_catalog() or [{"alias": alias, "context": context, "vision": "Vision" in alias or "VL-8B" in alias, "description": ""}
-                                   for alias, context in CONTEXTS.items()]
+    entries = config_catalog()
     return [{"id": item["alias"], "description": item["description"] or "Модель из конфигурации llama-swap; шлюз сейчас остановлен.",
              "context_length": item["context"], "status": {"value": "unloaded"}, "gateway_offline": True,
              "architecture": {"input_modalities": ["text", "image"] if item["vision"] else ["text"]}}
@@ -841,21 +836,62 @@ def load_model(job_id: str, alias: str) -> None:
 
 
 class Handler(BaseHTTPRequestHandler):
-    def send_bytes(self, content: bytes, mime: str, status: int = 200) -> None:
+    def send_security_headers(self) -> None:
+        for name, value in security.SECURITY_HEADERS.items():
+            self.send_header(name, value)
+
+    def send_bytes(self, content: bytes, mime: str, status: int = 200, headers: dict[str, str] | None = None) -> None:
         self.send_response(status)
         self.send_header("Content-Type", mime)
         self.send_header("Content-Length", str(len(content)))
         self.send_header("Cache-Control", "no-store")
-        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_security_headers()
+        for name, value in (headers or {}).items():
+            self.send_header(name, value)
         self.end_headers()
         self.wfile.write(content)
+
+    def guarded(self) -> bool:
+        """False (after answering) when the request fails the Host / Origin / password checks of security.py."""
+        verdict = security.check(self.command, self.path, self.headers, PASSWORD, ALLOWED_HOSTS)
+        if verdict is None:
+            return True
+        status, message, headers = verdict
+        self.send_bytes(json.dumps({"error": message}, ensure_ascii=False).encode("utf-8"),
+                        "application/json; charset=utf-8", status, headers)
+        return False
+
+    def read_json(self, limit: int) -> dict | None:
+        """JSON object of the request body, or None after an error answer (bad size, bad JSON, not an object)."""
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            length = 0
+        if length <= 0 or length > limit:
+            self.send_json({"error": "Некорректный размер запроса."}, 413)
+            return None
+        try:
+            data = json.loads(self.rfile.read(length))
+        except ValueError as exc:
+            self.send_json({"error": f"Некорректный JSON: {exc}"}, 400)
+            return None
+        if not isinstance(data, dict):
+            self.send_json({"error": "Тело запроса должно быть JSON-объектом."}, 400)
+            return None
+        return data
 
     def send_json(self, data: dict, status: int = 200) -> None:
         self.send_bytes(json.dumps(data, ensure_ascii=False).encode("utf-8"), "application/json; charset=utf-8", status)
 
     def do_GET(self) -> None:
+        if not self.guarded():
+            return
         if self.path == "/health":
             self.send_json({"ok": True})
+        elif self.path == "/favicon.ico":
+            self.send_response(204)
+            self.send_security_headers()
+            self.end_headers()
         elif self.path == "/api/tests":
             self.send_json(tests_feed.payload())
         elif self.path == "/api/models":
@@ -885,6 +921,7 @@ class Handler(BaseHTTPRequestHandler):
             if clean == "/report":
                 self.send_response(301)
                 self.send_header("Location", "/report/")
+                self.send_security_headers()
                 self.end_headers()
                 return
             if not file and (clean.startswith("/report/") or clean in DOWNLOADS):
@@ -899,6 +936,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header("Content-Type", mime)
                 self.send_header("Cache-Control", "no-store")
+                self.send_security_headers()
                 body = target.read_bytes()
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
@@ -921,6 +959,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_bytes(path.read_bytes(), mime)
 
     def do_POST(self) -> None:
+        if not self.guarded():
+            return
         if self.path in ("/api/start", "/api/chat") and (busy := video_busy()):
             self.send_json({"error": busy}, 409)
             return
@@ -937,11 +977,9 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_json(timer_snapshot())
                 return
             try:
-                length = int(self.headers.get("Content-Length", "0"))
-                if length <= 0 or length > 4096:
-                    self.send_json({"error": "Некорректный размер запроса."}, 413)
+                data = self.read_json(4096)
+                if data is None:
                     return
-                data = json.loads(self.rfile.read(length))
                 seconds = data.get("seconds")
                 if isinstance(seconds, bool) or not isinstance(seconds, int) or not 1 <= seconds <= 604800:
                     self.send_json({"error": "Укажите целое число секунд от 1 до 604800."}, 400)
@@ -962,13 +1000,11 @@ class Handler(BaseHTTPRequestHandler):
             return
         if self.path == "/api/unload":
             try:
-                length = int(self.headers.get("Content-Length", "0"))
-                if length <= 0 or length > 4096:
-                    self.send_json({"error": "Некорректный размер запроса."}, 413)
+                data = self.read_json(4096)
+                if data is None:
                     return
-                data = json.loads(self.rfile.read(length))
                 alias = str(data.get("model_key") or "")
-                if alias not in config_assets() and alias not in ASSETS:
+                if alias not in config_assets():
                     self.send_json({"error": "Неизвестная модель."}, 404)
                     return
                 _, running, error = gateway_snapshot()
@@ -990,13 +1026,11 @@ class Handler(BaseHTTPRequestHandler):
             return
         if self.path == "/api/start":
             try:
-                length = int(self.headers.get("Content-Length", "0"))
-                if length <= 0 or length > 4096:
-                    self.send_json({"error": "Некорректный размер запроса."}, 413)
+                data = self.read_json(4096)
+                if data is None:
                     return
-                data = json.loads(self.rfile.read(length))
                 alias = str(data.get("model_key") or "")
-                if alias not in config_assets() and alias not in ASSETS:
+                if alias not in config_assets():
                     self.send_json({"error": "Неизвестная модель."}, 404)
                     return
                 global active_job_id
@@ -1017,17 +1051,18 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"error": "Управление моделями доступно через llama-swap и Open WebUI."}, 501)
             return
         try:
-            length = int(self.headers.get("Content-Length", "0"))
-            if length <= 0 or length > 32 * 1024 * 1024:
-                self.send_json({"error": "Некорректный размер запроса."}, 413)
+            data = self.read_json(32 * 1024 * 1024)
+            if data is None:
                 return
-            data = json.loads(self.rfile.read(length))
             alias = str(data.get("model_key") or "")
             available = {str(item.get("id")) for item in gateway_json("/v1/models").get("data", [])}
             if alias not in available:
                 self.send_json({"error": "Модель отсутствует в каталоге шлюза."}, 404)
                 return
             payload = data.get("payload") or {}
+            if not isinstance(payload, dict):
+                self.send_json({"error": "payload должен быть JSON-объектом."}, 400)
+                return
             payload["model"] = alias
             request = urllib.request.Request(
                 GATEWAY + "/v1/chat/completions", data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),

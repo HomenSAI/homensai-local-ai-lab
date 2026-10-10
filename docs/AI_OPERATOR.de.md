@@ -29,13 +29,22 @@ Wenn Sie den Server dennoch einem entfernten Assistenten öffnen, stellen Sie ih
 
 ```
 Du bist Installateur und Supervisor dieses Projekts „Local AI Server“ (lies AGENTS.md / CLAUDE.md, docs/INSTALL.de.md, docs/AI_OPERATOR.de.md).
-1. Installiere es auf diesem Rechner nach docs/INSTALL.de.md: führe `python scripts/install.py doctor` aus, behebe die Meldungen, dann init, build, up, verify.
+1. Installiere es auf diesem Rechner nach docs/INSTALL.de.md: führe `python scripts/install.py doctor` aus, behebe die Meldungen, dann init, build, up, verify. `doctor` lädt das 5,6-GB-CUDA-Prüfimage nie von selbst: frage mich vor `doctor --pull`. Auf einem PC ohne NVIDIA-GPU `--no-gpu` verwenden.
    Frage mich vor jeder unumkehrbaren Aktion, vor Downloads über 1 GB und bei jeder Entscheidung, die ich treffen muss (Modellordner, Netzwerkadresse).
 2. Lege die von mir genannten Modelle wie in Abschnitt 4.5 ins Docker-Volume. Erfinde keine Download-Quellen; prüfe SHA-256.
 3. Führe die gewünschten Tests auf den gewünschten Modellen aus (Ergebnisdateien: docs/RESULTS_FORMAT.md). Ein Modell nach dem anderen; das Gateway wechselt Modelle selbst.
 4. Überwache: prüfe nach jedem Test die Plausibilität, wiederhole verdächtige Läufe und berichte mir in einer kurzen Tabelle: Modell, Test, Punktzahl, Geschwindigkeit, Auffälligkeiten.
 5. Öffne Konsole und Gateway nie ins Internet, schreibe keine Geheimnisse in Dateien, die in Git landen, lösche keine meiner Daten.
 ```
+
+## Wie die Konsole Skripte und Assistenten behandelt
+
+Die Konsole prüft jede Anfrage ([API.md](API.md), [SECURITY.md](../SECURITY.md)). Ihre Befehle müssen das einhalten; eine Ablehnung ist eine Information, kein Hindernis, das man umgeht:
+
+- `POST`-Aufrufe brauchen `-H "Content-Type: application/json"` (auch ohne Body), z. B. `curl -X POST http://localhost:8766/api/start -H "Content-Type: application/json" -d '{"model_key":"..."}'`. `415` heißt: Der Header fehlt.
+- Hat der Mensch `AI_CONSOLE_PASSWORD` gesetzt, fragen Sie ihn danach und verwenden `curl -u any:PASSWORT`; schreiben Sie es nie in Dateien, die in Git landen, in Ergebnisdateien oder in einen Bericht. `401` heißt: Passwort nötig.
+- `421` heißt: nicht erlaubter Hostname; verwenden Sie `localhost` oder die IP-Adresse; fragen Sie den Menschen, bevor Sie Namen in `AI_CONSOLE_ALLOWED_HOSTS` eintragen.
+- Schalten Sie diese Prüfungen nicht ab, ändern Sie weder `console/security.py` noch das Passwort, um einen Aufruf durchzubringen; melden Sie die Ablehnung dem Menschen.
 
 ## Die Überwachungsschleife (was der Assistent tut)
 
@@ -52,4 +61,6 @@ Du bist Installateur und Supervisor dieses Projekts „Local AI Server“ (lies 
 - Ergebnisse früherer Läufe nie ändern oder löschen; neue Zeilen anhängen (das Archiv behält alte Werte, aber die Historie ist der Beleg).
 - Keine Prompts oder Antworten mit personenbezogenen Daten in Git; das Repository soll teilbar sein (Ergebnisse unter CC BY 4.0 mit Nennung von <https://homensai.com>).
 - Vor Folgendem den Menschen fragen: Dateien oder Volumes löschen, Netzwerkadressen in `.env` ändern, Ports öffnen, große Dateien laden, etwas veröffentlichen.
+- Den Schutz der Konsole nicht abschwächen (Host-/Origin-/Passwort-Prüfung, die feste Form von `docker exec`) und das Passwort nie veröffentlichen; wird ein Aufruf abgelehnt, das melden.
+- Ein Modell, das nicht geladen wurde, wird als `{"model": ..., "load_ok": false, "error": "kurzer Grund"}` erfasst (keine Pfade in `error`); es wird als fehlgeschlagen angezeigt, nicht versteckt. Erhält eine Ergebniszeile `invalid_items`, lieferte der Prüfer unmögliche Punktzahlen: Prüfer korrigieren und eine neue Zeile anhängen ([RESULTS_FORMAT.md](RESULTS_FORMAT.md)).
 - Schlägt ein Befehl fehl, das Log lesen (`docker logs <Container>`), die Ursache beheben, nicht blind wiederholen.

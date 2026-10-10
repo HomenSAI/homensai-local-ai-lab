@@ -319,12 +319,16 @@ services:
       - ai-console-state:/state
     environment:
       AI_CONSOLE_PORT: "8766"
+      AI_CONSOLE_PASSWORD: ${AI_CONSOLE_PASSWORD:-}
+      AI_CONSOLE_ALLOWED_HOSTS: ${AI_CONSOLE_ALLOWED_HOSTS:-}
       AI_GATEWAY_URL: http://llama-swap-gateway:8080
       MODEL_DIR: /models
       PUBLIC_REPO_URL: ${PUBLIC_REPO_URL:-}
       VIDEO_CONTAINER: video-generation-comfyui-video-1   # separate project Video Studio; only used to refuse starting an LLM while it holds the GPU
       NVIDIA_DRIVER_CAPABILITIES: compute,utility
     read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
     tmpfs:
       - /tmp
     healthcheck:
