@@ -25,8 +25,8 @@
    "sha256": "9c6d353ee6304422cbad60986477ec80003ee96916f5536328e3dd5826afb17a"
   },
   "CHANGELOG.md": {
-   "bytes": 12874,
-   "sha256": "86f79b100ff7a5e79471fc76f89fa1f902f0e10f65b3298759bc1b104ae32740"
+   "bytes": 13829,
+   "sha256": "94595454aab96fae9d7027d21ab376933230479be61a35d74bc54f1dd7294dbc"
   },
   "CLAUDE.md": {
    "bytes": 1687,
@@ -741,16 +741,16 @@
    "sha256": "01b4c70b532533219c5ca0838796e4fbc43913b1189869116f375e1c2642eea7"
   },
   "tests/virtual-3080/README.md": {
-   "bytes": 5915,
-   "sha256": "b1de01d108a4473673af61b515e491ce187c6c514ba96683f09340abfac47b14"
+   "bytes": 6059,
+   "sha256": "155d393e94522033261082afcf56f31aba6be794c8f0a26a390d2934e32fd53d"
   },
   "tests/virtual-3080/curl": {
    "bytes": 1127,
    "sha256": "7b885057a56036e7520c74c3895b0d4dae90ecd203ec3e4ecebbb7032202edf2"
   },
   "tests/virtual-3080/fake_llama.py": {
-   "bytes": 19005,
-   "sha256": "5562c765e9c38e211cfc750f58aa6a57d4b77a816b473e64da896e2cb613f3b4"
+   "bytes": 19838,
+   "sha256": "41c252659d43dc596dfedd39726dd79076ffdc5bf1d8c09e4d3e19b5a58cadbf"
   },
   "tests/virtual-3080/make_models.py": {
    "bytes": 1970,

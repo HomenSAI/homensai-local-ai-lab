@@ -38,6 +38,8 @@ docker compose --profile bench up -d --build bench-runner
 
 Then open http://localhost:8766/ (console), http://localhost:8766/report/progress.html (test progress) and http://localhost:3010/ (versions).
 
+Test report of 10.10.2026 (in Russian): [REPORT.ru.md](REPORT.ru.md).
+
 **To remove it:** `docker compose --profile bench --profile gateway down`, `docker volume rm llm-models-fast`, delete `/usr/local/bin/nvidia-container-runtime-hook` and `/usr/local/bin/nvidia-smi`, restart Docker.
 
 ## Русский
@@ -46,4 +48,4 @@ Then open http://localhost:8766/ (console), http://localhost:8766/report/progres
 
 **Что подменено:** драйвер NVIDIA в Docker (программа с именем, которое ищет Docker; копирует виртуальную `nvidia-smi` в каждый контейнер с GPU), `nvidia-smi` («NVIDIA GeForce RTX 3080, 10240 MiB», занятая память и загрузка — от работающих виртуальных моделей), llama.cpp и llama-swap (одна программа на Python с теми же путями и API; видеопамять = размер файла + кэш контекста; модель, которая не помещается, падает с «out of memory», как настоящая), файлы моделей (разреженные `.gguf` правдоподобного размера, почти не занимают диск).
 
-**Шаги** — те же команды, что в английском разделе выше: 1) драйвер в `/usr/local/bin` и перезапуск Docker; 2) система по руководству (путь для Linux), но вместо сборки CUDA-образов — `docker build -t local/ai-server-llama-swap:260 tests/virtual-3080` и `make_models.py` для файлов моделей, `build --no-gpu`; 3) тесты одной командой. Затем откройте консоль, ход тестов и версии по ссылкам выше. **Удалить:** остановить сервисы, удалить том `llm-models-fast`, удалить два файла из `/usr/local/bin`, перезапустить Docker.
+**Шаги** — те же команды, что в английском разделе выше: 1) драйвер в `/usr/local/bin` и перезапуск Docker; 2) система по руководству (путь для Linux), но вместо сборки CUDA-образов — `docker build -t local/ai-server-llama-swap:260 tests/virtual-3080` и `make_models.py` для файлов моделей, `build --no-gpu`; 3) тесты одной командой. Затем откройте консоль, ход тестов и версии по ссылкам выше. Отчёт о проверке 10.10.2026: [REPORT.ru.md](REPORT.ru.md). **Удалить:** остановить сервисы, удалить том `llm-models-fast`, удалить два файла из `/usr/local/bin`, перезапустить Docker.

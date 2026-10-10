@@ -142,8 +142,11 @@ class ModelServer:
         if path in ("/v1/chat/completions", "/chat/completions", "/v1/completions", "/completion"):
             self.busy = True
             try:
-                time.sleep(0.05)
-                return self.chat(body or {})
+                status, reply = self.chat(body or {})
+                # take a twentieth of the simulated time (1-4 s), so the 0.5 s samplers of the tests see the load
+                t = reply.get("timings", {}) if isinstance(reply, dict) else {}
+                time.sleep(min(4.0, max(1.0, (t.get("prompt_ms", 0) + t.get("predicted_ms", 0)) / 20000)))
+                return status, reply
             finally:
                 self.busy = False
         return 404, {"error": {"code": 404, "message": "File Not Found"}}
@@ -218,9 +221,16 @@ def llama_bench(argv):
 
 # ---------------------------------------------------------------- llama-swap
 def read_config(path):
-    models, alias, in_models = {}, None, False
+    models, alias, in_models, quoted = {}, None, False, None
     for line in open(path, encoding="utf-8"):
         line = line.rstrip("\n")
+        if quoted:                               # a quoted value over several lines (YAML folds them with spaces)
+            key = quoted
+            models[alias][key] += " " + line.strip()
+            if line.rstrip().endswith("'"):
+                models[alias][key] = " ".join(models[alias][key][1:-1].replace("''", "'").split())
+                quoted = None
+            continue
         if re.match(r"^models:\s*$", line):
             in_models = True
         elif in_models and re.match(r"^\S", line):
@@ -233,6 +243,8 @@ def read_config(path):
             if m.group(1) == "description" and value[:1] in "'\"":
                 value = value[1:-1]
             models[alias][m.group(1)] = value
+            if value[:1] == "'" and (len(value) == 1 or not value.endswith("'")):
+                quoted = m.group(1)
         elif in_models and alias and line.strip() == "- image":
             models[alias]["vision"] = True
     for alias, item in models.items():
