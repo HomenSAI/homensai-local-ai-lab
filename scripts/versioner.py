@@ -36,7 +36,8 @@ def git(*args, check=True):
     command = ["git", "-c", f"http.extraHeader=Authorization: token {token}", "-C", WORK, *args]
     done = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if check and done.returncode:
-        raise RuntimeError(f"git {args[0]} failed: {done.stderr.strip()[:300].replace(token, '***')}")
+        message = done.stderr.strip()[:300]
+        raise RuntimeError(f"git {args[0]} failed: {message.replace(token, '***') if token else message}")  # an empty token would mask every character
     return done.stdout.strip()
 
 

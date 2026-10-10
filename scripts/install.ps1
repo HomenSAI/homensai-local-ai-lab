@@ -9,12 +9,13 @@
   powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init       # .env, folders, placeholders, Docker network and model volume
   powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build      # base images and gateway (15-40 min the first time)
   powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up         # console, report, Git and the gateway
+  powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git        # local Git server for the report versions
   powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify     # HTTP checks of every part
-  powershell -ExecutionPolicy Bypass -File scripts\install.ps1 all        # doctor + init + build + up + verify
+  powershell -ExecutionPolicy Bypass -File scripts\install.ps1 all        # doctor + init + build + up + git + verify
   Flags: -Pull (doctor downloads the 5.6 GB CUDA test image; ask the owner first), -NoGpu (PC without an NVIDIA GPU).
 #>
 param(
-  [Parameter(Position = 0)][ValidateSet("doctor", "init", "build", "up", "verify", "all")][string]$Command,
+  [Parameter(Position = 0)][ValidateSet("doctor", "init", "build", "up", "git", "verify", "all")][string]$Command,
   [switch]$Pull,
   [switch]$NoGpu
 )
@@ -152,6 +153,94 @@ function Invoke-Up {
   return $true
 }
 
+# Local Git server for the report versions: the same as scripts/setup_git.py (Gitea user, token, repository, SSH key,
+# versioner). Safe to repeat: existing user, token, repository and key are reused. Secrets stay in secrets/.
+function Invoke-GitApi([string]$Method, [string]$Url, $Body, [string]$Auth) {
+  $headers = @{}
+  if ($Auth) { $headers["Authorization"] = $Auth }
+  $json = $null
+  if ($null -ne $Body) { $json = [System.Text.Encoding]::UTF8.GetBytes(($Body | ConvertTo-Json -Compress)) }
+  try {
+    $r = Invoke-WebRequest -Uri $Url -Method $Method -Headers $headers -Body $json -ContentType "application/json" -UseBasicParsing -TimeoutSec 30
+    $data = $null; if ($r.Content) { $data = $r.Content | ConvertFrom-Json }
+    return @{ Status = [int]$r.StatusCode; Data = $data }
+  } catch {
+    if ($_.Exception.Response) { return @{ Status = [int]$_.Exception.Response.StatusCode; Data = $_.ErrorDetails.Message } }
+    return @{ Status = 0; Data = $_.Exception.Message }
+  }
+}
+
+function Invoke-GitSetup {
+  $dotenv = Read-DotEnv
+  $user = $dotenv["GITEA_REPORT_OWNER"]; if (-not $user) { $user = "reports-admin" }
+  $repo = $dotenv["GITEA_REPORT_REPO"]; if (-not $repo) { $repo = "model-test-reports" }
+  $port = $dotenv["GITEA_WEB_PORT"]; if (-not $port) { $port = "3010" }
+  $api = "http://127.0.0.1:$port/api/v1"
+  $secrets = Join-Path $Root "secrets"
+  New-Item -ItemType Directory -Force -Path $secrets | Out-Null
+  $utf8 = New-Object System.Text.UTF8Encoding $false
+  $tokenFile = Join-Path $secrets "gitea-token"; $adminFile = Join-Path $secrets "gitea-admin.txt"
+  if (-not (Test-Path $tokenFile)) { [System.IO.File]::WriteAllText($tokenFile, "", $utf8) }
+  Invoke-Compose @("up", "-d", "gitea") | Out-Null
+  $healthy = $false
+  for ($i = 0; $i -lt 60; $i++) {
+    if ((Invoke-DockerCli @("inspect", "-f", "{{.State.Health.Status}}", "ai-gitea")).Out -eq "healthy") { $healthy = $true; break }
+    Start-Sleep -Seconds 3
+  }
+  if (-not $healthy) { Say "FAIL" "Gitea did not become healthy; see: docker logs ai-gitea"; return $false }
+
+  $password = $null
+  if (Test-Path $adminFile) {
+    foreach ($line in Get-Content $adminFile -Encoding UTF8) { if ($line -like "password:*") { $password = $line.Substring(9).Trim() } }
+  }
+  if (-not $password) {
+    $bytes = New-Object byte[] 18
+    (New-Object System.Security.Cryptography.RNGCryptoServiceProvider).GetBytes($bytes)
+    $password = [Convert]::ToBase64String($bytes).Replace("+", "-").Replace("/", "_")
+    $created = Invoke-DockerCli @("exec", "ai-gitea", "gitea", "admin", "user", "create", "--admin", "--username", $user, "--password", $password,
+                                  "--email", "$user@local.invalid", "--must-change-password=false")
+    if ($created.Code -ne 0) {
+      if ($created.Out -notmatch "already exists") { Say "FAIL" ("Gitea user creation failed: " + $created.Out); return $false }
+      Invoke-DockerCli @("exec", "ai-gitea", "gitea", "admin", "user", "change-password", "--username", $user, "--password", $password,
+                         "--must-change-password=false") -Check | Out-Null
+    }
+    [System.IO.File]::WriteAllText($adminFile, "user: $user`npassword: $password`nweb: http://127.0.0.1:$port/`n", $utf8)
+    Say "ok" "Gitea administrator $user (login data in secrets\gitea-admin.txt)"
+  }
+  $basic = "Basic " + [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("${user}:$password"))
+  if (-not (Get-Content $tokenFile -Raw -ErrorAction SilentlyContinue)) {
+    $name = "versioner-" + (Get-Date -Format "yyyyMMddHHmmss")
+    $r = Invoke-GitApi "POST" "$api/users/$user/tokens" @{ name = $name; scopes = @("write:repository", "read:repository", "write:user", "read:user") } $basic
+    if ($r.Status -ne 200 -and $r.Status -ne 201) { Say "FAIL" ("token creation failed: " + $r.Status + " " + $r.Data); return $false }
+    [System.IO.File]::WriteAllText($tokenFile, $r.Data.sha1, $utf8)
+    Say "ok" "access token for the versioner (secrets\gitea-token)"
+  }
+  $token = "token " + (Get-Content $tokenFile -Raw).Trim()
+  if ((Invoke-GitApi "GET" "$api/repos/$user/$repo" $null $token).Status -eq 404) {
+    $r = Invoke-GitApi "POST" "$api/user/repos" @{ name = $repo; private = $true; auto_init = $false; default_branch = "main"
+      description = "Versions of the local AI model test reports (created by report-versioner)" } $token
+    if ($r.Status -ne 200 -and $r.Status -ne 201) { Say "FAIL" ("repository creation failed: " + $r.Status + " " + $r.Data); return $false }
+    Say "ok" "private repository $user/$repo"
+  }
+  $key = Join-Path $secrets "id_ed25519"
+  if (-not (Test-Path $key) -and (Get-Command ssh-keygen -ErrorAction SilentlyContinue)) {
+    & cmd /c "ssh-keygen -q -t ed25519 -N `"`" -C model-test-reports -f `"$key`"" | Out-Null
+  }
+  if (Test-Path "$key.pub") {
+    $public = (Get-Content "$key.pub" -Raw).Trim()
+    $keys = Invoke-GitApi "GET" "$api/user/keys" $null $token
+    $known = $false
+    foreach ($k in @($keys.Data)) { if ($k.key -and ($k.key.Split(" ")[0..1] -join " ") -eq ($public.Split(" ")[0..1] -join " ")) { $known = $true } }
+    if ($keys.Status -eq 200 -and -not $known) { Invoke-GitApi "POST" "$api/user/keys" @{ title = "workstation"; key = $public } $token | Out-Null }
+    Say "ok" "SSH key for cloning the versions (secrets\id_ed25519)"
+  } else {
+    Say "warn" "ssh-keygen not found: no SSH key. The versioner works without it; clone over HTTP with the login in secrets\gitea-admin.txt"
+  }
+  Invoke-Compose @("up", "-d", "report-versioner") | Out-Null
+  Say "ok" ("Git is ready: http://127.0.0.1:$port/$user/$repo  (versions: tags v0001, v0002 ..., stage-<id>-done, final-<date>)")
+  return $true
+}
+
 function Get-Http([string]$Url) {
   try { return [int](Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 8).StatusCode }
   catch { if ($_.Exception.Response) { return [int]$_.Exception.Response.StatusCode } return $_.Exception.Message }
@@ -177,10 +266,10 @@ function Invoke-Verify {
   return $good
 }
 
-$steps = @{ doctor = { Invoke-Doctor }; init = { Invoke-Init }; build = { Invoke-Build }; up = { Invoke-Up }; verify = { Invoke-Verify } }
+$steps = @{ doctor = { Invoke-Doctor }; init = { Invoke-Init }; build = { Invoke-Build }; up = { Invoke-Up }; git = { Invoke-GitSetup }; verify = { Invoke-Verify } }
 try {
   if ($Command -eq "all") {
-    foreach ($name in @("doctor", "init", "build", "up")) { if (-not (& $steps[$name])) { Say "FAIL" ("stopped at step '" + $name + "'"); exit 1 } }
+    foreach ($name in @("doctor", "init", "build", "up", "git")) { if (-not (& $steps[$name])) { Say "FAIL" ("stopped at step '" + $name + "'"); exit 1 } }
     Start-Sleep -Seconds 40
     if (Invoke-Verify) { exit 0 } else { exit 1 }
   }

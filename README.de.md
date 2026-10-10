@@ -13,7 +13,7 @@ Ein selbst gehosteter Stack für einen Arbeitsplatzrechner mit einer GPU (entwic
 - **Konsole** (Port 8766, **Deutsch / English / Русский**): Modellkatalog mit Start/Stopp, Chat, GPU-Live-Telemetrie, Diagnose, Entlade-Timer, Testergebnisse mit Fortschritt und Restzeitschätzung und die **Berichtsseite**.
 - **Berichte**: Benchmark-Ergebnisse werden zu einem Live-Bericht und einem SQLite-Archiv, das ältere Ergebnisse nie verliert.
 - **Versionsverlauf**: Ein lokales Gitea bewahrt jede Version der Berichte auf (Tags `v0001` …, `stage-<Phase>-done`, `final-<Datum>`).
-- **Von einem KI-Assistenten betrieben:** Der Server ist darauf ausgelegt, von Claude oder ChatGPT (Agent mit Shell-Zugriff) installiert, gestartet und überwacht zu werden: Geben Sie ihm das Repository, er liest `AGENTS.md` / `CLAUDE.md`, installiert, führt die Tests aus und prüft die Ergebnisse. Der Server läuft auch ohne Assistenten. Siehe [docs/AI_OPERATOR.de.md](docs/AI_OPERATOR.de.md).
+- **Optional von einem KI-Assistenten betrieben:** Sie können den Server selbst installieren und nutzen; Sie können ihn auch Claude, ChatGPT/Codex oder einem anderen Agenten mit Shell-Zugriff übergeben, der `AGENTS.md` / `CLAUDE.md` liest, installiert, die Tests ausführt und die Ergebnisse prüft. Siehe [docs/AI_OPERATOR.de.md](docs/AI_OPERATOR.de.md) und „Selbst oder mit einem KI-Assistenten?“ unten.
 - **Veröffentlichte Ergebnisse:** [results-public/RESULTS.md](results-public/RESULTS.md) – 23 Modelle, 15 für die späteren Phasen zugelassen; wie sie entstanden (Serverkern → Claude als Supervisor → Ergebnisse): [docs/METHODOLOGY.de.md](docs/METHODOLOGY.de.md).
 - **Verwandtes Projekt:** Die Videogenerierung (Wan 2.1 + ComfyUI, Storyboard aus einer Idee von Ihrem lokalen LLM) ist ein eigenes Projekt, **Video Studio** (eigenes Repository, Port 8767); diese Konsole verlinkt darauf.
 
@@ -27,6 +27,7 @@ powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init     # .env, Or
 #  .env im Editor öffnen, MODEL_DIR setzen und die .gguf-Modelle ablegen – siehe Anleitung, Abschnitt 4.5
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build    # erster Build 15–40 Minuten
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git      # lokales Git, das jede Version der Berichte aufbewahrt
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify   # jede Zeile muss [ok] sein
 ```
 
@@ -40,10 +41,38 @@ python scripts/install.py init       # .env, Ordner, Platzhalter, Netzwerk, Volu
 #  .env bearbeiten (MODEL_DIR) und .gguf-Modelle bereitstellen – siehe Anleitung, Abschnitt 4.5
 python scripts/install.py build      # erster Build 15–40 Minuten
 python scripts/install.py up
+python scripts/install.py git
 python scripts/install.py verify
 ```
 
 Öffnen Sie **http://localhost:8766/**.
+
+## Selbst oder mit einem KI-Assistenten?
+
+**Ein KI-Assistent ist nicht nötig.** Installation, Start, Tests und Berichte erledigen Sie mit den Befehlen dieser Seite; Sie müssen einen Befehl in PowerShell einfügen und eine Zeile der `.env` im Editor ändern können.
+
+| Aufgabe | Selbst | Was ein KI-Assistent hinzufügt |
+|---|---|---|
+| Installieren | die sechs Befehle oben, einer nach dem anderen | führt sie für Sie aus und behebt, was `doctor` / `verify` melden |
+| Modelle | die Dateien aus [MODELS.md](MODELS.md) laden und ins Docker-Volume legen (Anleitung, Abschnitt 4.5) | wählt Modelle für Ihre Karte, prüft SHA-256 |
+| Benutzen | die Konsole im Browser (unten) | — |
+| Tests starten | ein Befehl (unten) | überwacht den Lauf, prüft die Zahlen auf Plausibilität, wiederholt verdächtige Läufe |
+| Etwas geht nicht | Anleitung, Abschnitt 11 „Fehlerbehebung“ | liest die Container-Logs und behebt die Ursache |
+
+Diese Schritte kann nur ein Assistent ausführen, **der Befehle auf diesem Computer starten kann** (zum Beispiel Claude Code oder ein Codex-Agent); geben Sie ihm [PROMPT_FOR_AI.md](PROMPT_FOR_AI.md). Unter Windows nutzt er denselben PowerShell-Installer, der Server braucht also weiterhin nur Docker Desktop; der Assistent selbst kann eigene Voraussetzungen haben, siehe seine Dokumentation. Ein gewöhnlicher Browser-Chat installiert nichts, erklärt aber eine Fehlermeldung, die Sie einfügen.
+
+## Nach der Installation: was Sie benutzen
+
+| Was | Wo |
+|---|---|
+| Konsole: Modelle starten und stoppen, Chat, GPU-Last, Diagnose | http://localhost:8766/ |
+| Bericht mit allen Testergebnissen, Download als CSV und SQLite | http://localhost:8766/report/ |
+| Testfortschritt (Phasen, aktuelles Modell, Restzeit) | http://localhost:8766/report/progress.html |
+| OpenAI-kompatible API für andere Programme (Open WebUI, Skripte, IDEs) | http://localhost:8080/v1 |
+| Jede Version der Berichte (lokales Git) | http://localhost:3010/ (Zugangsdaten in `secrets/gitea-admin.txt`) |
+| Tests starten | `docker compose --profile bench up -d --build bench-runner` ([benchmarks/README.md](benchmarks/README.md)) |
+
+**Ohne GPU ausprobieren:** [tests/virtual-3080/](tests/virtual-3080/README.md) installiert das ganze System auf einem Linux-Rechner mit Docker und einer virtuellen RTX 3080 (simulierte Zahlen) – zum Kennenlernen oder um Änderungen zu testen.
 
 ## Dokumentation
 

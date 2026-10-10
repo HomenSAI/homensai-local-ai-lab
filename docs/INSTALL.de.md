@@ -75,6 +75,7 @@ powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init
 notepad .env
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify
 ```
 
@@ -89,10 +90,11 @@ python scripts/install.py init        # erstellt .env, Ordner, Platzhalter, Dock
 # jetzt .env bearbeiten: MODEL_DIR (und AI_CONSOLE_BIND_IP für Netzwerkzugriff), dann die Modelle bereitstellen (Abschnitt 4.5)
 python scripts/install.py build       # baut die Images (beim ersten Mal 15–40 Minuten)
 python scripts/install.py up          # startet alles
+python scripts/install.py git         # lokales Git, das jede Version der Berichte aufbewahrt
 python scripts/install.py verify      # HTTP-Prüfung jedes Teils
 ```
 
-`python scripts/install.py all` führt doctor, init, build, up und verify in einem Zug aus (nach dem Bearbeiten von `.env` verwenden). Jeder Schritt lässt sich gefahrlos wiederholen. Danach **http://localhost:8766/** öffnen.
+`python scripts/install.py all` führt doctor, init, build, up, git und verify in einem Zug aus (nach dem Bearbeiten von `.env` verwenden). Jeder Schritt lässt sich gefahrlos wiederholen. Danach **http://localhost:8766/** öffnen.
 
 - **GPU-Prüfung und das 5,6-GB-Image.** `doctor` prüft die GPU mit dem Image `nvidia/cuda:12.8.1-runtime-ubuntu24.04`. Ist es noch nicht auf dem PC, warnt `doctor` nur und überspringt die Prüfung; fragen Sie den Eigentümer und starten Sie `python scripts/install.py doctor --pull`, um es herunterzuladen (5,6 GB).
 - **PC ohne NVIDIA-GPU** (um Konsole, Bericht und Git auszuprobieren): `--no-gpu` an `doctor`, `build`, `up` und `verify` anhängen (oder an `all`). Das Gateway wird nicht gestartet, Modelle lassen sich nicht laden; die Konsole startet ohne GPU-Anforderung (`docker-compose.nogpu.yml`). Beim manuellen Start der Konsole: `docker compose -f docker-compose.yml -f docker-compose.nogpu.yml up -d ai-console`.
@@ -211,7 +213,8 @@ Das Gateway braucht etwa 30 s, bis es `healthy` ist, und startet **ohne geladene
 ### 4.8 Git-Server für Berichtsversionen einrichten
 
 ```
-python scripts/setup_git.py
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git     # Windows
+python scripts/install.py git                                   # Linux
 ```
 
 Das Skript startet Gitea, legt den Administrator, ein Zugriffstoken für den Versionierer, einen SSH-Schlüssel und das private Repository an und startet `report-versioner`. Passwörter und Schlüssel landen nur in `secrets/` (von Git ignoriert, nie veröffentlicht). Weboberfläche: `http://localhost:3010/` (Zugangsdaten in `secrets/gitea-admin.txt`). Versionen klonen:

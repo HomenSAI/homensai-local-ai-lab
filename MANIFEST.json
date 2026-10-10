@@ -9,8 +9,8 @@
    "sha256": "ded9f23a509b96724276948ec60172c230e01762f976a1a1f76c76080f14da51"
   },
   ".github/workflows/ci.yml": {
-   "bytes": 1632,
-   "sha256": "648c305074b6d7168428c4e673fc05919cc5120bb93553e05a6a530cd3496347"
+   "bytes": 1772,
+   "sha256": "10d1db607a00d7078dfb71e06576f805d6d7262df0e893e57c926e13294bcc4c"
   },
   ".github/workflows/release.yml": {
    "bytes": 1901,
@@ -21,16 +21,16 @@
    "sha256": "6cebaca65618a35af1c2b0e2f0162f54419076467ed1f27de8513f005312d32c"
   },
   "AGENTS.md": {
-   "bytes": 4078,
-   "sha256": "1e43d6b40b3ee736a0ba96c7a793671afb2ba5923b86cba05a307376b87845db"
+   "bytes": 4084,
+   "sha256": "9c6d353ee6304422cbad60986477ec80003ee96916f5536328e3dd5826afb17a"
   },
   "CHANGELOG.md": {
-   "bytes": 8807,
-   "sha256": "5a349dee6fb424a27f66392d1ff72d1f3c3980a8926d81fc9231dcc9d0bbd18a"
+   "bytes": 12874,
+   "sha256": "86f79b100ff7a5e79471fc76f89fa1f902f0e10f65b3298759bc1b104ae32740"
   },
   "CLAUDE.md": {
-   "bytes": 1681,
-   "sha256": "aa2aa3ce21703abe19f6dd66e5ba4b88967ff6fd8246e2949996adecc8fe7364"
+   "bytes": 1687,
+   "sha256": "09dd9c58da40b0d4d4228a54d502cbd9a8db607663940723f6ae81cc611a5646"
   },
   "CONTRIBUTING.md": {
    "bytes": 1826,
@@ -77,24 +77,24 @@
    "sha256": "62856e8aaac67e83cf6589462c9aa431fb8fb27d7dec50165153b9c046833c8a"
   },
   "PROMPT_FOR_AI.md": {
-   "bytes": 14851,
-   "sha256": "3ff115d3383fd690cde3e566c0e32dc932a95f66daa26aa8cb4f9e07719a00bc"
+   "bytes": 16655,
+   "sha256": "8795aa01853760a1867335359914ef009aca667e7ab9e0a4e95a6b02f7c5c696"
   },
   "PROVENANCE.md": {
    "bytes": 8858,
    "sha256": "f0390da035ac5fd73b5bcf089bf5632146b7a3180e4982fc9c476354e92ce216"
   },
   "README.de.md": {
-   "bytes": 6359,
-   "sha256": "3fdc7e1bdd7ededa67a97bf166b02739204f63d73fdd4a2362a93e2b1995b047"
+   "bytes": 8915,
+   "sha256": "b8c0eb8c7e5ed5bdb73b7f61cebb9b39145d47323a76a3cda71b6388ecb339e8"
   },
   "README.md": {
-   "bytes": 6254,
-   "sha256": "376f66934ee104cfa12d72e940030e7a733c560da8aa05cc2c534e29de4954c2"
+   "bytes": 8678,
+   "sha256": "45a3a2f6ee92e2a6ffad59f92c6db40501692dbb6f7cf95ba7494fa0e0ca5de4"
   },
   "README.ru.md": {
-   "bytes": 8726,
-   "sha256": "d6dc0ae32ee33445666973f1b4d274392be6a79dae6aba77a65713b3590c83dd"
+   "bytes": 12415,
+   "sha256": "d1c1eab8cc9056d288c01532cecdc33d3d9c067dda86efdf2bf8c6e9e9be0c64"
   },
   "SECURITY.md": {
    "bytes": 4173,
@@ -106,7 +106,7 @@
   },
   "VERSION": {
    "bytes": 6,
-   "sha256": "64d23f858ef51b0f996e4966d4e27c0371b437e2d2787890b1f7ad22d4ec5663"
+   "sha256": "78b591400c56b7b67b8cb3b2b8a8e65e9093897f02ce0878e6b5405c68620fa7"
   },
   "VERSIONS.md": {
    "bytes": 7453,
@@ -345,8 +345,8 @@
    "sha256": "53312e5aca154d3cb919b7b4e852f3883008de80b5e569b3e736b500d53831fe"
   },
   "docker-compose.yml": {
-   "bytes": 15114,
-   "sha256": "5fccf0a075719273250fc9831ef60dcca80a01c7a04ca98bf7b0865b9e05ae6f"
+   "bytes": 15221,
+   "sha256": "8c212826881e0285f9367adf135cca9ae2f3834870b2b5bb54a0a7a04b57080a"
   },
   "docker/bench-runner/Dockerfile": {
    "bytes": 233,
@@ -393,16 +393,16 @@
    "sha256": "86aadebb042a761c49f6d519fb3871fe358b90b40e58ae94e7dad727bab89197"
   },
   "docs/INSTALL.de.md": {
-   "bytes": 27544,
-   "sha256": "4b7acc3db6ff0bd87ec0b1a00520b7b128d66c1f7e91fc30689a4471f623edbb"
+   "bytes": 27831,
+   "sha256": "792e5fab52500f8b8fb03d902a9f99b7c92d9c35a8a91ba07acd1e06a3d10126"
   },
   "docs/INSTALL.en.md": {
-   "bytes": 25735,
-   "sha256": "cb56c60825e32db5af4126f8279ff8f6be1149a94f541c75099b20cff9b1a520"
+   "bytes": 26018,
+   "sha256": "9f419cfda60694f953e6e5ff239b5f658d2a5229ef8c2ec232540c44b090ab81"
   },
   "docs/INSTALL.ru.md": {
-   "bytes": 37070,
-   "sha256": "f6039625edb13eb29c57839fb42c8cec37ca929baafec4af3e718e9525bcfe81"
+   "bytes": 37396,
+   "sha256": "541e754bbf9fc79a62d8f16ea9c389f7bcbd17554546fd6ea53a30a5aa4b15fb"
   },
   "docs/METHODOLOGY.de.md": {
    "bytes": 5860,
@@ -585,12 +585,12 @@
    "sha256": "0edf893ade53e6726c1b1b9f42f644d1b3213286db4a2c05f599e24a311d2f18"
   },
   "scripts/install.ps1": {
-   "bytes": 10679,
-   "sha256": "636ced9053303b62c105f474dff4662c057989495a1dd27e6831a60c6a33c204"
+   "bytes": 16523,
+   "sha256": "008d179fece6ef1a896afea88468c29430d025c23989175e5d53458a0e6d2dcb"
   },
   "scripts/install.py": {
-   "bytes": 10696,
-   "sha256": "e889506dfa5bc6537ffb8cd2e87aba1d1d4720d32bd7724f30b071f3a644c839"
+   "bytes": 11247,
+   "sha256": "614492c8024f02412099326939ac02f25cf9a25e0d2294850823b8812d5e28d9"
   },
   "scripts/llama-server-entrypoint.sh": {
    "bytes": 1912,
@@ -641,8 +641,8 @@
    "sha256": "57e9be5ae3231c17556830553504b136409389d88067a524123954a67fdd2c1d"
   },
   "scripts/setup_git.py": {
-   "bytes": 5835,
-   "sha256": "70836eab884005e444e57df72d8895ad310a083601ee41952483a77154ecb459"
+   "bytes": 6291,
+   "sha256": "6407d5d53a48bd41a6f29231f039a6227515f954bb090a4aef765fc3f440fbb8"
   },
   "scripts/start-gateway.ps1": {
    "bytes": 2395,
@@ -709,8 +709,8 @@
    "sha256": "6da058ec4153f3d1328138d0b9ef4885630d1fb9f5dd49a6425b06c73cfb0d73"
   },
   "scripts/versioner.py": {
-   "bytes": 7327,
-   "sha256": "ea11550c4af53a650f74a8f0b570bcf229d05c4b287eeeb1cab015c5b72fc617"
+   "bytes": 7420,
+   "sha256": "08c637c592adf902eeb9a329088f8a2a68ddb5d2db84297e04295c775eeb751b"
   },
   "tests/helpers.py": {
    "bytes": 328,
@@ -735,6 +735,34 @@
   "tests/test_report_builder.py": {
    "bytes": 4153,
    "sha256": "ae447e2802efc8f84eb61db01ad5635c246c89cce224dccce413223d9dc00211"
+  },
+  "tests/virtual-3080/Dockerfile": {
+   "bytes": 1058,
+   "sha256": "01b4c70b532533219c5ca0838796e4fbc43913b1189869116f375e1c2642eea7"
+  },
+  "tests/virtual-3080/README.md": {
+   "bytes": 5915,
+   "sha256": "b1de01d108a4473673af61b515e491ce187c6c514ba96683f09340abfac47b14"
+  },
+  "tests/virtual-3080/curl": {
+   "bytes": 1127,
+   "sha256": "7b885057a56036e7520c74c3895b0d4dae90ecd203ec3e4ecebbb7032202edf2"
+  },
+  "tests/virtual-3080/fake_llama.py": {
+   "bytes": 18832,
+   "sha256": "6de513d6665828b63f2ca58acf5cb7be08de475c71aefbbf49722332b5dfd443"
+  },
+  "tests/virtual-3080/make_models.py": {
+   "bytes": 1897,
+   "sha256": "ce59555fbad9e6cf841311386c9872372f90ba381ec93777949e5d21357d17e8"
+  },
+  "tests/virtual-3080/nvidia-container-runtime-hook": {
+   "bytes": 1275,
+   "sha256": "e49a485cf8114e8d28fd641be86d3bdb0b986bb92ff1f128375572dbcf426b1b"
+  },
+  "tests/virtual-3080/nvidia-smi": {
+   "bytes": 1979,
+   "sha256": "122167e61d41d79034e42e202940e2db6dd35c51e5342cda5bdb08f4e24b8650"
   }
  }
 }

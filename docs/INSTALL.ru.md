@@ -75,6 +75,7 @@ powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init
 notepad .env
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify
 ```
 
@@ -89,10 +90,11 @@ python scripts/install.py init        # создаст .env, папки, заг�
 # отредактируйте .env: MODEL_DIR (и AI_CONSOLE_BIND_IP для доступа по сети), затем разместите модели (раздел 4.5)
 python scripts/install.py build       # соберёт образы (в первый раз 15–40 минут)
 python scripts/install.py up          # запустит всё
+python scripts/install.py git         # локальный Git, который хранит каждую версию отчётов
 python scripts/install.py verify      # HTTP-проверка каждой части
 ```
 
-`python scripts/install.py all` выполняет doctor, init, build, up и verify подряд (запускайте после правки `.env`). Любой шаг можно безопасно повторять. Потом откройте **http://localhost:8766/**.
+`python scripts/install.py all` выполняет doctor, init, build, up, git и verify подряд (запускайте после правки `.env`). Любой шаг можно безопасно повторять. Потом откройте **http://localhost:8766/**.
 
 - **Проверка видеокарты и образ на 5,6 ГБ.** `doctor` проверяет видеокарту образом `nvidia/cuda:12.8.1-runtime-ubuntu24.04`. Если его ещё нет на ПК, `doctor` только предупреждает и пропускает проверку; спросите владельца и запустите `python scripts/install.py doctor --pull`, чтобы скачать образ (5,6 ГБ).
 - **ПК без видеокарты NVIDIA** (чтобы попробовать консоль, отчёт и Git): добавьте `--no-gpu` к `doctor`, `build`, `up` и `verify` (или к `all`). Шлюз не запускается, модели загрузить нельзя; консоль стартует без запроса видеокарты (`docker-compose.nogpu.yml`). Если запускаете консоль вручную: `docker compose -f docker-compose.yml -f docker-compose.nogpu.yml up -d ai-console`.
@@ -211,7 +213,8 @@ docker compose --profile gateway up -d llama-swap-gateway
 ### 4.8 Настройте Git-сервер для версий отчётов
 
 ```
-python scripts/setup_git.py
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git     # Windows
+python scripts/install.py git                                   # Linux
 ```
 
 Скрипт запускает Gitea, создаёт администратора, токен для версионера, SSH-ключ и закрытый репозиторий, запускает `report-versioner`. Пароли и ключи записываются только в `secrets/` (игнорируется Git, никогда не публикуется). Веб-интерфейс: `http://localhost:3010/` (логин в `secrets/gitea-admin.txt`). Клонировать версии:

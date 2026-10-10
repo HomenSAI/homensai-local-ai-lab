@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.4.0 - virtual RTX 3080, Git setup in the installer, documentation for installing without an AI assistant (2026-10-10)
+
+English
+- Virtual RTX 3080 (`tests/virtual-3080/`): installs and runs the whole system on a Linux machine with Docker and no GPU - a virtual NVIDIA driver for Docker (`--gpus all` works, `nvidia-smi` is injected into GPU containers), a stand-in for llama.cpp / llama-swap / llama-bench with the same paths and APIs and a 10 GB memory model (a model that does not fit fails with "out of memory"), and sparse model files. Used for a full test from a fresh download: install, console, chat, all test phases, report, progress page, Git versions.
+- Installers: new step `git` (`install.ps1 git` on Windows, `install.py git` on Linux) sets up the local Git server for the report versions and is part of `all`; on Windows it needs no Python. `setup_git.py` no longer stops when `ssh-keygen` is missing (the SSH key is only for cloning the versions yourself) and starts the versioner without rebuilding it.
+- Fixes found by the virtual test: the test runner container had no GPU access (`gpus: all`), so on the real card the peak video memory of the tests would have been recorded as 0; the versioner masked every character of its error messages when the token was still empty.
+- Documentation: README (EN/RU/DE) says plainly that an AI assistant is not required, what it adds, which assistants can do it and what to use after the installation (console, report, test progress, API, versions, tests); `PROMPT_FOR_AI.md` uses the PowerShell installer on Windows (no Python or Git) and includes the Git step; the guides list the `git` step.
+
+Русский
+- Виртуальная RTX 3080 (`tests/virtual-3080/`): ставит и запускает всю систему на Linux-машине с Docker без видеокарты — виртуальный драйвер NVIDIA для Docker (`--gpus all` работает, `nvidia-smi` появляется в контейнерах с GPU), замена llama.cpp / llama-swap / llama-bench с теми же путями и API и моделью памяти 10 ГБ (модель, которая не помещается, падает с «out of memory»), разреженные файлы моделей. С ним выполнена полная проверка с чистого скачивания: установка, консоль, диалог, все фазы тестов, отчёт, ход тестов, версии в Git.
+- Установщики: новый шаг `git` (`install.ps1 git` на Windows, `install.py git` на Linux) настраивает локальный Git для версий отчётов и входит в `all`; на Windows Python не нужен. `setup_git.py` больше не останавливается без `ssh-keygen` (SSH-ключ нужен только для собственного клонирования версий) и запускает версионер без пересборки.
+- Исправления по итогам виртуальной проверки: у контейнера раннера тестов не было доступа к видеокарте (`gpus: all`), поэтому на настоящей карте пик видеопамяти в тестах записался бы как 0; версионер маскировал каждую букву сообщений об ошибке, пока токен был пустым.
+- Документация: в README (EN/RU/DE) прямо сказано, что ИИ-ассистент не обязателен, что он добавляет, какой ассистент подходит и чем пользоваться после установки (консоль, отчёт, ход тестов, API, версии, тесты); `PROMPT_FOR_AI.md` на Windows использует установщик на PowerShell (без Python и Git) и включает шаг Git; в руководствах есть шаг `git`.
+
 ## 1.3.0 - console and report on HomenS.AI Style (2026-10-10)
 
 - The console (port 8766) and the report page (`/report/`) use HomenS.AI Style 1.6.0, the shared design of all HomenS.AI projects: header with the HomenS.AI logo, navigation, language switch and theme button, light and dark theme (the console was dark only), IBM Plex fonts, footer with the author links from the brand data, bottom navigation on phones.

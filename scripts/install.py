@@ -7,8 +7,9 @@
   python scripts/install.py init        # create .env, folders, placeholder files, Docker network and model volume
   python scripts/install.py build       # build the base images and the gateway (one at a time, low RAM use)
   python scripts/install.py up          # start console, report builder, report redirect, Git; start the gateway (--no-gpu: without the gateway)
+  python scripts/install.py git         # local Git server for the report versions (Gitea user, token, repository, versioner)
   python scripts/install.py verify      # HTTP checks of every part (run after `up`; --no-gpu skips the gateway check)
-  python scripts/install.py all         # doctor + init + build + up + verify
+  python scripts/install.py all         # doctor + init + build + up + git + verify
 
 Nothing here needs third-party Python packages. Every step is idempotent: run it again after fixing a problem.
 """
@@ -162,6 +163,13 @@ def up(no_gpu=False):
     return True
 
 
+def git_setup():
+    """Gitea user, token, repository and the report versioner (scripts/setup_git.py; safe to repeat)."""
+    done = run([sys.executable, str(ROOT / "scripts" / "setup_git.py")], check=False)
+    say("ok" if done.returncode == 0 else "FAIL", "local Git server for report versions" + ("" if done.returncode == 0 else ": see the message above"))
+    return done.returncode == 0
+
+
 def http(url, timeout=8):
     try:
         with urllib.request.urlopen(url, timeout=timeout) as response:
@@ -198,9 +206,9 @@ def main():
         raise SystemExit(__doc__)
     no_gpu, pull = "--no-gpu" in flags, "--pull" in flags
     steps = {"doctor": lambda: doctor(pull, no_gpu), "init": init, "build": lambda: build(no_gpu),
-             "up": lambda: up(no_gpu), "verify": lambda: verify(no_gpu)}
+             "up": lambda: up(no_gpu), "git": git_setup, "verify": lambda: verify(no_gpu)}
     if command == "all":
-        for name in ("doctor", "init", "build", "up"):
+        for name in ("doctor", "init", "build", "up", "git"):
             if not steps[name]():
                 raise SystemExit(f"stopped at step '{name}'")
         time.sleep(40)

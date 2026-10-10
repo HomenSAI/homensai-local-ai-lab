@@ -17,7 +17,7 @@ A self-hosted stack for a single-GPU workstation (developed on an RTX 3080 with 
 - **Console** (port 8766, **English / Deutsch / Русский**): model catalog with Start/Stop, chat, live GPU telemetry, diagnostics, unload timer, test results with progress and time-left estimate, and the **report** page.
 - **Reports**: benchmark results become a live report and a SQLite archive that never loses older results.
 - **Version history**: a local Gitea keeps every version of the reports (tags `v0001`..., `stage-<id>-done`, `final-<date>`).
-- **Run by an AI assistant:** the server is built to be installed, started and supervised by Claude or ChatGPT (an agent with shell access): hand it the repository, it reads `AGENTS.md` / `CLAUDE.md`, installs, runs the tests, checks the results. The server works without one. See [docs/AI_OPERATOR.en.md](docs/AI_OPERATOR.en.md).
+- **Optionally run by an AI assistant:** you can install and use the server yourself; you can also hand it to Claude, ChatGPT/Codex or another agent with shell access, which reads `AGENTS.md` / `CLAUDE.md`, installs, runs the tests and checks the results. See [docs/AI_OPERATOR.en.md](docs/AI_OPERATOR.en.md) and "Yourself or with an AI assistant?" below.
 - **Published results:** [results-public/RESULTS.md](results-public/RESULTS.md) - 23 models, 15 admitted to the later stages; how they were produced (server core -> Claude as supervisor -> results): [docs/METHODOLOGY.en.md](docs/METHODOLOGY.en.md).
 - **Related project:** video generation (Wan 2.1 + ComfyUI, storyboard drafted by your local LLM) is its own project, **Video Studio** (separate repository, port 8767); this console links to it.
 
@@ -31,6 +31,7 @@ powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init     # .env, fo
 #  open .env in Notepad, set MODEL_DIR and put your .gguf models in place - see the guide, section 4.5
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build    # first build 15-40 min
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git      # local Git that keeps every version of the reports
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify   # every line must be [ok]
 ```
 
@@ -44,10 +45,38 @@ python scripts/install.py init       # .env, folders, placeholders, network, vol
 #  edit .env (MODEL_DIR) and put your .gguf models in place - see the guide, section 4.5
 python scripts/install.py build      # first build 15-40 min
 python scripts/install.py up
+python scripts/install.py git
 python scripts/install.py verify
 ```
 
 Open **http://localhost:8766/**.
+
+## Yourself or with an AI assistant?
+
+**An AI assistant is not required.** Installing, starting, testing and reading the reports are done with the commands on this page; you need to paste a command into PowerShell and change one line of `.env` in Notepad.
+
+| Task | Yourself | What an AI assistant adds |
+|---|---|---|
+| Install | the six commands above, one at a time | runs them for you and fixes what `doctor` / `verify` report |
+| Models | download the files listed in [MODELS.md](MODELS.md), put them into the Docker volume (guide, section 4.5) | picks models for your card, checks SHA-256 sums |
+| Use | the console in the browser (below) | — |
+| Run the tests | one command (below) | watches the run, checks that the numbers are plausible, repeats suspicious runs |
+| Something fails | guide, section 11 "Troubleshooting" | reads the container logs and fixes the cause |
+
+Only an assistant **that can run commands on this computer** can do these steps (for example Claude Code or a Codex agent); paste [PROMPT_FOR_AI.md](PROMPT_FOR_AI.md) into it. On Windows it uses the same PowerShell installer, so the server still needs nothing besides Docker Desktop; the assistant itself may have its own requirements, see its documentation. A plain browser chat cannot install anything, but it can explain an error message you paste into it.
+
+## After the installation: what to use
+
+| What | Where |
+|---|---|
+| Console: start / stop models, chat, GPU load, diagnostics | http://localhost:8766/ |
+| Report with all test results, CSV and SQLite download | http://localhost:8766/report/ |
+| Test progress (stages, current model, time left) | http://localhost:8766/report/progress.html |
+| OpenAI-compatible API for other programs (Open WebUI, scripts, IDEs) | http://localhost:8080/v1 |
+| Every version of the reports (local Git) | http://localhost:3010/ (login in `secrets/gitea-admin.txt`) |
+| Run the tests | `docker compose --profile bench up -d --build bench-runner` ([benchmarks/README.md](benchmarks/README.md)) |
+
+**Try it without a GPU:** [tests/virtual-3080/](tests/virtual-3080/README.md) installs the whole system on a Linux machine with Docker and a virtual RTX 3080 (simulated numbers) - useful to learn the system or to test changes.
 
 ## Documentation
 

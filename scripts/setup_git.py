@@ -8,6 +8,7 @@ Safe to run again: existing user / repository / key are reused.
 import json
 import os
 import secrets
+import shutil
 import subprocess
 import sys
 import time
@@ -96,14 +97,18 @@ def main():
             sys.exit(f"repository creation failed: {status} {data}")
 
     key = SECRETS / "id_ed25519"
-    if not key.exists():
+    if not key.exists() and shutil.which("ssh-keygen"):
         run("ssh-keygen", "-t", "ed25519", "-N", "", "-C", "model-test-reports", "-f", str(key))
-    public = (SECRETS / "id_ed25519.pub").read_text(encoding="utf-8").strip()
-    status, keys = api("GET", "/user/keys", auth=token)
-    if status == 200 and not any(k.get("key", "").split()[:2] == public.split()[:2] for k in keys):
-        api("POST", "/user/keys", {"title": "workstation", "key": public}, token)
+    if key.exists():  # the key is only for cloning the versions yourself; the versioner uses the token
+        public = (SECRETS / "id_ed25519.pub").read_text(encoding="utf-8").strip()
+        status, keys = api("GET", "/user/keys", auth=token)
+        if status == 200 and not any(k.get("key", "").split()[:2] == public.split()[:2] for k in keys):
+            api("POST", "/user/keys", {"title": "workstation", "key": public}, token)
+    else:
+        print("[warn] ssh-keygen not found: no SSH key created. The versioner works without it; clone the versions over "
+              f"HTTP with the login in secrets/gitea-admin.txt (http://127.0.0.1:{PORT}/{USER}/{REPO}.git).")
 
-    run("docker", "compose", "up", "-d", "--build", "report-versioner")
+    run("docker", "compose", "up", "-d", "report-versioner")   # built by `install.py build`; built here only if missing
     ip = ENV.get("AI_CONSOLE_BIND_IP", "127.0.0.1")
     print(f"""Git is ready.
   Web:   http://{ip}:{PORT}/   (login data are in secrets/gitea-admin.txt)

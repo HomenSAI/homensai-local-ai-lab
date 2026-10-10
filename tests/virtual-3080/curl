@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+# Local AI Lab - (c) 2026 Serhii Khomenko - https://homensai.com/
+"""Minimal curl for the virtual gateway image: GET only, flags -f -s -S --max-time and -o, as used by the
+gateway health check and the console's fixed `docker exec curl` form."""
+import sys, urllib.error, urllib.request
+
+args, url, fail, timeout, out = sys.argv[1:], None, False, 30.0, None
+i = 0
+while i < len(args):
+    a = args[i]
+    if a == "--max-time":
+        timeout = float(args[i + 1]); i += 1
+    elif a == "-o":
+        out = args[i + 1]; i += 1
+    elif a.startswith("-") and not a.startswith("--"):
+        fail = fail or "f" in a
+    elif not a.startswith("-"):
+        url = a
+    i += 1
+try:
+    with urllib.request.urlopen(url, timeout=timeout) as r:
+        data = r.read()
+except urllib.error.HTTPError as e:
+    if fail:
+        sys.stderr.write(f"curl: (22) The requested URL returned error: {e.code}\n"); sys.exit(22)
+    data = e.read()
+except Exception as e:
+    sys.stderr.write(f"curl: (7) Failed to connect: {e}\n"); sys.exit(7)
+if out:
+    open(out, "wb").write(data)
+else:
+    sys.stdout.buffer.write(data)

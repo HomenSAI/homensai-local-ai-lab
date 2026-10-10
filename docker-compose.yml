@@ -464,6 +464,7 @@ services:
     container_name: ai-bench-runner
     init: true
     restart: unless-stopped
+    gpus: all            # nvidia-smi inside the runner: the runners record peak video memory and GPU load
     network_mode: host
     environment:
       BENCH_PHASES: ${BENCH_PHASES:-general german context german_fix accel stem chem code20}

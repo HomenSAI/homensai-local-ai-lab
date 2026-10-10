@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+# Local AI Lab - (c) 2026 Serhii Khomenko - https://homensai.com/
+"""Virtual NVIDIA driver for the Local AI Lab test machine (a Linux host with Docker and no GPU).
+
+Docker accepts `--gpus all` (and `gpus: all` in compose) when a program with this name is on the PATH of dockerd;
+it then runs it as an OCI prestart hook for every GPU container. The real one mounts the driver into the container;
+this one copies the virtual `nvidia-smi` into it. Install: copy this file and nvidia-smi to /usr/local/bin and
+restart dockerd. Never install it on a machine with a real NVIDIA GPU."""
+import json, os, shutil, sys
+
+SMI = os.path.join(os.path.dirname(os.path.realpath(__file__)), "nvidia-smi")
+try:
+    state = json.load(sys.stdin)
+    bundle = state.get("bundle", "")
+    root = json.load(open(os.path.join(bundle, "config.json"))).get("root", {}).get("path", "rootfs")
+    targets = [os.path.join(bundle, root) if not os.path.isabs(root) else root, f"/proc/{state.get('pid')}/root"]
+    for base in targets:
+        try:
+            dest = os.path.join(base, "usr/bin/nvidia-smi")
+            shutil.copyfile(SMI, dest)
+            os.chmod(dest, 0o755)
+            break
+        except OSError:
+            continue
+except Exception:
+    pass
+sys.exit(0)

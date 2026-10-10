@@ -74,6 +74,7 @@ powershell -ExecutionPolicy Bypass -File scripts\install.ps1 init
 notepad .env
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 build
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 up
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 verify
 ```
 
@@ -88,10 +89,11 @@ python scripts/install.py init        # creates .env, folders, placeholders, Doc
 # now edit .env: set MODEL_DIR (and AI_CONSOLE_BIND_IP if you want LAN access), then put your models in place (section 4.5)
 python scripts/install.py build       # builds the images (15-40 min the first time)
 python scripts/install.py up          # starts everything
+python scripts/install.py git         # local Git that keeps every version of the reports
 python scripts/install.py verify      # HTTP checks of every part
 ```
 
-`python scripts/install.py all` runs doctor, init, build, up and verify in one go (use it after you edited `.env`). Every step can be repeated safely. Then open **http://localhost:8766/**.
+`python scripts/install.py all` runs doctor, init, build, up, git and verify in one go (use it after you edited `.env`). Every step can be repeated safely. Then open **http://localhost:8766/**.
 
 - **GPU check and the 5.6 GB image.** `doctor` checks the GPU with the image `nvidia/cuda:12.8.1-runtime-ubuntu24.04`. If that image is not on the PC yet, `doctor` only warns and skips the check; ask the owner and run `python scripts/install.py doctor --pull` to download it (5.6 GB).
 - **A PC without an NVIDIA GPU** (to try the console, the report and Git): add `--no-gpu` to `doctor`, `build`, `up` and `verify` (or to `all`). The gateway is not started and no model can be loaded; the console starts without requesting a GPU (`docker-compose.nogpu.yml`). If you start the console by hand, use `docker compose -f docker-compose.yml -f docker-compose.nogpu.yml up -d ai-console`.
@@ -210,7 +212,8 @@ The gateway needs about 30 s to become healthy and starts with **no model loaded
 ### 4.8 Set up the Git server for report versions
 
 ```
-python scripts/setup_git.py
+powershell -ExecutionPolicy Bypass -File scripts\install.ps1 git     # Windows
+python scripts/install.py git                                   # Linux
 ```
 
 It starts Gitea, creates the administrator, an access token for the versioner, an SSH key and the private repository, and starts `report-versioner`. Passwords and keys are written to `secrets/` only (ignored by Git, never published). Web UI: `http://localhost:3010/` (login in `secrets/gitea-admin.txt`). Clone the versions:

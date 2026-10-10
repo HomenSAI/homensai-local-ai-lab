@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Python syntax
-        run: python -m py_compile console/*.py scripts/*.py tests/*.py benchmarks/*.py
+        run: python -m py_compile console/*.py scripts/*.py tests/*.py benchmarks/*.py tests/virtual-3080/fake_llama.py tests/virtual-3080/make_models.py tests/virtual-3080/curl tests/virtual-3080/nvidia-container-runtime-hook
       - name: Unit tests (console security, report builder, public results, installer)
         run: python -m unittest discover -s tests -v
       - name: JavaScript syntax

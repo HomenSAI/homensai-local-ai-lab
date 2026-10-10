@@ -1,0 +1,34 @@
+#!/bin/sh
+# Local AI Lab - (c) 2026 Serhii Khomenko - https://homensai.com/
+# Virtual RTX 3080: answers the nvidia-smi queries of Local AI Lab. Used memory and load come from the virtual
+# model servers (GET /vgpu); without Python in the container only the fixed card data are printed.
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "NVIDIA GeForce RTX 3080 (virtual), 10240 MiB"
+  exit 0
+fi
+exec python3 - "$@" <<'PY'
+import json, os, sys, urllib.request
+ENDPOINTS = os.environ.get("VGPU_ENDPOINTS", "http://127.0.0.1:8090/vgpu http://127.0.0.1:8080/vgpu http://llama-swap-gateway:8080/vgpu").split()
+used = util = 0
+for url in ENDPOINTS:
+    try:
+        with urllib.request.urlopen(url, timeout=0.4) as r:
+            d = json.load(r); used += d.get("used_mib", 0); util = max(util, d.get("util", 0))
+    except Exception:
+        pass
+total = 10240
+used = min(used, total)
+values = {"name": "NVIDIA GeForce RTX 3080", "memory.total": total, "memory.used": used, "memory.free": total - used,
+          "utilization.gpu": util, "power.draw": round(28 + util * 2.9, 2), "temperature.gpu": 38 + util * 40 // 100,
+          "driver_version": "virtual", "pstate": "P2" if util else "P8"}
+query = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--query-gpu=")), None)
+if query:
+    units = "nounits" not in " ".join(sys.argv)
+    unit = {"memory.total": " MiB", "memory.used": " MiB", "memory.free": " MiB", "utilization.gpu": " %", "power.draw": " W"}
+    print(", ".join(f"{values.get(f, '[N/A]')}{unit.get(f, '') if units else ''}" for f in query.split(",")))
+else:
+    print("+-----------------------------------------------------------------------------+")
+    print("| NVIDIA-SMI virtual   Driver Version: virtual   (Local AI Lab test machine)   |")
+    print(f"| 0  NVIDIA GeForce RTX 3080   {used:>5}MiB / {total}MiB   GPU-Util {util:>3}%              |")
+    print("+-----------------------------------------------------------------------------+")
+PY
