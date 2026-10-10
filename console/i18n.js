@@ -71,14 +71,18 @@
       node(document.body);
       observer.observe(document.body, {subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["placeholder", "title", "aria-label"]});
     }
-    const bar = document.querySelector(".topbar");
+    const bar = document.getElementById("tools") || document.querySelector(".topbar");
     if (bar && !document.getElementById("langSwitch")) {
       const sel = document.createElement("select");
       sel.id = "langSwitch"; sel.className = "lang-switch"; sel.setAttribute("aria-label", "Language"); sel.setAttribute("data-no-i18n", "");
       sel.innerHTML = '<option value="ru">RU</option><option value="en">EN</option><option value="de">DE</option>';
       sel.value = lang;
       sel.addEventListener("change", () => { try { localStorage.setItem("uiLang", sel.value); } catch (e) { /* storage blocked */ } location.reload(); });
-      bar.appendChild(sel);
+      if (bar.id === "tools") {                          // HomenS.AI Style topbar: one more item of the tool list
+        const li = document.createElement("li");
+        li.appendChild(sel);
+        bar.prepend(li);
+      } else bar.appendChild(sel);
     }
   }
   fetch("/api/version").then(r => r.json()).then(v => document.querySelectorAll("[data-version]").forEach(e => { e.textContent = "v" + v.version; if (v.repo) { const a = e.closest(".site-footer"); const link = a && a.querySelector("[data-repo]"); if (link) { link.href = v.repo; link.parentElement.hidden = false; } } })).catch(() => {});

@@ -2,7 +2,8 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 WORKDIR /app
-COPY console/index.html console/app.css console/app.js console/container_server.py console/security.py console/tests_feed.py console/i18n.js console/i18n-dict.js /app/console/
+COPY console/index.html console/app.css console/app.js console/container_server.py console/security.py console/tests_feed.py console/i18n.js console/i18n-dict.js console/shell.js /app/console/
+COPY console/style/ /app/console/style/
 EXPOSE 8766
 COPY legal/ /app/legal/
 COPY VERSION /app/VERSION

@@ -21,7 +21,7 @@
 | `Dockerfile.upstream` / `.bonsai` | llama.cpp (CUDA 12.8, architecture 86) and the PrismML fork, built from pinned commits. |
 | `Dockerfile.llama-swap` | llama-swap v260 (SHA-256 checked) on top of the upstream image, with the Bonsai runtime copied to `/opt/prism`. |
 | `config/llama-swap.yaml` | One profile per model: file, context size, KV-cache type, speculative decoding, TTL. Edit it to add or remove models. |
-| `console/` | `container_server.py` (HTTP server, Docker/gateway access), `security.py` (Host / Origin / password checks and security headers), `tests_feed.py` (test table feed); static `index.html`, `app.js`, `app.css`; `i18n.js` + `i18n-dict.js` (RU/EN/DE). |
+| `console/` | `container_server.py` (HTTP server, Docker/gateway access), `security.py` (Host / Origin / password checks and security headers), `tests_feed.py` (test table feed); static `index.html`, `app.js`, `app.css`, `shell.js` (theme button, author footer); `i18n.js` + `i18n-dict.js` (RU/EN/DE); `style/`: HomenS.AI Style 1.3.0 (stylesheet, fonts, logo, scripts), served at `/style/`. |
 | `report/` | Static report page; `live-data.json` and `live-status.json` are written by the builder. |
 | `scripts/build_live_report.py` | Collects result files, merges them into SQLite (`raw_rows`, `results`, `history`, `model_scores`), builds the stage plan, the progress and the time-left estimate. |
 | `scripts/versioner.py`, `scripts/setup_git.py` | Report versioning into Gitea and its one-time setup. |

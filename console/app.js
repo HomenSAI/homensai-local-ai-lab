@@ -532,7 +532,7 @@
     const card=event.target.closest(".model-card");
     if(card&&event.target===card&&(event.key==="Enter"||event.key===" ")){event.preventDefault();selectModel(card.dataset.key);}
   });
-  $("reportLink").href="/report/";$("videoLink").href=`${location.protocol}//${location.hostname}:8767/`;
+  $("reportLink").href="/report/";for(const id of ["videoLink","videoLinkMobile"])$(id).href=`${location.protocol}//${location.hostname}:8767/`;
   // ---- test results: every kind of test on one row, sorted by any metric chosen above the list
   const testsSeen = new Map();
   const nf = (v, d = 0) => Number(v).toLocaleString("ru-RU", {maximumFractionDigits: d});

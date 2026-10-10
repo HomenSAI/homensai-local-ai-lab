@@ -93,6 +93,6 @@ SECURITY_HEADERS = {
     "Referrer-Policy": "no-referrer",
     "Cross-Origin-Resource-Policy": "same-origin",
     "Content-Security-Policy": ("default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
-                                "img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; "
+                                "img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; base-uri 'none'; "
                                 "form-action 'self'; frame-ancestors 'none'"),
 }

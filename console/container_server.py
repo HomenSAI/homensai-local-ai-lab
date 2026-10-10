@@ -23,6 +23,9 @@ import tests_feed
 
 WEB = Path(__file__).resolve().parent
 REPORT_DIR = Path("/app/report")
+STYLE_DIR = WEB / "style"   # HomenS.AI Style 1.3.0 (copied from the homensai-style repository; version in the pages' homensai-style meta)
+STYLE_TYPES = {".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".svg": "image/svg+xml",
+               ".woff2": "font/woff2", ".txt": "text/plain; charset=utf-8"}
 DOWNLOADS = {"/BENCHMARK_RESULTS.csv": Path("/app/downloads/BENCHMARK_RESULTS.csv"),
              "/BENCHMARK_RESULTS.db": Path("/app/downloads/BENCHMARK_RESULTS.db"),
              "/media/images/qwen-image-2.1-smoke.png": Path("/app/downloads/qwen-image-2.1-smoke.png")}
@@ -915,7 +918,7 @@ class Handler(BaseHTTPRequestHandler):
                             "repo": os.environ.get("PUBLIC_REPO_URL", "")})
         else:
             file = {"/": "index.html", "/index.html": "index.html", "/app.css": "app.css",
-                    "/app.js": "app.js",
+                    "/app.js": "app.js", "/shell.js": "shell.js",
                     "/i18n.js": "i18n.js", "/i18n-dict.js": "i18n-dict.js"}.get(self.path.split("?", 1)[0])
             clean = self.path.split("?", 1)[0]
             if clean == "/report":
@@ -941,6 +944,16 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
+                return
+            if not file and clean.startswith("/style/"):
+                # HomenS.AI Style package (console/style/): stylesheets, scripts, logo and fonts of the shared design.
+                relative = clean[len("/style/"):]
+                target = (STYLE_DIR / relative).resolve()
+                mime = STYLE_TYPES.get(target.suffix)
+                if ".." in relative or STYLE_DIR.resolve() not in target.parents or not mime or not target.is_file():
+                    self.send_error(404)
+                    return
+                self.send_bytes(target.read_bytes(), mime)
                 return
             if not file and self.path.startswith("/legal/"):
                 name = self.path[len("/legal/"):].split("?", 1)[0]

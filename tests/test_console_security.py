@@ -103,6 +103,17 @@ class ServerTest(unittest.TestCase):
         for path in ("/report/../../etc/passwd", "/report/%2e%2e/%2e%2e/etc/passwd", "/legal/../VERSION"):
             self.assertEqual(self.call("GET", path)[0], 404, path)
 
+    def test_style_package_is_served_with_its_types(self):
+        for path, mime in (("/style/dist/homensai-full.css", "text/css"), ("/style/js/ui.js", "text/javascript"),
+                           ("/style/brand/logo-mark.svg", "image/svg+xml"), ("/style/fonts/ibm-plex/IBMPlexSans-Regular.woff2", "font/woff2"),
+                           ("/shell.js", "text/javascript")):
+            status, headers, _ = self.call("GET", path)
+            self.assertEqual(status, 200, path)
+            self.assertTrue(headers["Content-Type"].startswith(mime), path)
+        self.assertIn("font-src 'self'", self.call("GET", "/")[1]["Content-Security-Policy"])
+        for path in ("/style/../container_server.py", "/style/%2e%2e/security.py", "/style/../../VERSION", "/style/LICENSE", "/style/dist/missing.css"):
+            self.assertEqual(self.call("GET", path)[0], 404, path)
+
     def test_password_protects_everything_but_health(self):
         cs.PASSWORD = "secret"
         try:

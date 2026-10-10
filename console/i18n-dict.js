@@ -4,6 +4,8 @@ window.I18N_DICT = [
   ["должен быть", "must be a", "muss ein"],
   ["Не удалось загрузить данные отчёта. Откройте отчёт через консоль", "Could not load the report data. Open the report through the console", "Die Berichtsdaten konnten nicht geladen werden. Öffnen Sie den Bericht über die Konsole"],
   // header, status
+  ["Перейти к содержанию", "Skip to content", "Zum Inhalt springen"], ["Лицензия результатов", "Results licence", "Lizenz der Ergebnisse"], ["Лицензия кода", "Code licence", "Lizenz des Codes"], ["Основная навигация", "Main navigation", "Hauptnavigation"],
+  ["Результаты и код можно использовать только в некоммерческих целях со ссылкой на автора", "Results and code may be used for noncommercial purposes only, with a link to the author", "Ergebnisse und Code dürfen nur für nichtkommerzielle Zwecke und mit Verweis auf den Autor genutzt werden"],
   ["Генерация видео", "Video generation", "Videogenerierung"], ["Модели", "Models", "Modelle"],
   ["Локальная сеть", "Local network", "Lokales Netzwerk"], ["Отчёт и результаты", "Report and results", "Bericht und Ergebnisse"],
   ["Панель доступна из локальной сети без пароля", "The panel is reachable from the local network without a password", "Das Panel ist im lokalen Netzwerk ohne Passwort erreichbar"],

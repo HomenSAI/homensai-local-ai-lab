@@ -1,0 +1,23 @@
+IBM Plex (Sans, Mono) — шрифты интерфейса HomenS.AI Academy
+
+Copyright © 2017 IBM Corp. with Reserved Font Name "Plex"
+Лицензия: SIL Open Font License, Version 1.1 (текст — в файле OFL.txt рядом). Разрешает использование, встраивание, распространение и продажу
+в составе программ, в том числе в коммерческих; сами шрифты нельзя продавать отдельно, текст лицензии и уведомление об авторских правах
+сохраняются при распространении.
+
+Источник: официальные пакеты npm @ibm/plex-sans 1.1.0 и @ibm/plex-mono 2.5.0 (fonts/complete/woff2), файлы БЕЗ ИЗМЕНЕНИЙ
+(без подмножеств, без перекодирования), поэтому имя «IBM Plex» остаётся законным (зарезервированное имя «Plex»).
+Официальный сайт: https://www.ibm.com/plex/ · репозиторий: https://github.com/IBM/plex
+
+Файлы и контрольные суммы SHA-256:
+  IBMPlexMono-Regular.woff2  ba204497f16b6d334cee9d1e963a831b73e3a56e1d6300a8489d18df7214b350
+  IBMPlexSans-Bold.woff2  fa7130d854a660b39a7fc9e6e0f2dc23dba5f1346e2adea3e1fe37b6d884133d
+  IBMPlexSans-Italic.woff2  13284fab1821ba6e3652c1580fcf2bbfd8c9309520c69b3d1224dab40b37c597
+  IBMPlexSans-Regular.woff2  ba711a3085ff9f27440b6b9c4550cfc47c97bf36591d5da958b975bb3add8c1a
+  IBMPlexSans-SemiBold.woff2  f78048030eab62e860efa39a0df79e2e5581bf122eb95b9bc42c0b8a4988d205
+
+Покрытие (проверено): кириллица (русский, украинские ґ є і ї), латиница (английский), немецкие Ä Ö Ü ä ö ü ß ẞ, типографика «» „“ — … № € → ✓.
+Нет в шрифте: геометрические значки ▲ ▼ ○ ● ✗ ▾ — их рисует системный шрифт (запасной в списке font-family).
+
+Как убрать: удалить каталог frontend/vendor/ibm-plex, блоки @font-face в frontend/app/styles.css и строку preload в frontend/index.html —
+интерфейс продолжит работать на системных шрифтах. Решение: docs/decisions/D-029.md.

@@ -17,6 +17,8 @@ results, launch settings and original code are published. Third-party software i
 | Open WebUI | чат-интерфейс (отдельная установка) | https://github.com/open-webui/open-webui — условия включают требования к сохранению брендинга |
 | ComfyUI, Wan 2.1 | генерация видео | https://github.com/comfyanonymous/ComfyUI (GPL-3.0), https://github.com/Wan-Video/Wan2.1 |
 | Python, nginx, Alpine, Docker | окружение | официальные образы и их лицензии |
+| IBM Plex Sans / Mono (в `console/style/fonts/ibm-plex/`) | шрифты интерфейса, без изменений | © 2017 IBM Corp., SIL Open Font License 1.1 (`OFL.txt` рядом со шрифтами) |
+| HomenS.AI Style (`console/style/`) | оформление консоли и отчёта | © 2026 Serhii Khomenko, автор этого проекта; условия — `console/style/LICENSE` |
 
 ## Модели / Models
 
