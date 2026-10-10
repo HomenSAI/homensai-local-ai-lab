@@ -744,6 +744,10 @@
    "bytes": 6059,
    "sha256": "155d393e94522033261082afcf56f31aba6be794c8f0a26a390d2934e32fd53d"
   },
+  "tests/virtual-3080/REPORT.ru.md": {
+   "bytes": 13622,
+   "sha256": "a99329f68bf8fec61662cd7dab10e9ff9fc5f6a7842164b906ebe5d5bc22ed04"
+  },
   "tests/virtual-3080/curl": {
    "bytes": 1127,
    "sha256": "7b885057a56036e7520c74c3895b0d4dae90ecd203ec3e4ecebbb7032202edf2"
